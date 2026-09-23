@@ -48,6 +48,20 @@ describe('composite', () => {
   it('treats a missing score as the bottom criterion', () => {
     expect(composite(answers({}))).toBeCloseTo(0);
   });
+
+  it('never emits NaN for malformed judge output', () => {
+    const malformed = {
+      hard_blocker: { noul: Number.NaN },
+      skills: { score: 'three', confidence: Number.NaN },
+      level: { score: Number.POSITIVE_INFINITY },
+      location: { score: -5, confidence: 2 },
+      comp: null,
+      domain: undefined,
+    } as unknown as JevAnswers;
+    const c = composite(malformed);
+    expect(Number.isFinite(c)).toBe(true);
+    expect(c).toBeCloseTo(0); // -5 clamps to 0; everything malformed reads 0
+  });
 });
 
 describe('stateFor', () => {
