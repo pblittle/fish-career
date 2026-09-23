@@ -27,3 +27,4 @@ jobs:
           if [ -n "$ref" ]; then gh workflow run test.yml --ref "$ref"; fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
