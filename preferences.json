@@ -1,0 +1,24 @@
+{
+  "preferences": [
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "databricks-8470847002.txt",
+      "source": "profile.md, Target roles: \"Direct-report management is not wanted; roles whose core is managing managers are not a fit.\""
+    },
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "openai-e9d435e1-1b9e-4715-84ce-75f372e5559c.txt",
+      "source": "profile.md, Location and remote: \"Remote US only. Based in Charleston, SC; not open to relocation.\""
+    },
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "replit-b5e81eae-06f9-4798-8988-2d06ca936dbc.txt",
+      "source": "profile.md, Level: the titles read as \"seniority evidence for a Principal/Staff+ IC-track or architect seat\"; a new-grad bar is far below it."
+    },
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "abridge-33020695-50ca-451f-93c1-893a4985b3a4.txt",
+      "source": "profile.md, Target roles: \"The fit test: authors architecture, builds the PoC hands-on, presents to senior stakeholders\" — associate general counsel is none of these."
+    }
+  ]
+}
