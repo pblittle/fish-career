@@ -3,6 +3,7 @@ name: test
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -19,7 +20,7 @@ jobs:
       - run: npm run build --prefix fish-mcp
 
   commitlint:
-    if: github.event_name == 'pull_request'
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,4 +30,4 @@ jobs:
         with:
           node-version: 20
       - run: npm ci --prefix fish-mcp
-      - run: fish-mcp/node_modules/.bin/commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+      - run: fish-mcp/node_modules/.bin/commitlint --from ${{ github.event.pull_request.base.sha || 'origin/main' }} --to ${{ github.event.pull_request.head.sha || 'HEAD' }}

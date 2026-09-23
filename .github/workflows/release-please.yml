@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   release-please:
@@ -16,3 +17,13 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      # Bot-created PRs fire no workflow events (the GITHUB_TOKEN recursion
+      # guard), so release PRs arrive with zero checks and the ruleset will
+      # not let them merge. workflow_dispatch is the documented exception to
+      # that guard: dispatch the checks onto the release branch's head.
+      - name: Trigger checks on the release PR
+        run: |
+          ref=$(gh api "repos/$GITHUB_REPOSITORY/pulls" --jq '[.[] | select(.head.ref | startswith("release-please"))][0].head.ref // empty')
+          if [ -n "$ref" ]; then gh workflow run test.yml --ref "$ref"; fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
