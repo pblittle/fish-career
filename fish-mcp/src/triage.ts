@@ -48,9 +48,13 @@ export const rowFromAnswers = (
   const dims: TriageRow['dims'] = {};
   for (const d of DIMENSIONS) {
     const top = d.criteria.length - 1;
+    const score = answers[d.id]?.score;
     dims[d.id] = {
-      value: (answers[d.id]?.score ?? 0) / top,
-      confidence: answers[d.id]?.confidence ?? 0,
+      value: Math.min(
+        1,
+        Math.max(0, (typeof score === 'number' && Number.isFinite(score) ? score : 0) / top),
+      ),
+      confidence: Math.min(1, Math.max(0, answers[d.id]?.confidence ?? 0)),
     };
   }
   return {
@@ -59,7 +63,7 @@ export const rowFromAnswers = (
     company: meta.company,
     composite: composite(answers),
     dims,
-    blocker: answers.hard_blocker?.noul ?? 0,
+    blocker: Math.min(1, Math.max(0, answers.hard_blocker?.noul ?? 0)),
   };
 };
 

@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -107,6 +107,14 @@ describe('markScored', () => {
     const p = join(home(), 'nested', 'scored.json');
     markScored(p, { 'a.txt': 0.1 }, CURRENT);
     expect(readLedger(p).entries['a.txt']?.score).toBe(0.1);
+  });
+
+  it('leaves no temp file behind', () => {
+    const dir = home();
+    const p = join(dir, 'scored.json');
+    markScored(p, { 'a.txt': 0.5 }, CURRENT);
+    const leftovers = readdirSync(dir).filter((f) => f !== 'scored.json');
+    expect(leftovers).toEqual([]);
   });
 });
 
