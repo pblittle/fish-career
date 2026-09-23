@@ -141,6 +141,7 @@ framework-then-platform shape, on purpose.
 
 ## Naming
 
-`fish` is the household name the project grew from. The repository and
-the future hosted product take the domain `fish.career`; the engine
-package is `fish-mcp`.
+`fish` is the household name the project grew from. `fish.career` names
+the repository and is the intended domain of the hosted product if it
+ever exists; the domain is deliberately unregistered while the product
+is hypothetical. The engine package is `fish-mcp`.
