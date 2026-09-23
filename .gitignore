@@ -1,0 +1,9 @@
+.env
+.firecrawl/
+postings/
+state/
+*.log
+opencode.json
+resume-clean.md
+fish-mcp/node_modules/
+fish-mcp/dist/
