@@ -12,8 +12,9 @@
 // A corrupt ledger is REPORTED, not silently treated as empty: an unnoticed
 // reset means paying for a full rescore the operator did not ask for.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { writeFileAtomic } from './config.js';
 
 export interface LedgerEntry {
   score: number;
@@ -120,5 +121,5 @@ export const markScored = (
     ]),
   );
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, JSON.stringify({ ...prior.entries, ...incoming }, null, 2));
+  writeFileAtomic(path, JSON.stringify({ ...prior.entries, ...incoming }, null, 2));
 };

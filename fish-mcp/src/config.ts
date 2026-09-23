@@ -2,7 +2,7 @@
 // directory, so the npm package itself stays stateless. Default is
 // ~/.config/fish; FISH_HOME overrides for tests and worktrees.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -70,9 +70,17 @@ export const readJson = <T>(path: string, fallback: T): T => {
   }
 };
 
+// Write-to-temp-then-rename: a crash mid-write leaves the old file
+// intact instead of a truncated one. rename(2) is atomic on one disk.
+export const writeFileAtomic = (path: string, data: string): void => {
+  const tmp = `${path}.${process.pid}.tmp`;
+  writeFileSync(tmp, data);
+  renameSync(tmp, path);
+};
+
 export const writeJson = (path: string, value: unknown): void => {
   mkdirSync(PATHS.state, { recursive: true });
-  writeFileSync(path, JSON.stringify(value, null, 2));
+  writeFileAtomic(path, JSON.stringify(value, null, 2));
 };
 
 export const hasApiKey = (): boolean =>
