@@ -1,0 +1,40 @@
+{
+  "name": "fish-mcp",
+  "version": "0.2.0",
+  "description": "MCP server for fish: watch company ATS boards, fetch remote postings, triage them against a profile with Jev",
+  "license": "MIT",
+  "author": "Little Bets, LLC",
+  "type": "module",
+  "bin": {
+    "fish-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc",
+    "lint": "biome check ..",
+    "lint:fix": "biome check --write .."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/core": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "zod": "^4.6.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.13",
+    "typescript": "^5.6.0",
+    "vitest": "^5.0.1"
+  }
+}
