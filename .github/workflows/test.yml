@@ -1,0 +1,32 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --prefix fish-mcp
+      - run: npm test --prefix fish-mcp
+      - run: npm run typecheck --prefix fish-mcp
+      - run: npm run lint --prefix fish-mcp
+      - run: npm run build --prefix fish-mcp
+
+  commitlint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --prefix fish-mcp
+      - run: fish-mcp/node_modules/.bin/commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
