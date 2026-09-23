@@ -174,10 +174,18 @@ export async function callJev(
   throw new Error(lastError);
 }
 
+// Model output is not schema-checked by the API: `answers` arrives as
+// whatever the judge emitted. A non-finite score would propagate NaN into
+// composite, the ledger, and the table (JSON.stringify nulls NaN, which
+// then fails the ledger's own finiteness check and reads as corruption).
+// Guard at the boundary once: non-finite scores read as 0, and every
+// probability is clamped to 0..1.
+const finite = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+
 const normalized = (answers: JevAnswers, id: string): number => {
   const dim = DIMENSIONS.find((d) => d.id === id);
   if (!dim) return 0;
-  return (answers[id]?.score ?? 0) / (dim.criteria.length - 1);
+  return Math.min(1, Math.max(0, finite(answers[id]?.score) / (dim.criteria.length - 1)));
 };
 
 export const composite = (answers: JevAnswers): number =>

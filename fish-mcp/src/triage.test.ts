@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { scoreFiles } from './triage.js';
+import { rowFromAnswers, scoreFiles } from './triage.js';
 
 const answersFor = (score: number) => ({
   hard_blocker: { noul: 0 },
@@ -29,6 +29,30 @@ const cache = () => {
 };
 
 afterEach(() => vi.unstubAllGlobals());
+
+describe('rowFromAnswers', () => {
+  it('clamps malformed judge output instead of emitting NaN', () => {
+    const row = rowFromAnswers(
+      'x.txt',
+      {
+        hard_blocker: { noul: 2 },
+        skills: { score: Number.NaN, confidence: 3 },
+        level: { score: 'nine' },
+        location: { score: -1, confidence: -1 },
+        comp: {},
+        domain: { score: 2, confidence: 0.5 },
+      } as never,
+      { title: 'T', company: 'C' },
+    );
+    expect(row.blocker).toBe(1);
+    expect(row.dims.skills?.value).toBe(0);
+    expect(row.dims.skills?.confidence).toBe(1);
+    expect(row.dims.location?.value).toBe(0);
+    expect(row.dims.location?.confidence).toBe(0);
+    expect(row.dims.domain?.value).toBeCloseTo(2 / 3);
+    expect(row.dims.domain?.confidence).toBe(0.5);
+  });
+});
 
 describe('scoreFiles', () => {
   it('traces every call and checkpoints every scored row', async () => {
