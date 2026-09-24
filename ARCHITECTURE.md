@@ -47,7 +47,7 @@ holds none of it.
 **Why:** an install that carries your candidate profile and your job search
 history is a liability, and it breaks the moment two worktrees want different
 state. An engine that is stateless and a home that is explicit gives you
-reproducible runs and a gitignore that is four lines long.
+reproducible runs and a gitignore you can read in one glance.
 
 ## The judge is untrusted
 

@@ -90,12 +90,21 @@ Optional cron (fetch only; scoring is interactive):
    TYPESAFE_API_KEY=...
    ```
 
-2. Fill `profile.md`. It is sent verbatim to the TypeSafe API as the
+2. Build the engine. Both root scripts import from `fish-career/dist/`,
+   which is gitignored, so a fresh clone has nothing to run until this
+   step:
+
+   ```bash
+   npm --prefix fish-career ci
+   npm --prefix fish-career run build
+   ```
+
+3. Fill `profile.md`. It is sent verbatim to the TypeSafe API as the
    state for every scoring call, so it carries no contact details, only
    role-relevant facts. The profile's accuracy bounds everything
    downstream; keep it current (floor, target scope, hard constraints).
 
-3. Run `node fetch.mjs`. First run writes only postings newer than 14
+4. Run `node fetch.mjs`. First run writes only postings newer than 14
    days; the window widens with `--days N` or disappears with `--all`.
 
 ## Files
