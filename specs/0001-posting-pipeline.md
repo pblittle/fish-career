@@ -1,4 +1,4 @@
-# 0001 — the fish posting pipeline
+# 0001: the fish posting pipeline
 
 Status: accepted · 2026-09-22
 
@@ -12,12 +12,12 @@ watching, with the comp data included.
 
 The scarce resource is the operator's attention. The pipeline's job is to
 convert an unbounded stream of postings into a small ranked table with the
-reasons attached — and to prove, measurably, that the ranking tracks the
+reasons attached, and to prove measurably that the ranking tracks the
 operator's own judgment rather than a model's taste.
 
 ## Contract
 
-### fetch — watchlist to postings cache
+### fetch: watchlist to postings cache
 
 - Four public ATS APIs, one flat posting shape: `TITLE`, `COMPANY`,
   `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body.
@@ -27,7 +27,7 @@ operator's own judgment rather than a model's taste.
 - A body too thin to score is resolved through the provider's detail
   endpoint, or baselined if it stays thin.
 
-### triage — postings to ranked rows
+### triage: postings to ranked rows
 
 - One judge call per posting: five Score dimensions plus one Noul
   hard-blocker. Weights, criteria, and blocker instructions are data in
@@ -44,19 +44,19 @@ operator's own judgment rather than a model's taste.
   A profile or rubric change re-scores stale entries on the next run; the
   operator never babysits invalidation.
 
-### evaluate and calibrate — the measurements
+### evaluate and calibrate: the measurements
 
 - `evaluate`: pairwise preferences in `preferences.json`, each quoting the
   profile line it came from. The ranking must satisfy all of them.
 - A golden fixture of recorded judge answers runs the same eval in CI with
   no network and no key.
-- `calibrate`: optional and stronger — Spearman agreement against a
+- `calibrate`: optional and stronger. Spearman agreement against a
   hand-ranked slice, for when an operator will rank one.
 
 ### surfaces
 
 One engine, two surfaces: the CLIs (`fetch.mjs`, `triage.mjs`) and the MCP
-server (`fish-mcp`) over the same modules, so semantics cannot drift.
+server (`fish-career`) over the same modules, so semantics cannot drift.
 
 ## Non-goals
 
@@ -66,6 +66,6 @@ server (`fish-mcp`) over the same modules, so semantics cannot drift.
 
 ## Acceptance
 
-- `npm --prefix fish-mcp test` green — including the golden eval slice.
+- `npm --prefix fish-career test` green, including the golden eval slice.
 - `node triage.mjs --evaluate` reports every revealed preference satisfied.
 - Every scored row is reproducible from `state/traces.jsonl`.

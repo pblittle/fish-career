@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-// fish-mcp: the fish pipeline as an MCP server. Tools for the agent to
+// fish.career: the pipeline as an MCP server. Tools for the agent to
 // manage a watchlist, poll public ATS boards, triage arrivals against
 // the operator's profile with Jev, and run the calibration loop that
 // keeps the rubric honest. State lives in ~/.config/fish (or FISH_HOME),
 // never in the package, so the npm install stays stateless.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { z } from 'zod';
@@ -35,13 +36,18 @@ import { scoreFiles } from './triage.js';
 ensureHome();
 loadEnv();
 
-const server = new McpServer({ name: 'fish-mcp', version: '0.2.0' });
+const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const { version } = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8')) as {
+  version: string;
+};
+
+const server = new McpServer({ name: 'fish.career', version });
 
 // --- watchlist_add: probe first, write only what the caller confirmed ---
 server.registerTool(
   'watchlist_add',
   {
-    title: 'Add a company to the fish watchlist',
+    title: 'Add a company to the watchlist',
     description:
       'Adds a company to the watchlist by probing the four public ATS APIs for the slug. With confirm=false (the default) it reports live posting counts per provider and writes nothing; call again with confirm=true to write the entry. Always read a title or two from the board before confirming: slugs collide (a "gamma" board might not be the company you mean).',
     inputSchema: {
@@ -387,7 +393,7 @@ server.registerTool(
   {
     title: 'Start a calibration round',
     description:
-      'Draws a stratified sample of postings (one per company, count defaults to 10) and returns them numbered. The operator ranks them by their own judgment, best opportunity first, BEFORE anything is scored; then calibrate_submit records that ranking, scores the same slice, and measures agreement. This is the first thing a new fish user does.',
+      'Draws a stratified sample of postings (one per company, count defaults to 10) and returns them numbered. The operator ranks them by their own judgment, best opportunity first, BEFORE anything is scored; then calibrate_submit records that ranking, scores the same slice, and measures agreement. This is the first thing a new user does.',
     inputSchema: {
       count: z.number().int().min(2).max(30).default(10).describe('How many postings to draw'),
     },

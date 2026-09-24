@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Thin CLI over the fish-mcp scoring engine. The rubric, the Jev call, the
+// Thin CLI over the fish-career scoring engine. The rubric, the Jev call, the
 // table, and the scored ledger live in the package; this file owns the
 // CLI-only concerns: argument parsing, the --sample/--reuse slice, and
 // --explain. State directory is FISH_HOME, or this folder when unset.
@@ -12,12 +12,12 @@
 //   node triage.mjs --explain acme     full answers for one posting
 //   node triage.mjs --dry-run          print the request, call nothing
 //
-// Requires the package built once: npm --prefix fish-mcp run build.
+// Requires the package built once: npm --prefix fish-career run build.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { evaluatePreferences, renderEval } from './fish-mcp/dist/evaluate.js';
+import { evaluatePreferences, renderEval } from './fish-career/dist/evaluate.js';
 import {
   BLOCKER_INSTRUCTIONS,
   callJev,
@@ -27,9 +27,9 @@ import {
   RUBRIC_VERSION,
   renderTable,
   stateFor,
-} from './fish-mcp/dist/jev.js';
-import { markScored, readLedger, stale, unscored } from './fish-mcp/dist/ledger.js';
-import { scoreFiles } from './fish-mcp/dist/triage.js';
+} from './fish-career/dist/jev.js';
+import { markScored, readLedger, stale, unscored } from './fish-career/dist/ledger.js';
+import { scoreFiles } from './fish-career/dist/triage.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const HOME = process.env.FISH_HOME ?? HERE;

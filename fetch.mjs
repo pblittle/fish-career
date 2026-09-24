@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Thin CLI over the fish-mcp fetch engine. The engine owns the dedupe
+// Thin CLI over the fish-career fetch engine. The engine owns the dedupe
 // semantics; this file only parses arguments and prints the diff.
 //
 //   node fetch.mjs                     poll the whole watchlist
@@ -7,18 +7,18 @@
 //   node fetch.mjs --days 30           first-run window override
 //   node fetch.mjs --all               ignore the first-run window
 //
-// Requires the package built once: npm --prefix fish-mcp run build.
+// Requires the package built once: npm --prefix fish-career run build.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fetchAll } from './fish-mcp/dist/fetch.js';
+import { fetchAll } from './fish-career/dist/fetch.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const HOME = process.env.FISH_HOME ?? HERE;
-const ENGINE = join(HERE, 'fish-mcp', 'dist');
+const ENGINE = join(HERE, 'fish-career', 'dist');
 if (!existsSync(join(ENGINE, 'fetch.js'))) {
-  console.error('fish-mcp is not built. Run: npm --prefix fish-mcp run build');
+  console.error('fish-career is not built. Run: npm --prefix fish-career run build');
   process.exit(1);
 }
 

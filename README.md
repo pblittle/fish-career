@@ -8,11 +8,27 @@ client may poll. Watching those feeds directly yields a daily diff of
 exactly the companies you choose, with compensation data LinkedIn hides,
 and no LinkedIn account in the loop to be restricted.
 
-Ranking is Jev (TypeSafe's System One model): typed questions, not
+The scarce resource is the operator's attention. The pipeline's job is to turn
+an unbounded stream of postings into a small ranked table with the reasons
+attached, and to prove measurably that the ranking tracks the operator's own
+judgment rather than a model's taste. Everything below exists to serve that.
+
+## How it works
+
+One engine, two surfaces. `fish-career` is the engine: fetch, judge, and
+measure. The two CLI scripts and the MCP server are thin skins over the same
+modules, so a score means the same thing however you asked for it. State lives
+outside the package (`FISH_HOME`), so the install stays stateless.
+
+The ranking is Jev (TypeSafe's System One model): typed questions, not
 generated prose. Each posting is judged on five dimensions as separate
 Score questions in one request, plus a Noul hard-blocker check, with
-weights and rubrics in code where they belong. Calibration against the
-operator's own judgment comes first; see Calibration.
+weights and rubrics in `DIMENSIONS`, where they can be argued with. Every
+score records the profile hash and rubric version that produced it, so a
+change to either re-scores on the next run.
+
+Calibration against the operator's own judgment comes first. See
+Calibration, and `ARCHITECTURE.md` for the decisions behind this shape.
 
 ## Commands
 
@@ -56,12 +72,21 @@ Optional cron (fetch only; scoring is interactive):
    TYPESAFE_API_KEY=...
    ```
 
-2. Fill `profile.md`. It is sent verbatim to the TypeSafe API as the
+2. Build the engine. Both root scripts import from `fish-career/dist/`,
+   which is gitignored, so a fresh clone has nothing to run until this
+   step:
+
+   ```bash
+   npm --prefix fish-career ci
+   npm --prefix fish-career run build
+   ```
+
+3. Fill `profile.md`. It is sent verbatim to the TypeSafe API as the
    state for every scoring call, so it carries no contact details, only
    role-relevant facts. The profile's accuracy bounds everything
    downstream; keep it current (floor, target scope, hard constraints).
 
-3. Run `node fetch.mjs`. First run writes only postings newer than 14
+4. Run `node fetch.mjs`. First run writes only postings newer than 14
    days; the window widens with `--days N` or disappears with `--all`.
 
 ## Calibration and eval
@@ -70,14 +95,14 @@ The ranking is only as good as the rubric, and the rubric is only as good
 as its agreement with the operator. Two measurements, in increasing
 strength:
 
-1. **`node triage.mjs --evaluate`** — the eval. Scores the postings
+1. **`node triage.mjs --evaluate`**: the eval. Scores the postings
    `preferences.json` names and checks the ranking against pairwise
    preferences the profile already states, each carrying its source line.
    No human step; run it after any profile or weight change. The same
    check runs in the test suite against recorded Jev answers
-   (`fish-mcp/src/fixtures/eval-slice.json`), so CI fails if a change
+   (`fish-career/src/fixtures/eval-slice.json`), so CI fails if a change
    breaks the operator's stated judgment.
-2. **Calibration** — the stronger measurement, optional:
+2. **Calibration**, the stronger measurement, optional:
    `node triage.mjs --sample 12` on a stratified slice (one per company,
    obvious fits and deliberate misses both), rank the same 12 by hand
    BEFORE reading Jev's table, compare. Where they disagree, decide

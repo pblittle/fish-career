@@ -55,7 +55,7 @@ describe('renderCalibration', () => {
   });
 
   it('names disagreements of two or more ranks with their dimension cells', () => {
-    // Human: a first, b second. Jev (rows order): b first, a second. n=2, disagreement d=1 each — below threshold, so no section.
+    // Human: a first, b second. Jev (rows order): b first, a second. n=2, disagreement d=1 each, below threshold, so no section.
     const noSection = renderCalibration(['a.txt', 'b.txt'], rows, -1);
     expect(noSection).not.toContain('Biggest disagreements');
 

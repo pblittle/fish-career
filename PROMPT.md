@@ -1,7 +1,7 @@
-# fish — starter prompt
+# fish.career: starter prompt
 
-Paste into any host once the fish MCP server is loaded (Claude Desktop,
-opencode, etc.).
+Paste into any host once the fish.career MCP server is loaded (Claude
+Desktop, opencode, etc.).
 
 ---
 
@@ -16,11 +16,11 @@ Tools available:
 
 Daily loop: fetch, then triage. Report the ranked table.
 
-Reading the table: "?" on a dimension means low confidence — read that posting
+Reading the table: "?" on a dimension means low confidence. Read that posting
 yourself before judging it. A blocker at 0.5+ means a likely unmet hard
 requirement (usually on-site location) regardless of match score. Greenhouse
 boards carry no comp data, so comp reads neutral there; sub-floor postings can
-slip past the comp gate — eyeball the top of the table for those.
+slip past the comp gate. Eyeball the top of the table for those.
 
 Context you should know: the profile's titles undersell the hands-on work,
 so judge skills against what was built, not the title.
