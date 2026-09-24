@@ -1,6 +1,6 @@
 // Conventional-commits gate for fish.career. Rules are inlined rather
 // than extends-ing @commitlint/config-conventional: the preset resolves
-// from the repo root while the dependency lives in fish-mcp/node_modules
+// from the repo root while the dependency lives in fish-career/node_modules
 // (MODULE_NOT_FOUND in CI on 2026-09-23). These are the rules the house
 // enforces anyway.
 export default {

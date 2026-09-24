@@ -6,6 +6,6 @@
 
 ## Checks
 
-- [ ] `npm --prefix fish-mcp test`
-- [ ] `npm --prefix fish-mcp run typecheck`
-- [ ] `npm --prefix fish-mcp run lint`
+- [ ] `npm --prefix fish-career test`
+- [ ] `npm --prefix fish-career run typecheck`
+- [ ] `npm --prefix fish-career run lint`

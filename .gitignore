@@ -5,5 +5,5 @@ state/
 *.log
 opencode.json
 resume-clean.md
-fish-mcp/node_modules/
-fish-mcp/dist/
+fish-career/node_modules/
+fish-career/dist/

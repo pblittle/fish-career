@@ -1,12 +1,12 @@
 // The scored ledger: which postings have already been triaged, and under
 // which profile and rubric. Both surfaces read and mark through this module
-// so the skip-repeat semantics cannot drift between them — the same reason
+// so the skip-repeat semantics cannot drift between them, the same reason
 // the fetch engine is shared.
 //
 // PROVENANCE RIDES EVERY ENTRY because a stored number means "matched this
 // much against that judgment". Change the profile or the weights and the old
 // number is no longer the current judgment, so the next run re-scores it
-// without being asked — invalidation is not the operator's job. An entry with
+// without being asked. Invalidation is not the operator's job. An entry with
 // no provenance predates this rule and is trusted once.
 //
 // A corrupt ledger is REPORTED, not silently treated as empty: an unnoticed

@@ -1,8 +1,15 @@
 # fish.career
 
-A job-posting pipeline for one senior operator: watch the companies worth
-watching, pull their remote postings from public ATS feeds, and rank the
-arrivals against a profile grounded in real work.
+> Me and Eric B. and a nice big plate of fish, which is my favorite
+> dish, but without no money it's still a wish.
+>
+> Eric B. & Rakim, "Paid in Full"
+
+Get paid in full.
+
+A job-posting pipeline for one senior operator: watch the companies
+worth watching, pull their remote postings from public ATS feeds, and
+rank the arrivals against a profile grounded in real work.
 
 Built for Barrett Little's 2026 search. Senior technical leadership
 without direct reports: platform architecture and Thoughtworks-style
@@ -19,11 +26,27 @@ client may poll. Watching those feeds directly yields a daily diff of
 exactly the companies you choose, with compensation data LinkedIn hides,
 and no LinkedIn account in the loop to be restricted.
 
-Ranking is Jev (TypeSafe's System One model): typed questions, not
+The scarce resource is the operator's attention. The pipeline's job is to turn
+an unbounded stream of postings into a small ranked table with the reasons
+attached, and to prove measurably that the ranking tracks the operator's own
+judgment rather than a model's taste. Everything below exists to serve that.
+
+## How it works
+
+One engine, two surfaces. `fish-career` is the engine: fetch, judge, and
+measure. The two CLI scripts and the MCP server are thin skins over the same
+modules, so a score means the same thing however you asked for it. State lives
+outside the package (`FISH_HOME`), so the install stays stateless.
+
+The ranking is Jev (TypeSafe's System One model): typed questions, not
 generated prose. Each posting is judged on five dimensions as separate
 Score questions in one request, plus a Noul hard-blocker check, with
-weights and rubrics in code where they belong. Calibration against the
-operator's own judgment comes first; see Calibration.
+weights and rubrics in `DIMENSIONS`, where they can be argued with. Every
+score records the profile hash and rubric version that produced it, so a
+change to either re-scores on the next run.
+
+Calibration against the operator's own judgment comes first. See
+Calibration, and `ARCHITECTURE.md` for the decisions behind this shape.
 
 ## Commands
 
@@ -100,14 +123,14 @@ The ranking is only as good as the rubric, and the rubric is only as good
 as its agreement with the operator. Two measurements, in increasing
 strength:
 
-1. **`node triage.mjs --evaluate`** — the eval. Scores the postings
+1. **`node triage.mjs --evaluate`**: the eval. Scores the postings
    `preferences.json` names and checks the ranking against pairwise
    preferences the profile already states, each carrying its source line.
    No human step; run it after any profile or weight change. The same
    check runs in the test suite against recorded Jev answers
-   (`fish-mcp/src/fixtures/eval-slice.json`), so CI fails if a change
+   (`fish-career/src/fixtures/eval-slice.json`), so CI fails if a change
    breaks the operator's stated judgment.
-2. **Calibration** — the stronger measurement, optional:
+2. **Calibration**, the stronger measurement, optional:
    `node triage.mjs --sample 12` on a stratified slice (one per company,
    obvious fits and deliberate misses both), rank the same 12 by hand
    BEFORE reading Jev's table, compare. Where they disagree, decide
@@ -132,16 +155,19 @@ gap, not a model failure: sharpen `profile.md`, not the code.
 
 ## Possible futures
 
-Open core, on purpose: this repository stays MIT and the engine stays
-free — it is shared infrastructure with near-zero marginal cost. If it
-proves itself, the product is the hosted layer: an App-plane ranked
-table (the pattern is proven elsewhere in this operator's work), Stripe
-credit packs, and per-run pricing that follows the actual cost. The
-framework-then-platform shape, on purpose.
+Open core, on purpose. This repository stays MIT and the engine stays
+free, since it is shared infrastructure with near-zero marginal cost.
+If it proves itself, the product is the platform that runs on top of it:
+an App-plane ranked table (the pattern is proven elsewhere in this
+operator's work), Stripe credit packs, and per-run pricing that follows
+the actual cost. The framework-then-platform shape, on purpose.
 
 ## Naming
 
-`fish` is the household name the project grew from. `fish.career` names
-the repository and is the intended domain of the hosted product if it
-ever exists; the domain is deliberately unregistered while the product
-is hypothetical. The engine package is `fish-mcp`.
+Named for *Paid in Full*. `fish.career` names this module and is the
+intended domain of the hosted product; the domain is deliberately
+unregistered while the product is hypothetical. The package is
+`fish-career`, so the npm surface and the filesystem agree.
+
+This is one module, not the whole platform. `fish.agency` is reserved
+for the larger thing if it is ever built.

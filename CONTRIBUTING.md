@@ -19,7 +19,7 @@ authentication key and a signing key).
 CI enforces [Conventional Commits](https://www.conventionalcommits.org)
 on every PR: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `perf:`,
 `ci:`, `chore:`, `style:`. Scopes in use: `fetch`, `triage`, `eval`,
-`mcp`, `cli`. Subjects are lowercase, descriptive, and may run long —
+`mcp`, `cli`. Subjects are lowercase, descriptive, and may run long:
 say what changed and why, not "fix bug".
 
 ## Specs come first
@@ -35,9 +35,9 @@ change without a spec is a draft.
 ## Style and tests
 
 ```sh
-npm --prefix fish-mcp run lint      # biome: format + lint
-npm --prefix fish-mcp test          # vitest; every change keeps the tree green
-npm --prefix fish-mcp run typecheck
+npm --prefix fish-career run lint      # biome: format + lint
+npm --prefix fish-career test          # vitest; every change keeps the tree green
+npm --prefix fish-career run typecheck
 ```
 
 Tests are not optional. A layer of work that cannot be tested is a
