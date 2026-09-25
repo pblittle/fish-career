@@ -261,6 +261,7 @@ npm run typecheck --prefix fish-career
 npm run lint --prefix fish-career       # biome
 npm run lint:md --prefix fish-career    # markdownlint
 npm run verify:pack --prefix fish-career
+npm run smoke --prefix fish-career      # stdio contract smoke on the built server
 node fish-career/dist/index.js demo
 ```
 

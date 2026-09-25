@@ -83,6 +83,20 @@ stripped.
 - `src/interfaces/mcp/server.test.ts` connects an in-memory client and pins:
   the tool list (names, schemas, annotations), the resource list and
   templates, the prompt list, one structured success per tool family, an
-  error envelope with a stable code, a resource read by URI, and a rendered
-  prompt argument.
+  error envelope with a stable code, a resource read by URI, a
+  protocol-level not-found, `.txt` normalization, and a rendered prompt
+  argument.
+- `npm --prefix fish-career run smoke` spawns the built server over real
+  stdio and asserts the tool, resource, and prompt lists, one write, and one
+  read.
+- CI runs the official Inspector CLI against the built server for discovery
+  (`tools/list`) and invocation (`tools/call`).
 - `npm --prefix fish-career test` green with no network.
+
+## Known portability note
+
+Inspector's strict schema check warns that nullable fields (`rho`,
+`previousRho`) serialize as `type: ["number","null"]`, which single-type
+dialects can reject. The null branch is a real state (fewer than two scored
+postings), and zod v4 does not emit `anyOf` for it, so the warning is
+accepted; the fields are documented here rather than weakened.
