@@ -116,3 +116,13 @@ tests the pipeline's behavior against fixed answers, not the model's mood.
   MCP SDK and `zod`; the scripts you type into a shell depend on nothing.
 - **`MIN_SCORABLE_TEXT`.** A body too thin to judge is resolved through the
   provider's detail endpoint or baselined, never scored on nothing.
+
+## Naming
+
+`fish.career` names this module and is the intended domain of the hosted
+product; the domain is deliberately unregistered while the product is
+hypothetical. The package is `fish-career`, so the npm surface and the
+filesystem agree.
+
+This is one module, not the whole platform. `fish.agency` is reserved for
+the larger thing if it is ever built.

@@ -5,6 +5,7 @@ state/
 *.log
 opencode.json
 resume-clean.md
+profile.md
 .claude/
 fish-career/node_modules/
 fish-career/dist/

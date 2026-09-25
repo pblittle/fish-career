@@ -89,6 +89,11 @@ Optional cron (fetch only; scoring is interactive):
 4. Run `node fetch.mjs`. First run writes only postings newer than 14
    days; the window widens with `--days N` or disappears with `--all`.
 
+5. Add a company: add a line to `CANDIDATES` in `probe-boards.mjs`, run
+   it, confirm identity by reading a title or two (slugs collide:
+   `scaleai` and `gamma` both needed a check), then move the verified
+   entry into `watchlist.json`.
+
 ## Calibration and eval
 
 The ranking is only as good as the rubric, and the rubric is only as good
@@ -124,3 +129,7 @@ gap, not a model failure: sharpen `profile.md`, not the code.
   $237.5K`), unverified.
 - Jev's calibration on job postings is unknown until the first
   calibration run; treat early rankings as a measurement, not a verdict.
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
