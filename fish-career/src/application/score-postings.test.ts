@@ -3,6 +3,7 @@ import {
   fixedClock,
   memoryLedger,
   memoryPostingRepository,
+  memoryTraceReader,
   memoryTraceSink,
 } from '../adapters/fake/in-memory.js';
 import { fakeJudge } from '../adapters/judge/fake.js';
@@ -29,6 +30,7 @@ const deps = (over: Partial<CareerDependencies> = {}): CareerDependencies => ({
   seen: { read: async () => ({}), write: async () => {} },
   ledger: memoryLedger(),
   traces: memoryTraceSink(),
+  traceReader: memoryTraceReader(),
   profile: { read: async () => '', write: async () => {} },
   watchlist: { read: async () => [], write: async () => {} },
   preferences: { read: async () => [] },

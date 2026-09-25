@@ -15,6 +15,7 @@ import type {
   SeenStore,
   WatchlistStore,
 } from '../ports/stores.js';
+import type { TraceReader } from '../ports/trace-reader.js';
 import type { TraceSink } from '../ports/trace-sink.js';
 
 export interface CareerDependencies {
@@ -26,6 +27,7 @@ export interface CareerDependencies {
   seen: SeenStore;
   ledger: Ledger;
   traces: TraceSink;
+  traceReader: TraceReader;
   profile: ProfileStore;
   watchlist: WatchlistStore;
   preferences: PreferencesStore;

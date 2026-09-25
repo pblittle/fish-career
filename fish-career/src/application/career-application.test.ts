@@ -7,6 +7,7 @@ import {
   memoryPreferencesStore,
   memoryProfileStore,
   memorySeenStore,
+  memoryTraceReader,
   memoryTraceSink,
   memoryWatchlistStore,
 } from '../adapters/fake/in-memory.js';
@@ -74,6 +75,7 @@ const harness = (over: Partial<CareerDependencies> = {}): Harness => {
     seen: memorySeenStore(),
     ledger,
     traces: memoryTraceSink(),
+    traceReader: memoryTraceReader(),
     profile: memoryProfileStore(PROFILE),
     watchlist: memoryWatchlistStore([
       { name: 'Acme', provider: 'fixture', slug: 'acme' },

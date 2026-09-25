@@ -131,18 +131,36 @@ quoting its source line. Run it after any profile or weight change.
 
 ## The MCP surface
 
-| Tool | Purpose | Writes |
+Ten action tools, each with an input schema, an output schema, safety
+annotations, and structured results. Passive state lives in resources, and
+the workflows ship as prompts.
+
+| Tool | Purpose | Safety |
 |---|---|---|
-| `watchlist_add` | Probe a company's ATS boards, then add a verified entry | watchlist |
-| `watchlist_list` | Every watched company with provider and slug | — |
-| `fetch_postings` | Poll watched boards, write unseen remote postings | postings, seen |
-| `triage` | Score unscored postings, return the ranked table | ledger, traces |
-| `evaluate` | Hold the ranking to the profile's stated preferences | traces |
-| `calibrate_start` | Draw a blind calibration slice | pending state |
-| `calibrate_submit` | Record your order, score the slice, report agreement | calibrations |
-| `calibrate_rescore` | Re-measure the last slice under the current rubric | calibrations |
-| `get_profile` / `update_profile` | Read and replace the candidate profile | profile |
-| `read_posting` | Read one cached posting in full | — |
+| `watchlist_probe` | Probe the four public ATS boards for a company slug | read-only |
+| `watchlist_add` | Write a verified company | additive, idempotent |
+| `watchlist_remove` | Remove a company | destructive |
+| `fetch_postings` | Poll watched boards, write unseen remote postings | open-world |
+| `triage_postings` | Score postings, return the ranked table | writes ledger + traces |
+| `evaluate_ranking` | Hold the ranking to the profile's stated preferences | measurement |
+| `calibration_start` | Draw a seeded blind slice | local write |
+| `calibration_submit` | Record your order, score the slice, measure agreement | judge call |
+| `calibration_rescore` | Re-measure the last slice under the current rubric | judge call |
+| `profile_update` | Replace the candidate profile | destructive |
+
+**Resources** (`resources/read`): `fish://profile/current`,
+`fish://watchlist`, `fish://postings`, `fish://postings/{postingId}`,
+`fish://rubric/current`, `fish://calibrations/latest`, `fish://runs/latest`.
+
+**Prompts**: `career-search-onboarding`, `review-new-arrivals`,
+`explain-ranking`, `calibrate-rubric`, `audit-profile`.
+
+Every tool result carries `structuredContent` that validates against its
+declared output schema, plus a text rendering for chat hosts. Expected
+failures return `isError: true` with a stable code
+(`NO_PROFILE`, `NOTHING_TO_SCORE`, `POSTING_NOT_FOUND`, ...) and a hint.
+Upgrading from the 0.4 tool names:
+[`docs/mcp-migration.md`](./docs/mcp-migration.md).
 
 ## The command line
 
