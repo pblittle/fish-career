@@ -18,6 +18,7 @@ export interface RankOutcome {
   skipped: number;
   stale: PostingId[];
   ledgerOk: boolean;
+  runId: string;
 }
 
 export const rankPostings =
@@ -71,7 +72,7 @@ export const rankPostings =
     }
 
     const markLedger = input.postingIds === undefined;
-    const { rows, errors } = await scorePostings(deps)(candidates, { profile, markLedger });
+    const { rows, errors, runId } = await scorePostings(deps)(candidates, { profile, markLedger });
     return {
       rows,
       errors,
@@ -79,5 +80,6 @@ export const rankPostings =
       skipped,
       stale: staleIds,
       ledgerOk,
+      runId,
     };
   };

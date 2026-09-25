@@ -75,6 +75,7 @@ export const fetchPostingsOutput = z.union([
 
 export const triagePostingsOutput = z.union([
   z.object({
+    runId: z.string().describe('The run ID, readable at fish://runs/{runId}'),
     rows: z.array(triageRowSchema),
     errors: z.array(z.string()),
     scored: z.array(z.string()),

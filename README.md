@@ -150,7 +150,8 @@ the workflows ship as prompts.
 
 **Resources** (`resources/read`): `fish://profile/current`,
 `fish://watchlist`, `fish://postings`, `fish://postings/{postingId}`,
-`fish://rubric/current`, `fish://calibrations/latest`, `fish://runs/latest`.
+`fish://rubric/current`, `fish://calibrations/latest`, `fish://runs/latest`,
+`fish://runs/{runId}`.
 
 **Prompts**: `career-search-onboarding`, `review-new-arrivals`,
 `explain-ranking`, `calibrate-rubric`, `audit-profile`.
@@ -259,8 +260,11 @@ Future API ──────┘         │
 Everything the server reads and writes hangs off `FISH_HOME`; the npm package
 holds none of it. The only outbound calls are GETs to the four public ATS APIs
 and the judge call, which sends your profile and the posting text to TypeSafe.
-There is no telemetry, no analytics, and no account. Details and the threat
-model: [`docs/privacy.md`](./docs/privacy.md).
+There is no telemetry, no analytics, and no account. Optionally, setting
+`FISH_TRACE=langsmith` with a key mirrors each judge call to LangSmith
+(posting IDs, hashes, model, tokens, and typed answers; never the posting or
+profile text) while the local JSONL trace stays the source of truth.
+Details and the threat model: [`docs/privacy.md`](./docs/privacy.md).
 
 Personal state can live in a private checkout—the public repository ships
 fixtures and examples only. Point `FISH_HOME` at it and keep profile,

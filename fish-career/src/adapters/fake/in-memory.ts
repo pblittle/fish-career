@@ -170,6 +170,14 @@ export const memoryTraceReader = (
     if (limit <= 0) return [];
     return records.slice(-limit);
   },
+  async byRun(runId: string) {
+    return records.filter((record) => record.runId === runId);
+  },
+  async latestRun() {
+    const last = records[records.length - 1];
+    if (last === undefined) return null;
+    return { runId: last.runId, records: records.filter((r) => r.runId === last.runId) };
+  },
 });
 
 export const fixedClock = (iso: string): Clock => ({ now: () => new Date(iso) });

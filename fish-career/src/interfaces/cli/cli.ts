@@ -108,6 +108,7 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           rescore: rest.includes('--rescore'),
         });
         io.out(renderTable(collapseVariants(outcome.rows)));
+        io.out(`\nRun ${outcome.runId}.`);
         if (outcome.skipped > 0) {
           io.out(`\nSkipped ${outcome.skipped} already-scored postings from earlier runs.`);
         }

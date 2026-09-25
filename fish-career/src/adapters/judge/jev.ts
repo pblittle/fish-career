@@ -57,6 +57,7 @@ export interface JevCall {
   inputTokens: number;
   outputTokens: number;
   model: string;
+  attempts: number;
 }
 
 export interface JevOptions {
@@ -108,6 +109,7 @@ export async function callJev(state: string, opts: JevOptions = {}): Promise<Jev
         inputTokens: body.usage?.input_tokens ?? 0,
         outputTokens: body.usage?.output_tokens ?? 0,
         model,
+        attempts: attempt,
       };
     }
     lastError = `judge API responded ${res.status}: ${(await res.text()).slice(0, 200)}`;
@@ -135,6 +137,7 @@ export class JevJudge implements Judge {
       inputTokens: call.inputTokens,
       outputTokens: call.outputTokens,
       model: call.model,
+      attempts: call.attempts,
     };
   }
 }

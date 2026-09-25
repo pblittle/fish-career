@@ -147,6 +147,7 @@ export const fakeJudgeCall = async (state: string): Promise<JudgeAnswer> => ({
   inputTokens: 0,
   outputTokens: 0,
   model: FAKE_JUDGE_MODEL,
+  attempts: 1,
 });
 
 export const fakeJudge: Judge = { ask: fakeJudgeCall };

@@ -68,14 +68,15 @@ interface Harness {
 const harness = (over: Partial<CareerDependencies> = {}): Harness => {
   const ledger = memoryLedger();
   const calibrations = memoryCalibrationStore();
+  const traces = memoryTraceSink();
   const deps: CareerDependencies = {
     providers: { fixture: memoryProvider('fixture', board()) },
     judge: fakeJudge,
     postings: memoryPostingRepository(),
     seen: memorySeenStore(),
     ledger,
-    traces: memoryTraceSink(),
-    traceReader: memoryTraceReader(),
+    traces,
+    traceReader: memoryTraceReader(traces.records),
     profile: memoryProfileStore(PROFILE),
     watchlist: memoryWatchlistStore([
       { name: 'Acme', provider: 'fixture', slug: 'acme' },
