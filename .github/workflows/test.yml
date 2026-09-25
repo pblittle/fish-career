@@ -24,6 +24,7 @@ jobs:
       - run: npm run lint:md --prefix fish-career
       - run: npm run build --prefix fish-career
       - run: npm run verify:pack --prefix fish-career
+      - run: npm run agents:check --prefix fish-career
       - run: npm run smoke --prefix fish-career
       - name: Inspector discovery and invocation
         run: |
