@@ -1,6 +1,6 @@
 {
   "name": "fish-career",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A local-first MCP server that finds job opportunities, interprets their fit, scores them with an explicit rubric, and hones that rubric against human judgment.",
   "keywords": [
     "job-search",
