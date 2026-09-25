@@ -38,8 +38,9 @@ operator's own judgment rather than a model's taste.
 - Every scored row checkpoints to the ledger immediately; a crash loses at
   most the row in flight.
 - Ranking: a blocker at 0.5 or above demotes a row below every clean row,
-  regardless of composite. Regional variants of one vacancy collapse to
-  one row that names the other offices.
+  regardless of composite. Region-labelled variants of one vacancy collapse
+  to one row that names the other offices; a bare base title stays its own
+  row, because hiding a distinct posting is worse than showing a duplicate.
 - The ledger records score plus provenance (profile hash, rubric version).
   A profile or rubric change re-scores stale entries on the next run; the
   operator never babysits invalidation.

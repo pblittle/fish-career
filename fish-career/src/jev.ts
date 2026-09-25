@@ -215,16 +215,24 @@ export const rankRows = (rows: TriageRow[]): TriageRow[] =>
 // Boards post one remote role once per office ("(Remote)", "(Dallas)",
 // "(Austin)"), and three top rows for one vacancy is a table that lies about
 // choice. The highest row stands; the others keep their office labels.
+//
+// Only region-labelled titles collapse. A bare base title ("Deployed
+// Engineer, Professional Services") stays its own row even when a suffixed
+// title shares its base: the two may be genuinely different postings (the
+// APAC variant of that role is a different job), and hiding a distinct role
+// is worse than showing a possible duplicate.
 export const roleKey = (title: string): string =>
   title
     .replace(/\s*\([^)]*\)\s*$/, '')
     .trim()
     .toLowerCase();
 
+const regionLabelled = (title: string): boolean => /\([^)]*\)\s*$/.test(title);
+
 export const collapseVariants = (rows: TriageRow[]): TriageRow[] => {
   const groups = new Map<string, TriageRow[]>();
   for (const r of rankRows(rows)) {
-    const key = `${r.company.toLowerCase()}::${roleKey(r.title)}`;
+    const key = `${r.company.toLowerCase()}::${roleKey(r.title)}${regionLabelled(r.title) ? '' : '::bare'}`;
     groups.set(key, [...(groups.get(key) ?? []), r]);
   }
   return [...groups.values()].map((group) => {
