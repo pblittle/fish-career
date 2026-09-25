@@ -47,7 +47,7 @@
     "typecheck": "tsc",
     "lint": "biome check ..",
     "lint:fix": "biome check --write ..",
-    "lint:md": "markdownlint-cli2 --config ../.markdownlint-cli2.jsonc \"../*.md\" \"../docs/**/*.md\" \"../specs/**/*.md\" \"README.md\"",
+    "lint:md": "markdownlint-cli2 --config ../.markdownlint-cli2.jsonc \"../*.md\" \"../docs/**/*.md\" \"../specs/**/*.md\" \"../.claude/skills/**/*.md\" \"README.md\"",
     "verify:pack": "node scripts/verify-pack.mjs",
     "smoke": "node scripts/smoke-stdio.mjs",
     "quality": "node dist/index.js quality",
