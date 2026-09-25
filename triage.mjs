@@ -30,6 +30,8 @@ const mapped = args.includes('--evaluate')
     : ['triage', ...args];
 
 process.env.FISH_HOME ??= HERE;
-const { createApplicationFromHome } = await import('./fish-career/dist/bootstrap/create-application.js');
+const { createApplicationFromHome } = await import(
+  './fish-career/dist/bootstrap/create-application.js'
+);
 const { runCli } = await import('./fish-career/dist/interfaces/cli/cli.js');
 process.exitCode = await runCli(mapped, { app: createApplicationFromHome() });

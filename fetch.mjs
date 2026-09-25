@@ -21,7 +21,9 @@ if (!existsSync(ENGINE)) {
 }
 
 process.env.FISH_HOME ??= HERE;
-const { createApplicationFromHome } = await import('./fish-career/dist/bootstrap/create-application.js');
+const { createApplicationFromHome } = await import(
+  './fish-career/dist/bootstrap/create-application.js'
+);
 const { runCli } = await import('./fish-career/dist/interfaces/cli/cli.js');
 process.exitCode = await runCli(['fetch', ...process.argv.slice(2)], {
   app: createApplicationFromHome(),
