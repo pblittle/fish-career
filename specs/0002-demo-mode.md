@@ -8,7 +8,7 @@ A new user cannot see the product work without first getting a TypeSafe API
 key and writing a candidate profile. The five-minute install therefore has a
 ten-minute prerequisite, and the README has to explain scoring before it can
 show it. A reviewer, a contributor, or a curious user should be able to watch
-the real pipeline—fetch, triage, evaluate, calibrate—run to completion with no
+the real pipeline (fetch, triage, evaluate, calibrate) run to completion with no
 credentials and no network.
 
 ## Contract

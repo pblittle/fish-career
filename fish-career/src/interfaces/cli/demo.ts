@@ -1,6 +1,6 @@
 // The credential-free end-to-end run. It executes the real application over
-// bundled fixtures—real filesystem adapters in a temp FISH_HOME, a fixture
-// provider, and a deterministic stand-in judge—so a new user can see the
+// bundled fixtures: real filesystem adapters in a temp FISH_HOME, a fixture
+// provider, and a deterministic stand-in judge, so a new user can see the
 // product work before writing a profile or getting an API key.
 //
 // Nothing here touches the user's real home: the run copies its fixtures into
@@ -93,12 +93,12 @@ export const runDemo = async (opts: DemoOptions = {}): Promise<DemoResult> => {
     loadDotEnv: false,
   });
 
-  out('fish.career demo — deterministic fixtures, no API key, no network.');
+  out('fish.career demo: deterministic fixtures, no API key, no network.');
   out('The judge is a documented stand-in (src/adapters/judge/fake.ts), not a model.');
   out('');
 
   const fetched = await app.fetchPostings();
-  out('1. fetch — polled 1 fixture board');
+  out('1. fetch: polled 1 fixture board');
   for (const c of fetched.perCompany) {
     const skipped = c.total - c.remote;
     out(
@@ -110,13 +110,13 @@ export const runDemo = async (opts: DemoOptions = {}): Promise<DemoResult> => {
 
   const ranked = await app.rankPostings();
   out('');
-  out('2. triage — scored every arrival against the demo profile');
+  out('2. triage: scored every arrival against the demo profile');
   out(renderTable(collapseVariants(ranked.rows)));
   if (ranked.errors.length > 0) out(`   Failed: ${ranked.errors.join('; ')}`);
 
   const evaluated = await app.evaluateRanking();
   out('');
-  out("3. evaluate — the ranking held to the profile's stated preferences");
+  out("3. evaluate: the ranking held to the profile's stated preferences");
   out(renderEval(evaluated.evaluation));
 
   const fixtureRanking = (
@@ -127,7 +127,7 @@ export const runDemo = async (opts: DemoOptions = {}): Promise<DemoResult> => {
   for (const id of started.postingIds) if (!human.includes(id)) human.push(id);
   const calibrated = await app.submitCalibration({ ranking: human });
   out('');
-  out('4. calibrate — a blind human ranking compared with the judge');
+  out('4. calibrate: a blind human ranking compared with the judge');
   out(
     renderCalibration(
       calibrated.record.humanRanking,
