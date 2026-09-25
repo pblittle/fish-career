@@ -56,6 +56,7 @@ const board = (): Record<string, Posting[]> => ({
 });
 
 const app = (): CareerApplication => {
+  const traces = memoryTraceSink();
   const deps: CareerDependencies = {
     providers: {
       fixture: memoryProvider('fixture', board()),
@@ -67,8 +68,8 @@ const app = (): CareerApplication => {
     postings: memoryPostingRepository(),
     seen: memorySeenStore(),
     ledger: memoryLedger(),
-    traces: memoryTraceSink(),
-    traceReader: memoryTraceReader(),
+    traces,
+    traceReader: memoryTraceReader(traces.records),
     profile: memoryProfileStore(PROFILE),
     watchlist: memoryWatchlistStore([{ name: 'Acme', provider: 'fixture', slug: 'acme' }]),
     preferences: memoryPreferencesStore([
@@ -139,7 +140,9 @@ describe('the MCP contract', () => {
       'fish://watchlist',
     ]);
     const { resourceTemplates } = await client.listResourceTemplates();
-    expect(resourceTemplates.map((t) => t.uriTemplate)).toContain('fish://postings/{postingId}');
+    const templates = resourceTemplates.map((t) => t.uriTemplate);
+    expect(templates).toContain('fish://postings/{postingId}');
+    expect(templates).toContain('fish://runs/{runId}');
   });
 
   it('registers the reusable prompts', async () => {
@@ -266,6 +269,18 @@ describe('the MCP contract', () => {
     expect(textOf(watchlist)).toContain('Acme');
     const runs = await client.readResource({ uri: 'fish://runs/latest' });
     expect(textOf(runs)).toContain('"records"');
+  });
+
+  it('reads one run by the ID the triage returned', async () => {
+    await client.callTool({ name: 'fetch_postings', arguments: {} });
+    const triaged = await client.callTool({ name: 'triage_postings', arguments: {} });
+    const runId = structured(triaged).runId as string;
+    expect(runId).toBeTypeOf('string');
+    const run = await client.readResource({ uri: `fish://runs/${runId}` });
+    const parsed = JSON.parse(textOf(run)) as { runId: string; records: unknown[] };
+    expect(parsed.runId).toBe(runId);
+    expect(parsed.records.length).toBeGreaterThan(0);
+    await expect(client.readResource({ uri: 'fish://runs/nope' })).rejects.toThrow();
   });
 
   it('serves a prompt with its arguments rendered', async () => {

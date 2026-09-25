@@ -9,6 +9,7 @@ export interface JudgeAnswer {
   inputTokens: number;
   outputTokens: number;
   model: string;
+  attempts: number;
 }
 
 export interface Judge {

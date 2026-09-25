@@ -208,8 +208,11 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
                   '',
                   'WARNING: the scored ledger could not be read; it was treated as empty and this run rewrote it.',
                 ]),
+            '',
+            `Run ${outcome.runId} (read it at fish://runs/${outcome.runId}).`,
           ].join('\n'),
           {
+            runId: outcome.runId,
             rows: collapsed,
             errors: outcome.errors,
             scored: outcome.scored,

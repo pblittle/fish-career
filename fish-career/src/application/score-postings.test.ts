@@ -42,6 +42,7 @@ const deps = (over: Partial<CareerDependencies> = {}): CareerDependencies => ({
   },
   clock: fixedClock('2026-09-25T12:00:00.000Z'),
   random: { int: () => 0, shuffle: (xs) => [...xs] },
+  version: 'test-1',
   ...over,
 });
 
@@ -69,7 +70,12 @@ describe('scorePostings', () => {
       status: 'ok',
       model: 'fake-judge',
       rubric: 1,
+      attempts: 1,
+      version: 'test-1',
     });
+    expect(traces.records[0]?.postingHash).toBeTypeOf('string');
+    expect(traces.records[0]?.runId).toBe(result.runId);
+    expect(traces.records[1]?.runId).toBe(result.runId);
     expect(traces.records[0]?.at).toBe('2026-09-25T12:00:00.000Z');
   });
 

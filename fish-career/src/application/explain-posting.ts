@@ -2,10 +2,11 @@
 // the row they produce. The CLI prints them; a host can too. Preview is the
 // same request without the call, for inspecting what would be sent.
 
+import { randomUUID } from 'node:crypto';
 import { type JevAnswers, rowFromAnswers, type TriageRow } from '../domain/answers.js';
 import { ApplicationError } from '../domain/errors.js';
 import type { PostingId } from '../domain/posting.js';
-import { postingIdFromFile } from '../domain/posting.js';
+import { postingHash, postingIdFromFile } from '../domain/posting.js';
 import { profileHash, questions, RUBRIC_VERSION, stateFor } from '../domain/rubric.js';
 import type { CareerDependencies } from './dependencies.js';
 
@@ -51,17 +52,22 @@ export const explainPosting =
         'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge.',
       );
     }
+    const runId = randomUUID();
+    const textHash = postingHash(record.text);
     const call = await judge.ask(stateFor(profile, record.text)).catch(async (err) => {
       // Every judge call leaves a trace, successes and failures alike.
       await deps.traces.write({
         at: deps.clock.now().toISOString(),
+        runId,
         postingId: record.id,
+        postingHash: textHash,
         status: 'error',
         latencyMs: 0,
         inputTokens: 0,
         outputTokens: 0,
         profileHash: profileHash(profile),
         rubric: RUBRIC_VERSION,
+        version: deps.version,
         error: String((err as Error).message ?? err),
       });
       throw err;
@@ -72,14 +78,18 @@ export const explainPosting =
     });
     await deps.traces.write({
       at: deps.clock.now().toISOString(),
+      runId,
       postingId: record.id,
+      postingHash: textHash,
       status: 'ok',
       latencyMs: call.latencyMs,
+      attempts: call.attempts,
       inputTokens: call.inputTokens,
       outputTokens: call.outputTokens,
       model: call.model,
       profileHash: profileHash(profile),
       rubric: RUBRIC_VERSION,
+      version: deps.version,
       answers: call.answers,
     });
     return {

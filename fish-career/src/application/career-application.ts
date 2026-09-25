@@ -24,6 +24,8 @@ export interface CareerApplication {
   pendingCalibration: () => ReturnType<CareerDependencies['calibrations']['readPending']>;
   latestCalibration: () => Promise<CalibrationRecord | null>;
   recentTraces: (limit?: number) => Promise<TraceRecord[]>;
+  tracesByRun: (runId: string) => Promise<TraceRecord[]>;
+  latestRun: () => ReturnType<CareerDependencies['traceReader']['latestRun']>;
   probeCompany: ReturnType<typeof probeCompany>;
   addCompany: ReturnType<typeof addCompany>;
   removeCompany: ReturnType<typeof removeCompany>;
@@ -47,6 +49,8 @@ export const createApplication = (deps: CareerDependencies): CareerApplication =
   pendingCalibration: () => deps.calibrations.readPending(),
   latestCalibration: () => deps.calibrations.latest(),
   recentTraces: (limit = 100) => deps.traceReader.recent(limit),
+  tracesByRun: (runId: string) => deps.traceReader.byRun(runId),
+  latestRun: () => deps.traceReader.latestRun(),
   probeCompany: probeCompany(deps),
   addCompany: addCompany(deps),
   removeCompany: removeCompany(deps),

@@ -103,10 +103,9 @@ try {
     if (!uris.includes(expected)) fail(`missing resource ${expected}`);
   }
   const templates = await send('resources/templates/list');
-  if (
-    !templates.result.resourceTemplates.some((t) => t.uriTemplate === 'fish://postings/{postingId}')
-  ) {
-    fail('missing posting resource template');
+  const templateUris = templates.result.resourceTemplates.map((t) => t.uriTemplate);
+  for (const expected of ['fish://postings/{postingId}', 'fish://runs/{runId}']) {
+    if (!templateUris.includes(expected)) fail(`missing resource template ${expected}`);
   }
 
   const prompts = await send('prompts/list');

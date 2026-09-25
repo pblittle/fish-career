@@ -34,4 +34,7 @@ export interface CareerDependencies {
   calibrations: CalibrationStore;
   clock: Clock;
   random: RandomSource;
+  // The application version stamped on traces, so a run says which build
+  // produced it.
+  version?: string;
 }

@@ -113,11 +113,32 @@ export const registerResources = (server: McpServer, app: CareerApplication): vo
     'runs-latest',
     'fish://runs/latest',
     {
-      title: 'Recent runs',
+      title: 'Latest run',
       description:
-        'The most recent judge calls with latency, token usage, model, profile hash, and rubric version.',
+        'Every judge call in the most recent scoring run, with latency, tokens, model, profile hash, and rubric version.',
       mimeType: 'application/json',
     },
-    async (uri) => json(uri.href, { runId: 'latest', records: await app.recentTraces(100) }),
+    async (uri) => {
+      const latest = await app.latestRun();
+      return json(uri.href, latest ?? { note: 'No run on record yet.' });
+    },
+  );
+
+  server.registerResource(
+    'run',
+    new ResourceTemplate('fish://runs/{runId}', { list: undefined }),
+    {
+      title: 'One run',
+      description: 'Every judge call in one scoring run, by run ID.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const runId = String(variables.runId ?? '');
+      const records = await app.tracesByRun(runId);
+      if (records.length === 0) {
+        throw new ResourceNotFoundError(uri.href, `No run ${runId} in the trace log.`);
+      }
+      return json(uri.href, { runId, records });
+    },
   );
 };

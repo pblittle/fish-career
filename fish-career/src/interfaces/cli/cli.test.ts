@@ -21,6 +21,7 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       skipped: 0,
       stale: [],
       ledgerOk: true,
+      runId: 'run-1',
     })),
     evaluateRanking: vi.fn(async () => ({
       evaluation: { satisfied: 0, total: 0, violations: [] },
@@ -82,6 +83,7 @@ describe('runCli', () => {
         skipped: 2,
         stale: [],
         ledgerOk: true,
+        runId: 'run-1',
       })),
     });
     const sink = io();

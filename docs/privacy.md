@@ -35,6 +35,14 @@ checkout to keep personal state out of any public tree.
    questions, with your API key in the `Authorization` header. This is the
    only place your judgment data leaves the machine.
 
+3. **Optional trace mirror.** With `FISH_TRACE=langsmith` and
+   `LANGSMITH_API_KEY` set, each judge call is also POSTed to
+   `api.smith.langchain.com/runs`. The mirror carries posting IDs, posting
+   and profile hashes, the model, attempts, token counts, the application
+   version, and the typed answers, but never the posting text or the profile
+   text. The local JSONL trace is always written and remains the source of
+   truth; a failing mirror never fails a scoring run.
+
 There is no telemetry, no analytics, no crash reporting, and no update check.
 The server opens no listening socket; it speaks stdio to the host that
 launched it.
