@@ -144,29 +144,64 @@ quoting its source line. Run it after any profile or weight change.
 | `get_profile` / `update_profile` | Read and replace the candidate profile | profile |
 | `read_posting` | Read one cached posting in full | — |
 
+## The command line
+
+The same use cases are available as `fish`, which is what the scripts below
+call. `fish` with no arguments starts the MCP server.
+
+```bash
+fish demo [--keep]                          # the credential-free demo
+fish fetch [--company X] [--days N] [--all] # poll and write arrivals
+fish triage [--rescore] [postingId...]      # score and rank
+fish evaluate                               # hold the ranking to your preferences
+fish calibrate start [--count N] [--seed N] # draw a blind slice
+fish calibrate submit <postingId...>        # record your order, measure agreement
+fish calibrate reuse                        # redraw the slice from its seed
+fish calibrate rescore                      # re-measure under the current rubric
+fish watchlist list | probe <slug> | add <name> <provider> <slug> | remove <name>
+fish profile get | set <path>
+fish postings list | read <postingId> | explain <postingId> [--dry-run]
+```
+
+From a source checkout, run it as `node fish-career/dist/index.js <command>`
+or link it (`npm --prefix fish-career link`). The root `fetch.mjs`,
+`triage.mjs`, and `probe-boards.mjs` are shims over these commands and keep
+their old `FISH_HOME` default.
+
 ## How it works
 
 ```text
 MCP over stdio ──┐
-CLI (dev) ───────┼── the engine (fish-career/src)
-                 │
-     ┌───────────┼────────────┐
-     │           │            │
- ATS providers  Judge   Ledger and traces
+CLI ─────────────┼── CareerApplication (src/application)
+Future hosted ───┤         │
+Future API ──────┘         │
+            ┌──────────────┼──────────────┐
+            │              │              │
+       ATS providers     Judge      Repositories,
+       (ports)           (port)     ledger, traces
+            │              │              │
+      adapters/ats   adapters/judge  adapters/filesystem
 ```
 
-- **One engine, two surfaces.** The MCP server and the dev CLIs import the
-  same modules, so a score means the same thing however you asked for it.
-  Nothing is reimplemented in a surface.
+- **One application core, many surfaces.** MCP handlers and CLI commands call
+  the same use cases; neither reads a directory, builds a judge prompt, or
+  decides an order. The demo runs the whole workflow through in-memory
+  adapters, which is what proves the core has no hidden filesystem, network,
+  or clock dependency.
 - **The judge is untrusted.** One request per posting: five typed Score
   dimensions plus one Noul hard-blocker check, not prose to be parsed for
-  sentiment. Every answer is a checkable number with a confidence.
+  sentiment. Responses are validated against a runtime schema at the adapter
+  boundary; a malformed answer fails that posting loudly instead of being
+  clamped into a score nobody can explain.
 - **Judgment is data.** Weights, criteria, and blocker instructions live in
-  `DIMENSIONS` in `src/jev.ts` with a `RUBRIC_VERSION`, where a change is a
-  reviewable diff.
+  `DIMENSIONS` in `src/domain/rubric.ts` with a `RUBRIC_VERSION`, where a
+  change is a reviewable diff.
 - **Every score carries provenance.** Each ledger entry records the profile
   hash and rubric version that produced it. Change either and stale entries
   re-score on the next run.
+- **Stable posting IDs.** A posting's ID is its cache filename stem, and every
+  ledger entry, trace, calibration, and tool speaks IDs. Storage layout is an
+  adapter detail.
 - **A blocker demotes.** A posting naming a hard requirement you cannot meet
   is not the top row whatever its composite, and it says so in the table.
 - **Variants collapse.** One region-labelled vacancy posted per office is one
