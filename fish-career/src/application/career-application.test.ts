@@ -200,6 +200,32 @@ describe('the complete workflow over in-memory ports', () => {
     });
   });
 
+  it('explains one posting with the raw answers and a trace', async () => {
+    const traces = memoryTraceSink();
+    const h = harness({ traces });
+    await h.app.fetchPostings();
+    const explanation = await h.app.explainPosting({ postingId: 'acme-1' });
+    expect(explanation.model).toBe('fake-judge');
+    expect(explanation.answers.hard_blocker.noul).toBeDefined();
+    expect(explanation.row.postingId).toBe('acme-1');
+    expect(traces.records).toHaveLength(1);
+    expect(traces.records[0]).toMatchObject({ postingId: 'acme-1', status: 'ok' });
+
+    const preview = await h.app.previewPosting({ postingId: 'acme-1' });
+    expect(preview.state).toContain('JOB POSTING:');
+    expect(preview.questions.hard_blocker).toBeDefined();
+  });
+
+  it('reports the pending calibration so a slice can be redrawn', async () => {
+    const h = harness();
+    await fetchAndRank(h);
+    expect(await h.app.pendingCalibration()).toBeNull();
+    const started = await h.app.startCalibration({ count: 2, seed: 5 });
+    const pending = await h.app.pendingCalibration();
+    expect(pending?.seed).toBe(5);
+    expect(pending?.postingIds).toEqual(started.postingIds);
+  });
+
   it('refuses to score without a profile, and to triage without a judge', async () => {
     const noProfile = harness({ profile: memoryProfileStore('') });
     await noProfile.app.fetchPostings();

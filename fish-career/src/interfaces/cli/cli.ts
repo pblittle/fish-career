@@ -31,10 +31,11 @@ Usage:
   fish evaluate
   fish calibrate start [--count N] [--seed N]
   fish calibrate submit <postingId...>
+  fish calibrate reuse
   fish calibrate rescore
   fish watchlist list | probe <slug> | add <name> <provider> <slug> | remove <name>
   fish profile get | set <path>
-  fish postings list | read <postingId>
+  fish postings list | read <postingId> | explain <postingId> [--dry-run]
   fish --version
   fish --help
 
@@ -151,7 +152,25 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           if (errors.length > 0) io.out(`Failed: ${errors.join('; ')}`);
           return 0;
         }
-        return fail(io, 'Usage: fish calibrate start | submit | rescore');
+        if (sub === 'reuse') {
+          const pending = await app.pendingCalibration();
+          if (!pending) {
+            return fail(io, 'No saved calibration slice to reuse. Run: fish calibrate start');
+          }
+          const started = await app.startCalibration({
+            count: pending.postingIds.length,
+            seed: pending.seed,
+          });
+          const summaries = await app.listPostings();
+          const byId = new Map(summaries.map((s) => [s.postingId, s]));
+          io.out(`Reusing the saved slice (seed ${started.seed}).\n`);
+          started.postingIds.forEach((id, i) => {
+            const s = byId.get(id);
+            io.out(`${i + 1}. ${s ? `${s.company}: ${s.title}` : id} (${id})`);
+          });
+          return 0;
+        }
+        return fail(io, 'Usage: fish calibrate start | submit | reuse | rescore');
       }
 
       case 'watchlist': {
@@ -234,7 +253,31 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           io.out(record.text);
           return 0;
         }
-        return fail(io, 'Usage: fish postings list | read <postingId>');
+        if (sub === 'explain') {
+          if (!id) return fail(io, 'Usage: fish postings explain <postingId> [--dry-run]');
+          const postingId = postingIdFromFile(id);
+          if (rest.includes('--dry-run')) {
+            const preview = await app.previewPosting({ postingId });
+            io.out(`Dry run: the request for ${postingId}, not sent.\n`);
+            io.out(
+              JSON.stringify(
+                { state: preview.state, model: preview.model, questions: preview.questions },
+                null,
+                2,
+              ),
+            );
+            return 0;
+          }
+          const explanation = await app.explainPosting({ postingId });
+          io.out(renderTable([explanation.row]));
+          io.out(`\nFull answers for ${postingId}:`);
+          io.out(JSON.stringify(explanation.answers, null, 2));
+          io.out(
+            `\ncost: ${explanation.inputTokens} in / ${explanation.outputTokens} out tokens, ${explanation.latencyMs}ms (${explanation.model})`,
+          );
+          return 0;
+        }
+        return fail(io, 'Usage: fish postings list | read <postingId> | explain <postingId>');
       }
 
       default:

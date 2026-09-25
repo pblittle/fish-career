@@ -5,6 +5,7 @@
 import { rescoreCalibration, startCalibration, submitCalibration } from './calibrate-ranking.js';
 import type { CareerDependencies } from './dependencies.js';
 import { evaluateRanking } from './evaluate-ranking.js';
+import { explainPosting, previewPosting } from './explain-posting.js';
 import { fetchPostings } from './fetch-postings.js';
 import { getProfile, listPostings, readPosting, updateProfile } from './postings.js';
 import { rankPostings } from './rank-postings.js';
@@ -18,6 +19,7 @@ export interface CareerApplication {
   startCalibration: ReturnType<typeof startCalibration>;
   submitCalibration: ReturnType<typeof submitCalibration>;
   rescoreCalibration: ReturnType<typeof rescoreCalibration>;
+  pendingCalibration: () => ReturnType<CareerDependencies['calibrations']['readPending']>;
   probeCompany: ReturnType<typeof probeCompany>;
   addCompany: ReturnType<typeof addCompany>;
   removeCompany: ReturnType<typeof removeCompany>;
@@ -26,6 +28,8 @@ export interface CareerApplication {
   updateProfile: ReturnType<typeof updateProfile>;
   listPostings: ReturnType<typeof listPostings>;
   readPosting: ReturnType<typeof readPosting>;
+  explainPosting: ReturnType<typeof explainPosting>;
+  previewPosting: ReturnType<typeof previewPosting>;
   rubric: () => RubricSummary;
 }
 
@@ -36,6 +40,7 @@ export const createApplication = (deps: CareerDependencies): CareerApplication =
   startCalibration: startCalibration(deps),
   submitCalibration: submitCalibration(deps),
   rescoreCalibration: rescoreCalibration(deps),
+  pendingCalibration: () => deps.calibrations.readPending(),
   probeCompany: probeCompany(deps),
   addCompany: addCompany(deps),
   removeCompany: removeCompany(deps),
@@ -44,5 +49,7 @@ export const createApplication = (deps: CareerDependencies): CareerApplication =
   updateProfile: updateProfile(deps),
   listPostings: listPostings(deps),
   readPosting: readPosting(deps),
+  explainPosting: explainPosting(deps),
+  previewPosting: previewPosting(deps),
   rubric: rubricSummary,
 });

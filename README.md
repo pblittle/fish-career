@@ -156,10 +156,11 @@ fish triage [--rescore] [postingId...]      # score and rank
 fish evaluate                               # hold the ranking to your preferences
 fish calibrate start [--count N] [--seed N] # draw a blind slice
 fish calibrate submit <postingId...>        # record your order, measure agreement
+fish calibrate reuse                        # redraw the slice from its seed
 fish calibrate rescore                      # re-measure under the current rubric
 fish watchlist list | probe <slug> | add <name> <provider> <slug> | remove <name>
 fish profile get | set <path>
-fish postings list | read <postingId>
+fish postings list | read <postingId> | explain <postingId> [--dry-run]
 ```
 
 From a source checkout, run it as `node fish-career/dist/index.js <command>`

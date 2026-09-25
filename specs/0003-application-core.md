@@ -74,10 +74,15 @@ the MCP contract work in a later spec maps the codes to protocol errors.
 ### Surfaces
 
 - The `fish` CLI is the blessed interface: `fetch`, `triage`, `evaluate`,
-  `calibrate start|submit|rescore`, `watchlist list|probe|add|remove`,
-  `profile get|set`, `postings list|read`, `demo`.
+  `calibrate start|submit|reuse|rescore`, `watchlist list|probe|add|remove`,
+  `profile get|set`, `postings list|read|explain`, `demo`.
+- `postings explain` returns the raw typed answers and cost for one posting;
+  `--dry-run` prints the request without sending it. `calibrate reuse` redraws
+  the pending slice from its recorded seed.
 - The root `fetch.mjs`, `triage.mjs`, and `probe-boards.mjs` become shims over
-  the CLI and keep their old `FISH_HOME` default.
+  the CLI and keep their old `FISH_HOME` default; the shims map retired flags
+  (`--explain`, `--dry-run`, `--reuse`, `--sample`, `--evaluate`) onto the
+  commands above.
 - The MCP tool names and behavior are unchanged by this spec; the typed,
   structured MCP contract is a separate change.
 

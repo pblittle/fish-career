@@ -30,6 +30,7 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
     startCalibration: vi.fn(async () => ({ postingIds: [], seed: 1, startedAt: '' })),
     submitCalibration: vi.fn(),
     rescoreCalibration: vi.fn(),
+    pendingCalibration: vi.fn(async () => null),
     probeCompany: vi.fn(async () => ({ slug: 'acme', counts: {}, samples: [] })),
     addCompany: vi.fn(async () => ({
       added: true,
@@ -41,6 +42,8 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
     updateProfile: vi.fn(async () => {}),
     listPostings: vi.fn(async () => []),
     readPosting: vi.fn(),
+    explainPosting: vi.fn(),
+    previewPosting: vi.fn(),
     rubric: () => ({ version: 1, dimensions: [], blockerInstructions: '' }),
     ...over,
   }) as CareerApplication;
@@ -115,5 +118,66 @@ describe('runCli', () => {
     const sink = io();
     expect(await runCli(['watchlist', 'add', 'Acme'], { app: stubApp(), io: sink.io })).toBe(1);
     expect(sink.err.join('\n')).toContain('Usage: fish watchlist add');
+  });
+
+  it('postings explain --dry-run prints the request without calling the judge', async () => {
+    const previewPosting = vi.fn(async () => ({
+      state: 'CANDIDATE PROFILE:\n...\n\nJOB POSTING:\n...',
+      model: 'jev-latest',
+      questions: {},
+    }));
+    const app = stubApp({ previewPosting, explainPosting: vi.fn() });
+    const sink = io();
+    const code = await runCli(['postings', 'explain', 'acme-1', '--dry-run'], { app, io: sink.io });
+    expect(code).toBe(0);
+    expect(previewPosting).toHaveBeenCalledWith({ postingId: 'acme-1' });
+    expect(app.explainPosting).not.toHaveBeenCalled();
+    expect(sink.out.join('\n')).toContain('not sent');
+  });
+
+  it('postings explain prints the raw answers and cost', async () => {
+    const app = stubApp({
+      explainPosting: vi.fn(async () => ({
+        row: {
+          postingId: 'acme-1',
+          title: 'Role',
+          company: 'Acme',
+          composite: 0.5,
+          dims: {},
+          blocker: 0,
+        },
+        answers: { hard_blocker: { noul: 0 } },
+        model: 'fake-judge',
+        latencyMs: 5,
+        inputTokens: 10,
+        outputTokens: 2,
+      })),
+    });
+    const sink = io();
+    const code = await runCli(['postings', 'explain', 'acme-1'], { app, io: sink.io });
+    expect(code).toBe(0);
+    const text = sink.out.join('\n');
+    expect(text).toContain('Full answers for acme-1');
+    expect(text).toContain('cost: 10 in / 2 out tokens');
+  });
+
+  it('calibrate reuse redraws the recorded slice, and fails cleanly with none', async () => {
+    const noPending = stubApp();
+    const sinkA = io();
+    expect(await runCli(['calibrate', 'reuse'], { app: noPending, io: sinkA.io })).toBe(1);
+    expect(sinkA.err.join('\n')).toContain('No saved calibration slice');
+
+    const startCalibration = vi.fn(async () => ({
+      postingIds: ['a', 'b'],
+      seed: 77,
+      startedAt: '',
+    }));
+    const app = stubApp({
+      pendingCalibration: vi.fn(async () => ({ postingIds: ['a', 'b'], seed: 77, startedAt: '' })),
+      startCalibration,
+    });
+    const sink = io();
+    expect(await runCli(['calibrate', 'reuse'], { app, io: sink.io })).toBe(0);
+    expect(startCalibration).toHaveBeenCalledWith({ count: 2, seed: 77 });
   });
 });
