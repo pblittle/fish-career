@@ -1,0 +1,3 @@
+{
+  "companies": [{ "name": "LangChain", "provider": "fixture", "slug": "langchain" }]
+}

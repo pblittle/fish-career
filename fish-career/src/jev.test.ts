@@ -131,6 +131,14 @@ describe('collapseVariants', () => {
     ]);
     expect(rows).toHaveLength(3);
   });
+
+  it('keeps a bare base title separate from its region-labelled variants', () => {
+    const rows = collapseVariants([
+      tableRow('atl.txt', 0.8, 0, { title: 'Deployed Engineer, Professional Services' }),
+      tableRow('apac.txt', 0.6, 0, { title: 'Deployed Engineer, Professional Services (APAC)' }),
+    ]);
+    expect(rows).toHaveLength(2);
+  });
 });
 
 describe('callJev', () => {

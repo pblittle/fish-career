@@ -1,0 +1,24 @@
+{
+  "preferences": [
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "langchain-0ee73994-b8a3-4a75-9675-da536abd3e10.txt",
+      "source": "profile.md, location: \"Remote US only; not open to relocation\" rules out a Singapore-based remote role."
+    },
+    {
+      "better": "langchain-d1dc8b4d-5f7f-46b3-bfd9-dfcb375a614b.txt",
+      "worse": "langchain-0ee73994-b8a3-4a75-9675-da536abd3e10.txt",
+      "source": "profile.md, location: \"Remote US only\" — both are remote, only one is in the US."
+    },
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "langchain-8aa63e71-b431-49d7-ab4a-bf4b3630d8e6.txt",
+      "source": "profile.md, target work: architecture and agent engineering over a support-desk role."
+    },
+    {
+      "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",
+      "worse": "langchain-d1dc8b4d-5f7f-46b3-bfd9-dfcb375a614b.txt",
+      "source": "profile.md, core skills: Kubernetes, Terraform, and infrastructure ownership appear in the architect posting."
+    }
+  ]
+}

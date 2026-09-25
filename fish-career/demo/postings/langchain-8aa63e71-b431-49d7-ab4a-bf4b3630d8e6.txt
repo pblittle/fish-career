@@ -1,0 +1,89 @@
+TITLE: Senior Technical Support Engineer
+COMPANY: LangChain
+LOCATION: San Francisco, CA (Remote)
+COMPENSATION: not stated
+URL: https://jobs.ashbyhq.com/langchain/8aa63e71-b431-49d7-ab4a-bf4b3630d8e6
+PUBLISHED: 2026-09-18T20:51:25.013+00:00
+
+ABOUT US
+
+
+
+At LangChain, our mission is to make intelligent agents ubiquitous. We build the foundation for agent engineering in the real world, helping developers move from prototypes to production-ready AI agents that teams can rely on. We began as widely adopted open-source tools and have grown to also offer a platform for building, evaluating, deploying, and operating agents at scale.
+
+With $125M raised at Series B from IVP, Sequoia, Benchmark, CapitalG, and Sapphire Ventures, we’re at a stage where we’re continuing to develop new products, growth is accelerating, and all team members have meaningful impact on what we build and how we work together. LangChain is a place where your contributions can shape how this technology shows up in the real world.
+
+Today, our platform includes LangSmith (Observability, Evaluation, Deployment, Fleet, and Sandboxes), our open source frameworks (LangChain, LangGraph, and Deep Agents), and the newly launched LangSmith Engine for autonomous agent improvement. We have 100M+ monthly open source downloads, 6,000+ active LangSmith customers, and 5 of the Fortune 10 use LangSmith in production (+ 35% of the Fortune 500 overall), including teams at Klarna, Clay, Coinbase, Workday, Lyft, Cloudflare, Harvey, Rippling, Vanta, LinkedIn, Monday.com, Nvidia, and Bridgewater.
+
+
+
+
+
+
+
+
+ABOUT THE ROLE
+
+We’re hiring a Senior Technical Support Engineer to lead our customer support experience for highly technical users, from AI engineers to infrastructure architects. You’ll be on the front lines helping teams debug production LLM applications and agents, improve AI observability and evaluations, and unblock critical issues. You’ll also help define what world-class technical support looks like for modern AI platforms
+
+
+
+
+KEY RESPONSIBILITIES
+
+ - Be the go-to escalation point for technical support inquiries—diagnosing issues across customer setup, LangChain products, and deployment issues.
+
+ - Work directly with engineering, operations, documentation, and product teams to resolve bugs, suggest patches, and advocate for customer needs.
+
+ - Partner with Deployed Engineering to support critical enterprise customers.
+
+ - Build and refine internal tooling, diagnostics, and runbooks for complex issue triage.
+
+ - Lead post-mortems for critical incidents and feed learnings back into product and documentation.
+
+ - Help refine KPIs for support health (MTTR, CSAT, bug recurrence) and drive continuous improvement.
+
+ - Improve documentation and knowledge articles to improve 1-to-many resources and provide proactive support.
+
+ - Mentor and coach other support engineers.
+
+
+
+
+HOW TO BE SUCCESSFUL IN THIS ROLE
+
+ - 6+ years in technical support, solutions engineering, or SRE roles in deeply technical B2B environments (e.g., observability, infrastructure, data platforms).
+
+ - Expert troubleshooting skills across APIs, SDKs, distributed systems, and cloud-native stacks.
+
+ - Programming experience with Python. Bonus if you have TypeScript experience.
+
+ - Hands-on knowledge of Kubernetes and Docker
+
+ - Comfort working with logs, traces, metrics in Datadog, and 3rd-party integrations (e.g., OpenTelemetry, LLM providers).
+
+ - Experience supporting enterprise customers and collaborating with engineering on complex escalations.
+
+ - A bias for clarity and continuous improvement: you write succinct, helpful, and accurate responses and build a foundation for case deflection.
+
+ - High ownership — want to do what’s best for the customer and the company and are relentlessly results oriented
+
+Location: Remote
+
+
+
+
+COMPENSATION 
+
+ - Annual salary range: $130,000 - $195,000 USD + equity
+
+Compensation Philosophy:
+
+We offer competitive compensation that includes base salary, variable compensation for relevant roles, meaningful equity, benefits, and perks. Actual compensation and offerings will vary based on role, level, and location. Team members in the EU, UK, and APAC receive locally competitive benefits aligned with regional norms and regulations.
+
+
+
+
+BENEFITS
+
+Benefits include medical, dental, and vision coverage, flexible vacation, a 401(k) plan, meals on in-office days in the US and more.

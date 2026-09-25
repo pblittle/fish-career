@@ -6,7 +6,13 @@
 // one (first run, or an explicit --days).
 
 import type { WatchlistEntry } from './config.js';
-import { MIN_SCORABLE_TEXT, type Posting, PROVIDERS, writePostingFile } from './providers.js';
+import {
+  MIN_SCORABLE_TEXT,
+  type Posting,
+  PROVIDERS,
+  type Provider,
+  writePostingFile,
+} from './providers.js';
 
 export interface Arrival {
   company: string;
@@ -73,23 +79,31 @@ export function admitPostings(
   return out;
 }
 
-const detailFor = async (providerId: string, p: Posting): Promise<string> => {
-  const provider = PROVIDERS[providerId];
+const detailFor = async (providerId: string, p: Posting, providers: Providers): Promise<string> => {
+  const provider = providers[providerId];
   return provider?.detail ? provider.detail(p) : '';
 };
+
+export type Providers = Readonly<Record<string, Provider>>;
 
 export const MS_PER_DAY = 86_400_000;
 
 export async function fetchAll(
   watchlist: WatchlistEntry[],
-  opts: { postingsDir: string; seen: Record<string, unknown>; days: number | null },
+  opts: {
+    postingsDir: string;
+    seen: Record<string, unknown>;
+    days: number | null;
+    providers?: Providers;
+  },
 ): Promise<FetchOutcome> {
+  const providers = opts.providers ?? PROVIDERS;
   const now = Date.now();
   const cutoff = opts.days !== null ? now - opts.days * MS_PER_DAY : null;
   const outcome: FetchOutcome = { arrivals: [], newSeen: {}, failures: [], perCompany: [] };
 
   for (const c of watchlist) {
-    const provider = PROVIDERS[c.provider];
+    const provider = providers[c.provider];
     if (!provider) {
       outcome.failures.push(`${c.name}: unknown provider ${c.provider}`);
       continue;
@@ -110,7 +124,7 @@ export async function fetchAll(
     const resolved: Record<string, string> = {};
     for (const a of admitted) {
       if (a.decision === 'needs-detail') {
-        resolved[a.posting.key] = await detailFor(c.provider, a.posting);
+        resolved[a.posting.key] = await detailFor(c.provider, a.posting, providers);
       }
     }
     const decided = Object.keys(resolved).length
