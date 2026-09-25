@@ -3,24 +3,43 @@
 The decisions worth defending, and why they were made. Short on purpose: if a
 decision isn't here, it wasn't one.
 
-## One engine, two surfaces
+## One application core, many surfaces
 
 ```text
-fetch.mjs  triage.mjs          index.ts (MCP server)
-     \        |                      /
-      \       |                     /
-       v      v                    v
-        fish-career/src  ← the engine
+MCP over stdio ──┐
+CLI ─────────────┼── CareerApplication (src/application)
+Future hosted ───┤         │
+Future API ──────┘         │
+            ┌──────────────┼──────────────┐
+            │              │              │
+       ATS providers     Judge      Repositories,
+       (ports)           (port)     ledger, traces
+            │              │              │
+      adapters/ats   adapters/judge  adapters/filesystem
 ```
 
-The engine is eight modules (`fetch`, `triage`, `jev`, `ledger`, `evaluate`,
-`compare`, `providers`, `config`). The two CLI scripts and the MCP server are
-thin surfaces that import it. Nothing is reimplemented in either surface.
+```text
+src/domain        pure policy: posting, rubric, answers, ranking,
+                  preferences, calibration, ledger, admission, random, errors
+src/ports         the interfaces the application may use
+src/application   use cases: fetchPostings, rankPostings, evaluateRanking,
+                  calibrateRanking, watchlist, postings, rubric summary
+src/adapters      ats (four boards), judge (Jev, fake), filesystem, fake (in-memory)
+src/interfaces    mcp (server), cli (commands, demo)
+src/bootstrap     createApplicationFromHome, createServerFromHome
+```
+
+Every use case takes a dependencies object of ports; MCP, the CLI, and the
+demo call the same methods. The demo runs the complete workflow through
+in-memory adapters, which is what proves the core has no hidden dependency on
+the filesystem, the network, or the clock.
 
 **Why:** two surfaces over one copy of the logic cannot disagree. The
 alternative (a CLI with its own fetch loop, an MCP server with its own)
 produces a tool that scores differently depending on how you called it. That
-is the failure this shape makes impossible rather than unlikely.
+is the failure this shape makes impossible rather than unlikely. The ports are
+also what make the future hosted product an adapter swap rather than a
+rewrite.
 
 ## One repository, not five
 
@@ -54,23 +73,25 @@ reproducible runs and a gitignore you can read in one glance.
 
 ## The judge is untrusted
 
-Jev is called with **typed questions, not a generated paragraph**: five Score
-dimensions plus one Noul hard-blocker check in a single request. The output is
-a structured answer per dimension, not prose to be parsed for sentiment.
+The judge is a port. The Jev adapter asks **typed questions, not a generated
+paragraph**: five Score dimensions plus one Noul hard-blocker check in a single
+request. The output is a structured answer per dimension, validated with a
+runtime schema at the adapter boundary, not prose to be parsed for sentiment.
 
 **Why:** prose scoring forces you to extract a number from a paragraph the
 model wrote, and that extraction is where the dishonesty lives. A typed answer
-per dimension is checkable, weightable, and disagreeable. You can look at the
-per-dimension probabilities and see exactly where the ranking came from. A
-`?` in the table means the model was not confident; that is surfaced, not
-smoothed over. A blocker at 0.5+ demotes a row below every clean row whatever
-the composite says, because an unmet hard requirement is not a matter of taste.
+per dimension is checkable, weightable, and disagreeable. A response missing a
+dimension or carrying a non-finite score fails that posting loudly instead of
+being clamped into a score nobody can explain. A `?` in the table means the
+model was not confident; that is surfaced, not smoothed over. A blocker at
+0.5+ demotes a row below every clean row whatever the composite says, because
+an unmet hard requirement is not a matter of taste.
 
 ## Judgment is data
 
 Weights, level descriptions, and blocker instructions live in `DIMENSIONS` in
-`jev.ts` with a `RUBRIC_VERSION`. They are not scattered across prompt strings
-or buried in a config nobody reads.
+`src/domain/rubric.ts` with a `RUBRIC_VERSION`. They are not scattered across
+prompt strings or buried in a config nobody reads.
 
 **Why:** a rubric you cannot argue with is a rubric you cannot fix. Putting it
 next to the code that uses it means a weight change is a diff, reviewable in a
@@ -105,18 +126,26 @@ tests the pipeline's behavior against fixed answers, not the model's mood.
 
 ## Smaller decisions
 
+- **Stable posting IDs.** A posting's ID is its cache filename stem, and every
+  ledger entry, trace, calibration, and protocol surface speaks IDs. Storage
+  layout (`.txt` headers today, a database tomorrow) is an adapter detail;
+  older ledgers and preferences that keyed on filenames are normalized on read.
 - **One judge call per posting.** A run is long and a call is idempotent, so
   a 429, a 5xx, or a dropped connection costs a backoff and a retry; any other
   4xx is the request's own fault and throws at once. `fetchImpl` and
   `retryBaseMs` are injectable so the policy is tested without a network or
   real sleeps.
-- **Regional variants collapse.** One vacancy in five offices is one row that
-  names the other offices, not five rows in the top ten.
+- **Calibration draws are seeded.** The seed is recorded with the pending
+  slice, so the same slice can be redrawn and a disagreement re-examined.
+- **Region-labelled variants collapse.** One vacancy in five offices is one row
+  that names the other offices, not five rows in the top ten. A bare base title
+  stays its own row, because hiding a distinct posting is worse than showing a
+  duplicate.
 - **Four providers, one posting shape.** Greenhouse, Ashby, SmartRecruiters,
-  and Lever flatten to a single header plus body. The provider differences
-  stay in `providers.ts` where they belong.
-- **The root CLIs have no runtime dependencies.** The engine depends on the
-  MCP SDK and `zod`; the scripts you type into a shell depend on nothing.
+  and Lever flatten to a single header plus body. The provider differences stay
+  in `src/adapters/ats/providers.ts` where they belong.
+- **The engine depends on the MCP SDK and `zod`.** The root CLI scripts are
+  shims over the built `fish` CLI and add nothing of their own.
 - **`MIN_SCORABLE_TEXT`.** A body too thin to judge is resolved through the
   provider's detail endpoint or baselined, never scored on nothing.
 

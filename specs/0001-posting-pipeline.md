@@ -56,8 +56,11 @@ operator's own judgment rather than a model's taste.
 
 ### surfaces
 
-One engine, two surfaces: the CLIs (`fetch.mjs`, `triage.mjs`) and the MCP
-server (`fish-career`) over the same modules, so semantics cannot drift.
+One application core, many surfaces: `src/application` holds the use cases,
+the MCP server (`fish-career` over stdio) and the `fish` CLI are thin surfaces
+over it, and the root `*.mjs` scripts are shims over the CLI. A score means
+the same thing however it was asked for. See
+`specs/0003-application-core.md` for the ports and adapters.
 
 ## Non-goals
 
