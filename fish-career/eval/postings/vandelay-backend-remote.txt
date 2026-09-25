@@ -1,0 +1,12 @@
+TITLE: Backend Engineer
+COMPANY: Vandelay Industries
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $150,000 – $180,000
+URL: https://example.com/eval/vandelay-backend-remote
+PUBLISHED: 2026-09-15
+
+Vandelay Industries runs the import/export marketplace that powers
+thousands of small businesses. You will build TypeScript and Node.js
+services, model Postgres data, and keep the AWS footprint healthy. This is
+a remote US role on a small team; the domain is e-commerce logistics, and
+the compensation band tops out at the candidate's stated floor.

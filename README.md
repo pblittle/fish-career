@@ -172,6 +172,7 @@ fish demo [--keep]                          # the credential-free demo
 fish fetch [--company X] [--days N] [--all] # poll and write arrivals
 fish triage [--rescore] [postingId...]      # score and rank
 fish evaluate                               # hold the ranking to your preferences
+fish quality [--k N] [--json]               # ranking quality against the labeled dataset
 fish calibrate start [--count N] [--seed N] # draw a blind slice
 fish calibrate submit <postingId...>        # record your order, measure agreement
 fish calibrate reuse                        # redraw the slice from its seed
@@ -185,6 +186,32 @@ From a source checkout, run it as `node fish-career/dist/index.js <command>`
 or link it (`npm --prefix fish-career link`). The root `fetch.mjs`,
 `triage.mjs`, and `probe-boards.mjs` are shims over these commands and keep
 their old `FISH_HOME` default.
+
+## Ranking quality
+
+`evaluate` checks the ranking against constraints the profile states.
+`calibrate` measures it against one blind human ranking. `quality` is the
+standing measurement: 17 labeled postings, graded 0-3 with a note on each,
+covering the hard cases (on-site and hybrid blockers, out-of-geography
+remote, overqualification, missing compensation, ambiguous location,
+duplicate regional listings, an adversarial posting, a too-thin posting).
+
+```bash
+fish quality            # deterministic, offline, no API key
+```
+
+Against the recorded baseline: pairwise accuracy 92.3%, Kendall tau 73.7%,
+Spearman 86.3%, precision@5 100%, nDCG@5 98.4%, every blocked posting below
+every clean one, and a top five that survives a 20% bump to any single
+dimension weight. The disagreements are as useful as the hits: the report
+names the junior seat the level ladder over-rewards and the management role
+the composite still surfaces. Read it in full:
+[`docs/quality-report.md`](./docs/quality-report.md).
+
+The metrics are a golden fixture. A rubric change that moves them fails CI
+until `eval/expected-metrics.json` is updated deliberately, and
+`npm --prefix fish-career run record:eval` re-records the baseline from a
+live judge run.
 
 ## How it works
 
@@ -262,6 +289,7 @@ npm run lint --prefix fish-career       # biome
 npm run lint:md --prefix fish-career    # markdownlint
 npm run verify:pack --prefix fish-career
 npm run smoke --prefix fish-career      # stdio contract smoke on the built server
+npm run quality --prefix fish-career    # ranking quality report, offline
 node fish-career/dist/index.js demo
 ```
 

@@ -1,0 +1,13 @@
+TITLE: Senior AI Infrastructure Engineer
+COMPANY: Globex Systems
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $200,000 – $230,000
+URL: https://example.com/eval/globex-senior-ai-infra
+PUBLISHED: 2026-09-17
+
+Globex Systems builds agent infrastructure for enterprise customers. You
+will design the evaluation and deployment layers: LangChain and LangGraph
+orchestration in Python and TypeScript, Kubernetes autoscaling on AWS,
+Terraform for the estate, and Postgres for state. The team is remote-first
+across the US, and this is a senior individual contributor role with deep
+ownership of the infrastructure that agent workloads run on.

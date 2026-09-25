@@ -1,0 +1,13 @@
+TITLE: Senior Platform Engineer
+COMPANY: Initech Cloud
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $170,000 – $190,000
+URL: https://example.com/eval/initech-senior-platform
+PUBLISHED: 2026-09-20
+
+Initech Cloud runs the control plane for regulated-industry workloads. The
+platform team builds TypeScript and Python services, Kubernetes operators,
+Terraform modules, and Postgres-backed APIs on AWS. You will own reliability
+for the deployment pipeline and the developer experience around it. This is
+a remote US role with quarterly onsites; senior engineers here are hands-on
+architects and individual contributors.

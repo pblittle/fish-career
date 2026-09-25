@@ -109,20 +109,25 @@ are no longer asking and nothing tells you which half. Invalidation is
 automatic so the operator never babysits it. A crash costs at most the row in
 flight, because every row checkpoints the moment it is scored.
 
-## There are two measurements, and the eval is the acceptance test
+## There are three measurements, and the golden metrics are the acceptance test
 
 - **`evaluate`**: holds the ranking to pairwise preferences that quote their
   own source line in the profile. No human step. Runs in CI against a golden
-  slice of recorded judge answers, so **no network and no API key**. A change
-  that breaks the operator's stated judgment fails the build.
-- **`calibrate`**: optional and stronger. A hand-ranked slice, scored by Jev,
-  reported as Spearman agreement. Where the two disagree, the disagreement is
-  the tuning signal.
+  slice of recorded judge answers, so **no network and no API key**.
+- **`calibrate`**: optional and stronger per run. A hand-ranked slice, scored
+  by the judge, reported as Spearman agreement. Where the two disagree, the
+  disagreement is the tuning signal.
+- **`quality`**: the labeled dataset (`fish-career/eval/`) measured with
+  pairwise accuracy, Kendall tau, Spearman, precision@k, and nDCG@k, plus a
+  weight-sensitivity pass. The recorded baseline's metrics are a golden
+  fixture; a rubric change that moves them must update it deliberately, so
+  the build fails until the change is owned.
 
-**Why:** "the model scored some jobs" is not a claim about anything. The eval
-is what turns the rubric into something with an acceptance criterion, and the
-golden fixture is what keeps the judge behind a test boundary. The suite
-tests the pipeline's behavior against fixed answers, not the model's mood.
+**Why:** "the model scored some jobs" is not a claim about anything. The
+measurements are what turn the rubric into something with an acceptance
+criterion, and the golden fixtures are what keep the judge behind a test
+boundary. The suite tests the pipeline's behavior against fixed answers, not
+the model's mood.
 
 ## Smaller decisions
 

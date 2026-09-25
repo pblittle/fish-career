@@ -1,0 +1,13 @@
+TITLE: Engineering Manager, Platform
+COMPANY: Globex Systems
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $220,000 – $250,000
+URL: https://example.com/eval/globex-manager-platform
+PUBLISHED: 2026-09-11
+
+Globex Systems is hiring an engineering manager for the platform group. You
+will manage three teams of platform engineers, own hiring and performance,
+and partner with product on roadmap. The platform itself is TypeScript,
+Postgres, and AWS, but this role is primarily people leadership: managing
+managers is not part of it, and hands-on coding is not expected beyond
+reviewing designs. Remote-first across the US.

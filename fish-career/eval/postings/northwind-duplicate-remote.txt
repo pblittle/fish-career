@@ -1,0 +1,12 @@
+TITLE: Senior Backend Engineer
+COMPANY: Northwind Labs
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $185,000 – $205,000
+URL: https://example.com/eval/northwind-duplicate-remote
+PUBLISHED: 2026-09-07
+
+Northwind Labs is expanding the payments infrastructure team. You will
+build TypeScript and Node.js services, design Postgres schemas, and operate
+AWS infrastructure. Remote-first across the United States, with quarterly
+onsites. Senior engineers own their services end to end and set their own
+priorities.

@@ -1,0 +1,18 @@
+{
+  "about": "Golden metrics for the recorded baseline over eval/labels.json. A rubric, dataset, or baseline change that moves these numbers must update this file deliberately; that is the regression contract for ranking quality.",
+  "k": 5,
+  "pairwiseAccuracy": 0.9230769230769231,
+  "kendallTau": 0.736850539762792,
+  "spearman": 0.8632352941176471,
+  "precisionAt5": 1,
+  "ndcgAt5": 0.9840352219951628,
+  "missing": ["contoso-thin"],
+  "blockersBelowClean": true,
+  "sensitivity": [
+    { "dimension": "skills", "topKOverlap": 1, "maxRankShift": 1 },
+    { "dimension": "level", "topKOverlap": 1, "maxRankShift": 1 },
+    { "dimension": "location", "topKOverlap": 1, "maxRankShift": 0 },
+    { "dimension": "comp", "topKOverlap": 1, "maxRankShift": 1 },
+    { "dimension": "domain", "topKOverlap": 1, "maxRankShift": 1 }
+  ]
+}

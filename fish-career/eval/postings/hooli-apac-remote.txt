@@ -1,0 +1,12 @@
+TITLE: Senior Platform Engineer
+COMPANY: Hooli
+LOCATION: Remote - Singapore (Remote)
+COMPENSATION: not stated
+URL: https://example.com/eval/hooli-apac-remote
+PUBLISHED: 2026-09-10
+
+Hooli is expanding its platform team in APAC. You will build TypeScript and
+Python services, run Kubernetes on AWS, and own Postgres reliability for the
+regional estate. This is a remote role based in Singapore, with occasional
+travel to customer sites around the region. Compensation is not listed;
+the team is distributed across APAC time zones.
