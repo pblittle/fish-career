@@ -32,11 +32,14 @@ release train. The split is all tax and no buyer. And the thing it costs is
 exactly the thing named above: shared modules keep the surfaces honest;
 separate repositories make drift the default.
 
-**When it stops being right:** a second consumer with its own cadence (the
-platform this module feeds) or a second maintainer. The extraction is already cheap:
-the package publishes `dist/` only, ships a `bin`, and owns no state, so
-"publish `fish-career` and depend on it" is additive. Deferring the split is
-a decision; making the extraction cheap is what pays for it.
+**When it stops being right:** a real second consumer or a second maintainer.
+The split triggers are enumerated in `docs/adr/0001-product-boundary.md`; the
+short version is a hosted product, multi-user identity, private data, a
+divergent release cadence, a second team, or billing and notification
+infrastructure. The extraction is already cheap: the package publishes `dist/`
+only, ships a `bin`, and owns no state, so "publish `fish-career` and depend on
+it" is additive. Deferring the split is a decision; making the extraction cheap
+is what pays for it.
 
 ## State lives outside the package
 
@@ -119,10 +122,11 @@ tests the pipeline's behavior against fixed answers, not the model's mood.
 
 ## Naming
 
-`fish.career` names this module and is the intended domain of the hosted
-product; the domain is deliberately unregistered while the product is
-hypothetical. The package is `fish-career`, so the npm surface and the
-filesystem agree.
+`fish.career` names the product and the MCP server. The package is
+`fish-career`, so the npm surface and the filesystem agree; the preferred CLI
+command is `fish`. The domain is deliberately unregistered while the product is
+hypothetical.
 
-This is one module, not the whole platform. `fish.agency` is reserved for
-the larger thing if it is ever built.
+`fish.agency` is not part of this architecture. It was a placeholder for a
+hypothetical parent platform and is retired by
+`docs/adr/0001-product-boundary.md`.
