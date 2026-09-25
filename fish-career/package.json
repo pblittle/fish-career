@@ -25,7 +25,8 @@
   },
   "files": [
     "dist",
-    "demo"
+    "demo",
+    "eval"
   ],
   "engines": {
     "node": ">=20.12"
@@ -53,6 +54,8 @@
     "lint:md": "markdownlint-cli2 --config ../.markdownlint-cli2.jsonc \"../*.md\" \"../docs/**/*.md\" \"../specs/**/*.md\" \"README.md\"",
     "verify:pack": "node scripts/verify-pack.mjs",
     "smoke": "node scripts/smoke-stdio.mjs",
+    "quality": "node dist/index.js quality",
+    "record:eval": "node scripts/record-eval-baseline.mjs",
     "prepack": "npm run build"
   },
   "dependencies": {

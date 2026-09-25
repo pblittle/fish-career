@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it, vi } from 'vitest';
 import type { CareerApplication } from '../../application/career-application.js';
 import { ApplicationError } from '../../domain/errors.js';
@@ -196,5 +197,19 @@ describe('runCli', () => {
     expect(sink.err.join('\n')).toContain('--count needs an integer between 2 and 30');
     expect(await runCli(['calibrate', 'start', '--count', '99'], { app, io: sink.io })).toBe(1);
     expect(app.startCalibration).not.toHaveBeenCalled();
+  });
+
+  it('quality prints the report from the bundled dataset', async () => {
+    const evalDir = fileURLToPath(new URL('../../../eval', import.meta.url));
+    const sink = io();
+    const code = await runCli(['quality', '--k', '3'], {
+      app: stubApp(),
+      io: sink.io,
+      evalDir,
+    });
+    expect(code).toBe(0);
+    const text = sink.out.join('\n');
+    expect(text).toContain('ranking quality against 17 labeled postings');
+    expect(text).toContain('precision@3');
   });
 });

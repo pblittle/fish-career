@@ -30,6 +30,11 @@ const requiredExact = [
   'demo/README.md',
   'demo/profile.md',
   'demo/boards.json',
+  'eval/README.md',
+  'eval/labels.json',
+  'eval/base-run.json',
+  'eval/expected-metrics.json',
+  'eval/profile.md',
 ];
 
 const requiredPatterns = [

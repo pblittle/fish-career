@@ -1,0 +1,12 @@
+TITLE: Senior Platform Engineer
+COMPANY: Northwind Labs
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $200,000 – $230,000
+URL: https://example.com/eval/northwind-platform-austin
+PUBLISHED: 2026-09-14
+
+Our board lists this as remote, but the team is in Austin: this role is
+on-site at our Austin headquarters, and there is no remote option. You will
+build TypeScript and Node.js services, model Postgres schemas, and operate
+distributed systems on AWS. We want engineers in the room for architecture
+decisions. Candidates must be based in the Austin area.

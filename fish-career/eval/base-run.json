@@ -1,0 +1,1611 @@
+{
+  "about": "A recorded judge run over eval/postings, used as the deterministic baseline for the quality report. Re-record with npm run record:eval and review the diff.",
+  "capturedAt": "2026-09-25T13:04:32.416Z",
+  "model": "jev-latest",
+  "rubric": 1,
+  "profile": "eval/profile.md",
+  "profileHash": "c81e2614f327",
+  "skipped": ["contoso-thin"],
+  "entries": [
+    {
+      "postingId": "contoso-backend-hybrid",
+      "file": "contoso-backend-hybrid.txt",
+      "title": "Senior Backend Engineer",
+      "company": "Contoso Robotics",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.97,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.14,
+          "confidence": 0.56,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.15,
+            "2": 0.56,
+            "3": 0.29
+          }
+        },
+        "level": {
+          "score": 2.04,
+          "confidence": 0.96,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.96,
+            "3": 0.04
+          }
+        },
+        "location": {
+          "score": 0.32,
+          "confidence": 0.68,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0.69,
+            "1": 0.31,
+            "2": 0,
+            "3": 0
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 1.52,
+          "confidence": 0.42,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.1,
+            "1": 0.33,
+            "2": 0.52,
+            "3": 0.05
+          }
+        }
+      },
+      "latencyMs": 437,
+      "inputTokens": 1092,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "globex-adversarial",
+      "file": "globex-adversarial.txt",
+      "title": "Growth Marketing Operations Lead",
+      "company": "Globex Systems",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.56,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 0.15,
+          "confidence": 0.85,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0.85,
+            "1": 0.15,
+            "2": 0,
+            "3": 0
+          }
+        },
+        "level": {
+          "score": 2.59,
+          "confidence": 0.59,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0.09,
+            "1": 0.03,
+            "2": 0.08,
+            "3": 0.8
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 0,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 0
+          }
+        },
+        "domain": {
+          "score": 0.16,
+          "confidence": 0.84,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.85,
+            "1": 0.15,
+            "2": 0,
+            "3": 0
+          }
+        }
+      },
+      "latencyMs": 187,
+      "inputTokens": 1118,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "globex-manager-platform",
+      "file": "globex-manager-platform.txt",
+      "title": "Engineering Manager, Platform",
+      "company": "Globex Systems",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.35,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 0.95,
+          "confidence": 0.92,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0.07,
+            "1": 0.92,
+            "2": 0.01,
+            "3": 0
+          }
+        },
+        "level": {
+          "score": 0.45,
+          "confidence": 0.55,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0.63,
+            "1": 0.32,
+            "2": 0.01,
+            "3": 0.04
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 2.55,
+          "confidence": 0.55,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.02,
+            "2": 0.37,
+            "3": 0.6
+          }
+        }
+      },
+      "latencyMs": 138,
+      "inputTokens": 1095,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "globex-senior-ai-infra",
+      "file": "globex-senior-ai-infra.txt",
+      "title": "Senior AI Infrastructure Engineer",
+      "company": "Globex Systems",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.05,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.99,
+          "confidence": 0.99,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.01,
+            "3": 0.99
+          }
+        },
+        "level": {
+          "score": 2.02,
+          "confidence": 0.98,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.98,
+            "3": 0.02
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        }
+      },
+      "latencyMs": 144,
+      "inputTokens": 1106,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "hooli-ambiguous-location",
+      "file": "hooli-ambiguous-location.txt",
+      "title": "Senior Backend Engineer",
+      "company": "Hooli",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.16,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.66,
+          "confidence": 0.66,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.02,
+            "2": 0.29,
+            "3": 0.6900000000000001
+          }
+        },
+        "level": {
+          "score": 2.04,
+          "confidence": 0.96,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.96,
+            "3": 0.04
+          }
+        },
+        "location": {
+          "score": 2,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 1,
+            "3": 0
+          }
+        },
+        "comp": {
+          "score": 1.01,
+          "confidence": 0.99,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.99,
+            "2": 0.01,
+            "3": 0
+          }
+        },
+        "domain": {
+          "score": 2.93,
+          "confidence": 0.93,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.06,
+            "3": 0.9400000000000001
+          }
+        }
+      },
+      "latencyMs": 170,
+      "inputTokens": 1079,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "hooli-apac-remote",
+      "file": "hooli-apac-remote.txt",
+      "title": "Senior Platform Engineer",
+      "company": "Hooli",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.91,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.94,
+          "confidence": 0.94,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.05,
+            "3": 0.95
+          }
+        },
+        "level": {
+          "score": 2.03,
+          "confidence": 0.97,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.97,
+            "3": 0.03
+          }
+        },
+        "location": {
+          "score": 0.97,
+          "confidence": 0.8,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0.12,
+            "1": 0.84,
+            "2": 0,
+            "3": 0.04
+          }
+        },
+        "comp": {
+          "score": 0.98,
+          "confidence": 0.96,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.96,
+            "2": 0.01,
+            "3": 0
+          }
+        },
+        "domain": {
+          "score": 2.86,
+          "confidence": 0.86,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.01,
+            "2": 0.11,
+            "3": 0.88
+          }
+        }
+      },
+      "latencyMs": 158,
+      "inputTokens": 1063,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "hooli-platform-remote",
+      "file": "hooli-platform-remote.txt",
+      "title": "Platform Engineer",
+      "company": "Hooli",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.06,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.57,
+          "confidence": 0.57,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.03,
+            "2": 0.37,
+            "3": 0.6
+          }
+        },
+        "level": {
+          "score": 2.62,
+          "confidence": 0.62,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.37,
+            "3": 0.63
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 1.02,
+          "confidence": 0.98,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.98,
+            "2": 0.02,
+            "3": 0
+          }
+        },
+        "domain": {
+          "score": 2.91,
+          "confidence": 0.91,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.09,
+            "3": 0.91
+          }
+        }
+      },
+      "latencyMs": 142,
+      "inputTokens": 1061,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "initech-junior-backend",
+      "file": "initech-junior-backend.txt",
+      "title": "Junior Backend Engineer",
+      "company": "Initech Cloud",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.38,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.65,
+          "confidence": 0.65,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.07,
+            "2": 0.21,
+            "3": 0.72
+          }
+        },
+        "level": {
+          "score": 2.99,
+          "confidence": 0.99,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 0,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 0
+          }
+        },
+        "domain": {
+          "score": 1.92,
+          "confidence": 0.67,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.18,
+            "2": 0.68,
+            "3": 0.13
+          }
+        }
+      },
+      "latencyMs": 162,
+      "inputTokens": 1079,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "initech-senior-platform",
+      "file": "initech-senior-platform.txt",
+      "title": "Senior Platform Engineer",
+      "company": "Initech Cloud",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.19,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.95,
+          "confidence": 0.95,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.05,
+            "3": 0.95
+          }
+        },
+        "level": {
+          "score": 2.03,
+          "confidence": 0.97,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.97,
+            "3": 0.03
+          }
+        },
+        "location": {
+          "score": 2.81,
+          "confidence": 0.81,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.02,
+            "2": 0.02,
+            "3": 0.91
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 2.86,
+          "confidence": 0.86,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.02,
+            "2": 0.09,
+            "3": 0.89
+          }
+        }
+      },
+      "latencyMs": 189,
+      "inputTokens": 1094,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "northwind-duplicate-dallas",
+      "file": "northwind-duplicate-dallas.txt",
+      "title": "Senior Backend Engineer",
+      "company": "Northwind Labs",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.24,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.45,
+          "confidence": 0.45,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.07,
+            "2": 0.42,
+            "3": 0.51
+          }
+        },
+        "level": {
+          "score": 2.07,
+          "confidence": 0.92,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.92,
+            "3": 0.08
+          }
+        },
+        "location": {
+          "score": 2.77,
+          "confidence": 0.77,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.04,
+            "2": 0.02,
+            "3": 0.89
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 1.34,
+          "confidence": 0.23,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.18,
+            "1": 0.35,
+            "2": 0.42,
+            "3": 0.05
+          }
+        }
+      },
+      "latencyMs": 149,
+      "inputTokens": 1083,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "northwind-duplicate-remote",
+      "file": "northwind-duplicate-remote.txt",
+      "title": "Senior Backend Engineer",
+      "company": "Northwind Labs",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.16,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.27,
+          "confidence": 0.52,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.11,
+            "2": 0.52,
+            "3": 0.37
+          }
+        },
+        "level": {
+          "score": 2.12,
+          "confidence": 0.87,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.88,
+            "3": 0.12
+          }
+        },
+        "location": {
+          "score": 2.87,
+          "confidence": 0.87,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.01,
+            "2": 0.01,
+            "3": 0.94
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 1.32,
+          "confidence": 0.22,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.18,
+            "1": 0.37,
+            "2": 0.4,
+            "3": 0.05
+          }
+        }
+      },
+      "latencyMs": 151,
+      "inputTokens": 1072,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "northwind-platform-austin",
+      "file": "northwind-platform-austin.txt",
+      "title": "Senior Platform Engineer",
+      "company": "Northwind Labs",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.96,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.45,
+          "confidence": 0.45,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.07,
+            "2": 0.41,
+            "3": 0.52
+          }
+        },
+        "level": {
+          "score": 2.03,
+          "confidence": 0.97,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.97,
+            "3": 0.03
+          }
+        },
+        "location": {
+          "score": 0.1,
+          "confidence": 0.9,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0.91,
+            "1": 0.07,
+            "2": 0.01,
+            "3": 0.01
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 2.55,
+          "confidence": 0.55,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.06,
+            "2": 0.31,
+            "3": 0.63
+          }
+        }
+      },
+      "latencyMs": 164,
+      "inputTokens": 1086,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "northwind-senior-backend",
+      "file": "northwind-senior-backend.txt",
+      "title": "Senior Backend Engineer",
+      "company": "Northwind Labs",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.05,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.84,
+          "confidence": 0.84,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.01,
+            "2": 0.14,
+            "3": 0.85
+          }
+        },
+        "level": {
+          "score": 2.08,
+          "confidence": 0.92,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.92,
+            "3": 0.08
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 2.96,
+          "confidence": 0.96,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.03,
+            "3": 0.97
+          }
+        }
+      },
+      "latencyMs": 120,
+      "inputTokens": 1091,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "northwind-staff-backend",
+      "file": "northwind-staff-backend.txt",
+      "title": "Staff Backend Engineer",
+      "company": "Northwind Labs",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.05,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.31,
+          "confidence": 0.51,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.09,
+            "2": 0.51,
+            "3": 0.4
+          }
+        },
+        "level": {
+          "score": 1.94,
+          "confidence": 0.94,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.06,
+            "2": 0.94,
+            "3": 0
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "domain": {
+          "score": 2.94,
+          "confidence": 0.94,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.05,
+            "3": 0.95
+          }
+        }
+      },
+      "latencyMs": 153,
+      "inputTokens": 1115,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "vandelay-backend-remote",
+      "file": "vandelay-backend-remote.txt",
+      "title": "Backend Engineer",
+      "company": "Vandelay Industries",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.1,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.39,
+          "confidence": 0.39,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.11,
+            "2": 0.39,
+            "3": 0.5
+          }
+        },
+        "level": {
+          "score": 2.92,
+          "confidence": 0.92,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0,
+            "2": 0.05,
+            "3": 0.94
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 1.48,
+          "confidence": 0,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0.49,
+            "1": 0,
+            "2": 0.06,
+            "3": 0.45
+          }
+        },
+        "domain": {
+          "score": 0.81,
+          "confidence": 0.56,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0.31,
+            "1": 0.57,
+            "2": 0.11,
+            "3": 0.01
+          }
+        }
+      },
+      "latencyMs": 169,
+      "inputTokens": 1083,
+      "outputTokens": 88
+    },
+    {
+      "postingId": "vandelay-missing-comp",
+      "file": "vandelay-missing-comp.txt",
+      "title": "Senior Backend Engineer",
+      "company": "Vandelay Industries",
+      "answers": {
+        "hard_blocker": {
+          "noul": 0.05,
+          "type": "noul"
+        },
+        "skills": {
+          "score": 2.28,
+          "confidence": 0.49,
+          "type": "score",
+          "legend": {
+            "0": "Almost none of the posting's required skills appear among the candidate's stated skills",
+            "1": "Some required skills match, but a core requirement of the role is missing",
+            "2": "Most required skills match, with a few gaps the candidate could close on the job",
+            "3": "The posting's requirements are skills the candidate has used in depth"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.11,
+            "2": 0.49,
+            "3": 0.4
+          }
+        },
+        "level": {
+          "score": 2.06,
+          "confidence": 0.93,
+          "type": "score",
+          "legend": {
+            "0": "The posting is far above the candidate's stated level; the stated experience bar is not met",
+            "1": "The posting is somewhat above the candidate's stated level",
+            "2": "The posting matches the candidate's stated level",
+            "3": "The posting is below the candidate's stated level; the candidate would be overqualified"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.93,
+            "3": 0.07
+          }
+        },
+        "location": {
+          "score": 3,
+          "confidence": 1,
+          "type": "score",
+          "legend": {
+            "0": "The role is on-site or hybrid in a location the candidate's constraints rule out",
+            "1": "The role would require a relocation the candidate has not said they want",
+            "2": "The location or remote policy is not stated clearly enough to judge",
+            "3": "The remote policy or location matches the candidate's stated constraint"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 1
+          }
+        },
+        "comp": {
+          "score": 1.23,
+          "confidence": 0.77,
+          "type": "score",
+          "legend": {
+            "0": "The posting states or strongly suggests compensation below the candidate's stated floor",
+            "1": "The posting gives no compensation signal",
+            "2": "Compensation hints are consistent with the candidate's floor, without stating a number",
+            "3": "The posting states compensation at or above the candidate's stated floor"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0.77,
+            "2": 0.23,
+            "3": 0
+          }
+        },
+        "domain": {
+          "score": 2.94,
+          "confidence": 0.94,
+          "type": "score",
+          "legend": {
+            "0": "The work is in a domain the candidate has ruled out or shown no interest in",
+            "1": "The domain is neither named in the candidate's interests nor ruled out",
+            "2": "The work touches a domain the candidate has some interest in",
+            "3": "The work is squarely in a domain the candidate says they want"
+          },
+          "probabilities": {
+            "0": 0,
+            "1": 0,
+            "2": 0.06,
+            "3": 0.94
+          }
+        }
+      },
+      "latencyMs": 127,
+      "inputTokens": 1080,
+      "outputTokens": 88
+    }
+  ]
+}

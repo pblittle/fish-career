@@ -1,0 +1,12 @@
+TITLE: Senior Backend Engineer
+COMPANY: Contoso Robotics
+LOCATION: Seattle, WA (Hybrid)
+COMPENSATION: $200,000 – $230,000
+URL: https://example.com/eval/contoso-backend-hybrid
+PUBLISHED: 2026-09-13
+
+This is a hybrid role: 3 days a week in our Seattle office, and relocation
+to the Seattle area is required. You will build TypeScript and Node.js
+services, own Postgres data models, and run distributed systems on AWS for
+our robotics fleet. We are looking for engineers who want to shape how the
+fleet scales. The team is small and the problems are physical.

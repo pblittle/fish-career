@@ -1,0 +1,12 @@
+TITLE: Platform Engineer
+COMPANY: Hooli
+LOCATION: Remote (US) (Remote)
+COMPENSATION: not stated
+URL: https://example.com/eval/hooli-platform-remote
+PUBLISHED: 2026-09-16
+
+Hooli is hiring a platform engineer to work on the internal developer
+platform. You will write TypeScript and Node.js services, manage Postgres
+schemas, and improve CI/CD on AWS. Compensation is not listed for this
+posting; the recruiter shares the range in the first call. The team is
+remote-first across the United States with occasional travel.

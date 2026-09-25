@@ -1,0 +1,13 @@
+TITLE: Senior Backend Engineer
+COMPANY: Hooli
+LOCATION: Various (Remote)
+COMPENSATION: not stated
+URL: https://example.com/eval/hooli-ambiguous-location
+PUBLISHED: 2026-09-09
+
+Hooli is growing the backend group that powers its AI infrastructure.
+You will build TypeScript and Node.js services, model Postgres data, and
+operate distributed systems on AWS. The location policy is flexible and
+discussed case by case; the posting says "various" and does not state
+whether the role is US-only. Compensation is not listed. Strong backend
+engineers with distributed-systems depth are encouraged to apply.

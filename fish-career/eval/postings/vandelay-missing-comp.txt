@@ -1,0 +1,13 @@
+TITLE: Senior Backend Engineer
+COMPANY: Vandelay Industries
+LOCATION: Remote (US) (Remote)
+COMPENSATION: not stated
+URL: https://example.com/eval/vandelay-missing-comp
+PUBLISHED: 2026-09-08
+
+Vandelay Industries is rebuilding its developer tooling platform. You will
+own TypeScript and Node.js services, Postgres schemas, and the AWS
+infrastructure behind them, working with a small team that ships weekly.
+This is a remote US role and an individual contributor seat with real
+architecture ownership. Compensation is not stated in the posting; the
+team says the range is competitive and shared in the first conversation.

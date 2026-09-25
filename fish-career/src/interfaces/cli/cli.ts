@@ -2,12 +2,15 @@
 // one application use case, so a score means the same thing however it was
 // asked for.
 
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { CareerApplication } from '../../application/career-application.js';
 import { renderCalibration } from '../../domain/calibration.js';
 import { ApplicationError } from '../../domain/errors.js';
 import { postingIdFromFile } from '../../domain/posting.js';
 import { renderEval } from '../../domain/preferences.js';
 import { collapseVariants, renderTable } from '../../domain/ranking.js';
+import { runQuality } from './quality.js';
 
 export interface CliIo {
   out(line: string): void;
@@ -17,7 +20,11 @@ export interface CliIo {
 export interface CliDeps {
   app: CareerApplication;
   io?: CliIo;
+  evalDir?: string;
 }
+
+const defaultEvalDir = (): string =>
+  join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'eval');
 
 export const USAGE = `fish.career — a local-first MCP server that finds job opportunities,
 interprets their fit, scores them with an explicit rubric, and hones that
@@ -29,6 +36,7 @@ Usage:
   fish fetch [--company X] [--days N] [--all]
   fish triage [--rescore] [postingId...]
   fish evaluate
+  fish quality [--k N] [--json]     ranking quality against the labeled dataset
   fish calibrate start [--count N] [--seed N]
   fish calibrate submit <postingId...>
   fish calibrate reuse
@@ -114,6 +122,25 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
         const { evaluation, errors } = await app.evaluateRanking();
         io.out(renderEval(evaluation));
         if (errors.length > 0) io.out(`Failed: ${errors.join('; ')}`);
+        return 0;
+      }
+
+      case 'quality': {
+        let k = 5;
+        const kRaw = valueFor(rest, '--k');
+        if (kRaw !== undefined) {
+          const n = Number(kRaw);
+          if (!Number.isInteger(n) || n < 1 || n > 50) {
+            return fail(io, '--k needs an integer between 1 and 50.');
+          }
+          k = n;
+        }
+        const { text } = await runQuality({
+          dir: deps.evalDir ?? defaultEvalDir(),
+          k,
+          json: rest.includes('--json'),
+        });
+        io.out(text);
         return 0;
       }
 

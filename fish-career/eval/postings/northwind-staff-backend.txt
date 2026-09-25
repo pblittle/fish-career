@@ -1,0 +1,14 @@
+TITLE: Staff Backend Engineer
+COMPANY: Northwind Labs
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $210,000 – $240,000
+URL: https://example.com/eval/northwind-staff-backend
+PUBLISHED: 2026-09-18
+
+Northwind Labs builds the developer tooling platform that 4,000 engineering
+teams use to ship and observe their services. You will own the architecture
+of the ingestion pipeline: TypeScript and Node.js services on AWS, Postgres
+for state, and event streams for delivery. We are remote-first across the
+United States. Staff engineers write code daily, design distributed systems
+that stay correct under load, and mentor through design review. This is an
+individual contributor role with no people-management duties.

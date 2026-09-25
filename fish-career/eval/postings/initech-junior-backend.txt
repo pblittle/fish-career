@@ -1,0 +1,12 @@
+TITLE: Junior Backend Engineer
+COMPANY: Initech Cloud
+LOCATION: Remote (US) (Remote)
+COMPENSATION: $110,000 – $130,000
+URL: https://example.com/eval/initech-junior-backend
+PUBLISHED: 2026-09-12
+
+We are hiring a junior engineer for the cloud data team. You will learn to
+build TypeScript and Node.js services, write Postgres queries, and deploy to
+AWS with mentorship from senior engineers. This is a remote US role for
+someone early in their career. Distributed systems experience is not
+required; curiosity is.
