@@ -9,3 +9,6 @@
 /.claude/
 fish-career/node_modules/
 fish-career/dist/
+/PROMPT.md
+/preferences.json
+/watchlist.json

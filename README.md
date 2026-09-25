@@ -1,146 +1,220 @@
 # fish.career
 
+[![test](https://github.com/pblittle/fish-career/actions/workflows/test.yml/badge.svg)](https://github.com/pblittle/fish-career/actions/workflows/test.yml)
+
 > fish.career is a local-first MCP server that finds job opportunities,
 > interprets their fit, scores them with an explicit rubric, and hones that
 > rubric against human judgment.
 
-**Find** opportunities on public ATS feeds you choose. **Interpret** titles,
-locations, compensation, and requirements into one normalized shape. **Score**
-them with a versioned decision rubric. **Hone** that rubric against blind human
-ranking and reproducible evaluation.
+**F**ind opportunities on the public ATS boards you choose. **I**nterpret
+titles, locations, compensation, and requirements into one normalized shape.
+**S**core them with a versioned decision rubric. **H**one that rubric against
+blind human ranking and reproducible evaluation.
 
-The product boundary and repository strategy live in
-[`docs/adr/0001-product-boundary.md`](./docs/adr/0001-product-boundary.md).
+The scarce resource is your attention. The pipeline's job is to turn an
+unbounded stream of postings into a small ranked table with the reasons
+attached, and to prove measurably that the ranking tracks your own judgment
+rather than a model's taste. Everything below serves that.
 
-## Why this exists
+- Product boundary and repository strategy: [`docs/adr/0001-product-boundary.md`](./docs/adr/0001-product-boundary.md)
+- Architecture and the decisions behind it: [`ARCHITECTURE.md`](./ARCHITECTURE.md)
+- Pipeline contract: [`specs/0001-posting-pipeline.md`](./specs/0001-posting-pipeline.md)
 
-LinkedIn is a middleman. Job postings originate on public, official,
-no-auth ATS feeds (Greenhouse, Ashby, SmartRecruiters, Lever) that any
-client may poll. Watching those feeds directly yields a daily diff of
-exactly the companies you choose, with compensation data LinkedIn hides,
-and no LinkedIn account in the loop to be restricted.
+## See it work
 
-The scarce resource is the operator's attention. The pipeline's job is to turn
-an unbounded stream of postings into a small ranked table with the reasons
-attached, and to prove measurably that the ranking tracks the operator's own
-judgment rather than a model's taste. Everything below exists to serve that.
+The demo runs the real pipeline—fetch, triage, evaluate, calibrate—over
+bundled fixtures with **no API key and no network**, in a temp directory that
+is removed afterwards:
+
+```bash
+npm ci --prefix fish-career
+npm run build --prefix fish-career
+node fish-career/dist/index.js demo
+```
+
+It prints a ranked table, holds the ranking to the fixture profile's stated
+preferences, and compares a blind human ranking against the judge. The judge
+in the demo is a documented stand-in (`src/fake-judge.ts`), not a model; the
+demo says so in its first lines.
+
+## Five-minute setup
+
+### 1. Install
+
+Requires Node 20.12+. The package is `fish-career`; `npx -y fish-career`
+works once the first npm release lands, and the source install below is
+identical:
+
+```bash
+git clone https://github.com/pblittle/fish-career.git
+cd fish-career
+npm ci --prefix fish-career
+npm run build --prefix fish-career
+```
+
+### 2. Connect your MCP host
+
+The server speaks MCP over stdio. State lives outside the package in
+`FISH_HOME` (default `~/.config/fish`). Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "fish-career": {
+      "command": "node",
+      "args": ["/absolute/path/to/fish-career/fish-career/dist/index.js"],
+      "env": { "FISH_HOME": "/absolute/path/to/fish-state" }
+    }
+  }
+}
+```
+
+Host-specific notes: [Claude Desktop](./docs/hosts/claude-desktop.md) ·
+[opencode](./docs/hosts/opencode.md) · [Cursor](./docs/hosts/cursor.md).
+
+### 3. Give it a profile
+
+The profile is the judgment target: every score is made against it, and it is
+sent verbatim to the judge on scoring calls. Ask your host to run
+`update_profile`, or write `$FISH_HOME/profile.md` directly. A skeleton:
+
+```markdown
+# Candidate profile
+
+Target roles: what you want to do, and what you are done doing.
+Level: the seat you are looking for, and the one above it you would take.
+Location and remote: your constraint, stated as a rule.
+Compensation floor: $NNN,NNN.
+Core skills: the things you have used in depth.
+Domains I want: the fields worth your next five years.
+Hard constraints: anything a posting must not violate.
+```
+
+The profile's accuracy bounds everything downstream. A vague line produces a
+low-confidence judgment, and the table marks those cells with `?`.
+
+### 4. Watch companies
+
+Ask the host to `watchlist_add` with a company name and a candidate slug.
+The first call probes all four public ATS APIs and writes nothing; read a
+title or two from the board it finds, then call again with `confirm=true` to
+write the entry. Slugs collide—verifying identity is the point of the split.
+`watchlist_list` shows what you are watching.
+
+### 5. Fetch and triage
+
+`fetch_postings` polls every watched board, keeps remote postings, writes the
+arrivals you have never seen, and returns the diff. `triage` scores them
+against the profile with the judge and returns the ranked table with
+per-dimension scores, confidences, and blocker flags. Triage needs a TypeSafe
+API key in `$FISH_HOME/.env`:
+
+```text
+TYPESAFE_API_KEY=...
+```
+
+Key from <https://console.typesafe.ai/keys>.
+
+### 6. Calibrate against yourself
+
+The ranking is only as good as its agreement with you. `calibrate_start`
+draws a slice of cached postings and hands them over numbered. Rank them by
+your own judgment, best first, **before** reading any score, then call
+`calibrate_submit` with that order. You get Spearman agreement and the
+biggest disagreements, with the dimension cells that drove each one. Adjust
+weights or profile lines, then `calibrate_rescore` re-measures the same slice
+under the new rubric.
+
+`evaluate` is the cheaper measurement: it holds the ranking to pairwise
+preferences your profile already states (`$FISH_HOME/preferences.json`), each
+quoting its source line. Run it after any profile or weight change.
+
+## The MCP surface
+
+| Tool | Purpose | Writes |
+|---|---|---|
+| `watchlist_add` | Probe a company's ATS boards, then add a verified entry | watchlist |
+| `watchlist_list` | Every watched company with provider and slug | — |
+| `fetch_postings` | Poll watched boards, write unseen remote postings | postings, seen |
+| `triage` | Score unscored postings, return the ranked table | ledger, traces |
+| `evaluate` | Hold the ranking to the profile's stated preferences | traces |
+| `calibrate_start` | Draw a blind calibration slice | pending state |
+| `calibrate_submit` | Record your order, score the slice, report agreement | calibrations |
+| `calibrate_rescore` | Re-measure the last slice under the current rubric | calibrations |
+| `get_profile` / `update_profile` | Read and replace the candidate profile | profile |
+| `read_posting` | Read one cached posting in full | — |
 
 ## How it works
 
-One engine, two surfaces. `fish-career` is the engine: fetch, judge, and
-measure. The two CLI scripts and the MCP server are thin skins over the same
-modules, so a score means the same thing however you asked for it. State lives
-outside the package (`FISH_HOME`), so the install stays stateless.
-
-The ranking is Jev (TypeSafe's System One model): typed questions, not
-generated prose. Each posting is judged on five dimensions as separate
-Score questions in one request, plus a Noul hard-blocker check, with
-weights and rubrics in `DIMENSIONS`, where they can be argued with. Every
-score records the profile hash and rubric version that produced it, so a
-change to either re-scores on the next run.
-
-Calibration against the operator's own judgment comes first. See
-Calibration, and `ARCHITECTURE.md` for the decisions behind this shape.
-
-## Commands
-
-Requires Node 20.12+. No runtime dependencies.
-
-`FISH_HOME` overrides where profile, watchlist, postings, and state live.
-Unset, the CLIs use this folder and the MCP server uses `~/.config/fish`.
-Set it to the same path on both if you want them to share a ledger.
-
-```bash
-node fetch.mjs                      # poll the watchlist, write new remote postings
-node fetch.mjs --company ramp       # one company (substring match)
-node fetch.mjs --all                # replay the whole backlog
-node triage.mjs                     # score new postings with Jev, print ranked table
-node triage.mjs --sample 12         # score a random slice (calibration)
-node triage.mjs --reuse             # rescore the SAME slice (weight tuning)
-node triage.mjs --rescore           # score everything again, ignore scored state
-node triage.mjs --evaluate          # hold the rubric to preferences.json
-node triage.mjs --explain <needle>  # full probabilities for one posting
-node probe-boards.mjs               # verify watchlist boards and live counts
+```text
+MCP over stdio ──┐
+CLI (dev) ───────┼── the engine (fish-career/src)
+                 │
+     ┌───────────┼────────────┐
+     │           │            │
+ ATS providers  Judge   Ledger and traces
 ```
 
-Daily loop:
+- **One engine, two surfaces.** The MCP server and the dev CLIs import the
+  same modules, so a score means the same thing however you asked for it.
+  Nothing is reimplemented in a surface.
+- **The judge is untrusted.** One request per posting: five typed Score
+  dimensions plus one Noul hard-blocker check, not prose to be parsed for
+  sentiment. Every answer is a checkable number with a confidence.
+- **Judgment is data.** Weights, criteria, and blocker instructions live in
+  `DIMENSIONS` in `src/jev.ts` with a `RUBRIC_VERSION`, where a change is a
+  reviewable diff.
+- **Every score carries provenance.** Each ledger entry records the profile
+  hash and rubric version that produced it. Change either and stale entries
+  re-score on the next run.
+- **A blocker demotes.** A posting naming a hard requirement you cannot meet
+  is not the top row whatever its composite, and it says so in the table.
+- **Variants collapse.** One region-labelled vacancy posted per office is one
+  row that names the other offices. A bare base title stays its own row.
+- **Arrivals only.** Every remote posting a poll observes is marked seen,
+  written or not; later polls deliver the diff.
 
-```bash
-node fetch.mjs && node triage.mjs
-```
+## Privacy and data flow
 
-Optional cron (fetch only; scoring is interactive):
+Everything the server reads and writes hangs off `FISH_HOME`; the npm package
+holds none of it. The only outbound calls are GETs to the four public ATS APIs
+and the judge call, which sends your profile and the posting text to TypeSafe.
+There is no telemetry, no analytics, and no account. Details and the threat
+model: [`docs/privacy.md`](./docs/privacy.md).
 
-```
-0 8 * * * cd ~/sandbox/fish && node fetch.mjs >> fetch.log 2>&1
-```
-
-## Setup
-
-1. TypeSafe API key from https://console.typesafe.ai/keys into `.env`
-   (copy from `.env.example`):
-
-   ```
-   TYPESAFE_API_KEY=...
-   ```
-
-2. Build the engine. Both root scripts import from `fish-career/dist/`,
-   which is gitignored, so a fresh clone has nothing to run until this
-   step:
-
-   ```bash
-   npm --prefix fish-career ci
-   npm --prefix fish-career run build
-   ```
-
-3. Fill `profile.md`. It is sent verbatim to the TypeSafe API as the
-   state for every scoring call, so it carries no contact details, only
-   role-relevant facts. The profile's accuracy bounds everything
-   downstream; keep it current (floor, target scope, hard constraints).
-
-4. Run `node fetch.mjs`. First run writes only postings newer than 14
-   days; the window widens with `--days N` or disappears with `--all`.
-
-5. Add a company: add a line to `CANDIDATES` in `probe-boards.mjs`, run
-   it, confirm identity by reading a title or two (slugs collide:
-   `scaleai` and `gamma` both needed a check), then move the verified
-   entry into `watchlist.json`.
-
-## Calibration and eval
-
-The ranking is only as good as the rubric, and the rubric is only as good
-as its agreement with the operator. Two measurements, in increasing
-strength:
-
-1. **`node triage.mjs --evaluate`**: the eval. Scores the postings
-   `preferences.json` names and checks the ranking against pairwise
-   preferences the profile already states, each carrying its source line.
-   No human step; run it after any profile or weight change. The same
-   check runs in the test suite against recorded Jev answers
-   (`fish-career/src/fixtures/eval-slice.json`), so CI fails if a change
-   breaks the operator's stated judgment.
-2. **Calibration**, the stronger measurement, optional:
-   `node triage.mjs --sample 12` on a stratified slice (one per company,
-   obvious fits and deliberate misses both), rank the same 12 by hand
-   BEFORE reading Jev's table, compare. Where they disagree, decide
-   whether the model or the rubric is wrong, adjust weights or level
-   descriptions in `DIMENSIONS`, and `--reuse` on the same slice until it
-   agrees.
-
-A dimension that keeps answering at low confidence is usually a profile
-gap, not a model failure: sharpen `profile.md`, not the code.
+Personal state can live in a private checkout—the public repository ships
+fixtures and examples only. Point `FISH_HOME` at it and keep profile,
+watchlist, postings, and calibrations out of any public tree.
 
 ## Known limits
 
-- Greenhouse boards carry no compensation data, so the comp dimension
-  reads neutral there; sub-floor postings on Greenhouse slip past the
-  comp gate and should be eyeballed at the top of the table.
-- US eligibility is not filtered at fetch; it lives in posting text and
-  is judged by the location dimension and the blocker check.
-- Ashby comp ranges arrive as written by the employer (e.g. `$158.4K –
-  $237.5K`), unverified.
-- Jev's calibration on job postings is unknown until the first
+- Greenhouse boards carry no compensation data, so the comp dimension reads
+  neutral there; sub-floor Greenhouse postings can slip past the comp gate and
+  should be eyeballed at the top of the table.
+- US eligibility is not filtered at fetch; it lives in posting text and is
+  judged by the location dimension and the blocker check.
+- Ashby compensation ranges arrive as written by the employer, unverified.
+- The judge's calibration on job postings is unknown until the first
   calibration run; treat early rankings as a measurement, not a verdict.
+- One profile per `FISH_HOME`. No auto-applying, no authenticated scraping,
+  no LinkedIn.
+
+## Development
+
+```bash
+npm ci --prefix fish-career
+npm test --prefix fish-career          # vitest; deterministic, no network
+npm run typecheck --prefix fish-career
+npm run lint --prefix fish-career       # biome
+npm run lint:md --prefix fish-career    # markdownlint
+npm run verify:pack --prefix fish-career
+node fish-career/dist/index.js demo
+```
+
+Behavior changes land with a spec in [`specs/`](./specs) and significant
+architecture decisions with an ADR in [`docs/adr/`](./docs/adr). Releases are
+cut by release-please from conventional commits; see
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## License
 
