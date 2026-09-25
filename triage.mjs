@@ -24,7 +24,7 @@ if (!existsSync(ENGINE)) {
 }
 
 const args = process.argv.slice(2);
-const valueOf = (flag) => {
+const flagValue = (flag) => {
   const i = args.indexOf(flag);
   return i >= 0 ? args[i + 1] : undefined;
 };
@@ -40,7 +40,7 @@ let mapped;
 if (args.includes('--evaluate')) {
   mapped = ['evaluate'];
 } else if (args.includes('--explain')) {
-  const needle = valueOf('--explain');
+  const needle = flagValue('--explain');
   if (!needle) {
     console.error('--explain needs a posting ID or a substring of one.');
     process.exit(1);
@@ -62,7 +62,7 @@ if (args.includes('--evaluate')) {
     ...(args.includes('--dry-run') ? ['--dry-run'] : []),
   ];
 } else if (args.includes('--sample')) {
-  mapped = ['calibrate', 'start', '--count', String(Number(valueOf('--sample')) || 12)];
+  mapped = ['calibrate', 'start', '--count', String(Number(flagValue('--sample')) || 12)];
 } else if (args.includes('--reuse')) {
   mapped = ['calibrate', 'reuse'];
 } else if (args.includes('--dry-run')) {
