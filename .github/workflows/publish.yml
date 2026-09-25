@@ -1,0 +1,30 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fish-career
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      # Trusted publishing: npmjs.com must list this repository and this
+      # workflow as the package's trusted publisher. The id-token permission
+      # above lets npm mint the credential, so no long-lived token is stored.
+      - run: npm publish --provenance --access public
