@@ -24,6 +24,13 @@ jobs:
       - run: npm run lint:md --prefix fish-career
       - run: npm run build --prefix fish-career
       - run: npm run verify:pack --prefix fish-career
+      - run: npm run smoke --prefix fish-career
+      - name: Inspector discovery and invocation
+        run: |
+          FISH_HOME=$(mktemp -d) npx -y @modelcontextprotocol/inspector --cli node fish-career/dist/index.js --method tools/list | tee /tmp/tools.json
+          grep -q triage_postings /tmp/tools.json
+          FISH_HOME=$(mktemp -d) npx -y @modelcontextprotocol/inspector --cli node fish-career/dist/index.js --method tools/call --tool-name profile_update --tool-arg "content=# CI smoke" | tee /tmp/call.json
+          grep -q '"written": true' /tmp/call.json
 
   compat:
     runs-on: ubuntu-latest

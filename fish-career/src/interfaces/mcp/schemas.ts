@@ -110,14 +110,19 @@ export const calibrationStartOutput = z.union([
   errorEnvelope,
 ]);
 
+// `z.nullable()` emits `type: ["number","null"]`, which single-type dialects
+// (Gemini function declarations, OpenAPI 3.0) reject or drop. A union emits
+// anyOf branches instead, which Inspector's portability check accepts.
+const nullableNumber = z.union([z.number(), z.null()]);
+
 export const calibrationResultOutput = z.union([
   z.object({
     at: z.string(),
-    rho: z.number().nullable(),
+    rho: nullableNumber,
     postingIds: z.array(z.string()),
     humanRanking: z.array(z.string()),
     rows: z.array(triageRowSchema),
-    previousRho: z.number().nullable().optional(),
+    previousRho: nullableNumber.optional(),
     errors: z.array(z.string()),
   }),
   errorEnvelope,
