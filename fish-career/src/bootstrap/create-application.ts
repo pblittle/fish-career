@@ -12,6 +12,7 @@ import { filePostingRepository } from '../adapters/filesystem/posting-repository
 import { filePreferencesStore } from '../adapters/filesystem/preferences-store.js';
 import { fileProfileStore } from '../adapters/filesystem/profile-store.js';
 import { fileSeenStore } from '../adapters/filesystem/seen-store.js';
+import { jsonlTraceReader } from '../adapters/filesystem/trace-reader.js';
 import { jsonlTraceSink } from '../adapters/filesystem/trace-sink.js';
 import { fileWatchlistStore } from '../adapters/filesystem/watchlist-store.js';
 import { fakeJudge } from '../adapters/judge/fake.js';
@@ -52,6 +53,7 @@ export const createApplicationFromHome = (
     seen: fileSeenStore(paths),
     ledger: fileLedger(paths.ledger),
     traces: jsonlTraceSink(paths.traces),
+    traceReader: jsonlTraceReader(paths.traces),
     profile: fileProfileStore(paths),
     watchlist: fileWatchlistStore(paths),
     preferences: filePreferencesStore(paths),

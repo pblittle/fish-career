@@ -39,14 +39,22 @@ own blind ranking. The repository README walks the whole five-minute setup.
 
 | Tool | Purpose |
 |---|---|
-| `watchlist_add` | Probe a company's ATS boards and add a verified entry |
-| `watchlist_list` | List the watchlist |
+| `watchlist_probe` | Probe the four public ATS boards for a company slug (read-only) |
+| `watchlist_add` / `watchlist_remove` | Write or remove a verified watchlist entry |
 | `fetch_postings` | Poll the watchlist and write new remote postings |
-| `triage` | Score postings against the profile, return a ranked table |
-| `evaluate` | Hold the ranking to the preferences your profile states |
-| `calibrate_start` / `calibrate_submit` / `calibrate_rescore` | Blind human ranking vs the rubric |
-| `get_profile` / `update_profile` | Read and replace the candidate profile |
-| `read_posting` | Read one cached posting in full |
+| `triage_postings` | Score postings against the profile, return a ranked table |
+| `evaluate_ranking` | Hold the ranking to the preferences your profile states |
+| `calibration_start` / `calibration_submit` / `calibration_rescore` | Blind human ranking vs the rubric |
+| `profile_update` | Replace the candidate profile |
+
+Passive state is exposed as resources: `fish://profile/current`,
+`fish://watchlist`, `fish://postings`, `fish://postings/{postingId}`,
+`fish://rubric/current`, `fish://calibrations/latest`, `fish://runs/latest`.
+Workflow prompts ship too: `career-search-onboarding`,
+`review-new-arrivals`, `explain-ranking`, `calibrate-rubric`, `audit-profile`.
+
+Every tool returns structured content validated against a declared output
+schema, plus text for chat hosts; expected failures carry a stable code.
 
 Scoring requires a TypeSafe API key in `FISH_HOME/.env`; the demo and the
 tests do not.

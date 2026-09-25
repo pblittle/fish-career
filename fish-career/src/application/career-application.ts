@@ -2,6 +2,8 @@
 // demo, and any future surface call these methods; none of them read a
 // directory, build a prompt, or decide a ranking themselves.
 
+import type { CalibrationRecord } from '../domain/calibration.js';
+import type { TraceRecord } from '../ports/trace-sink.js';
 import { rescoreCalibration, startCalibration, submitCalibration } from './calibrate-ranking.js';
 import type { CareerDependencies } from './dependencies.js';
 import { evaluateRanking } from './evaluate-ranking.js';
@@ -20,6 +22,8 @@ export interface CareerApplication {
   submitCalibration: ReturnType<typeof submitCalibration>;
   rescoreCalibration: ReturnType<typeof rescoreCalibration>;
   pendingCalibration: () => ReturnType<CareerDependencies['calibrations']['readPending']>;
+  latestCalibration: () => Promise<CalibrationRecord | null>;
+  recentTraces: (limit?: number) => Promise<TraceRecord[]>;
   probeCompany: ReturnType<typeof probeCompany>;
   addCompany: ReturnType<typeof addCompany>;
   removeCompany: ReturnType<typeof removeCompany>;
@@ -41,6 +45,8 @@ export const createApplication = (deps: CareerDependencies): CareerApplication =
   submitCalibration: submitCalibration(deps),
   rescoreCalibration: rescoreCalibration(deps),
   pendingCalibration: () => deps.calibrations.readPending(),
+  latestCalibration: () => deps.calibrations.latest(),
+  recentTraces: (limit = 100) => deps.traceReader.recent(limit),
   probeCompany: probeCompany(deps),
   addCompany: addCompany(deps),
   removeCompany: removeCompany(deps),

@@ -20,6 +20,7 @@ import type {
   WatchlistEntry,
   WatchlistStore,
 } from '../../ports/stores.js';
+import type { TraceReader } from '../../ports/trace-reader.js';
 import type { TraceRecord, TraceSink } from '../../ports/trace-sink.js';
 
 export const memoryProfileStore = (initial = ''): ProfileStore => {
@@ -160,6 +161,15 @@ export const memoryTraceSink = (): TraceSink & { records: TraceRecord[] } => {
     },
   };
 };
+
+export const memoryTraceReader = (
+  records: TraceRecord[] = [],
+): TraceReader & { records: TraceRecord[] } => ({
+  records,
+  async recent(limit: number) {
+    return records.slice(-Math.max(0, limit));
+  },
+});
 
 export const fixedClock = (iso: string): Clock => ({ now: () => new Date(iso) });
 
