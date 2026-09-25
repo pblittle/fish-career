@@ -72,7 +72,7 @@ describe('the recorded eval slice (golden inputs, no network)', () => {
     readFileSync(new URL('./fixtures/eval-slice.json', import.meta.url), 'utf8'),
   ) as { entries: { file: string; answers: JevAnswers }[] };
   const prefs = JSON.parse(
-    readFileSync(new URL('../../preferences.json', import.meta.url), 'utf8'),
+    readFileSync(new URL('./fixtures/eval-preferences.json', import.meta.url), 'utf8'),
   ) as { preferences: Preference[] };
 
   it('the current rubric satisfies every operator-revealed preference', () => {
