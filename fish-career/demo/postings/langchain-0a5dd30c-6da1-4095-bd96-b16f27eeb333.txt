@@ -1,0 +1,128 @@
+TITLE: Deployed Architect, Professional Services (Remote)
+COMPANY: LangChain
+LOCATION: Los Angeles, CA (Remote)
+COMPENSATION: not stated
+URL: https://jobs.ashbyhq.com/langchain/0a5dd30c-6da1-4095-bd96-b16f27eeb333
+PUBLISHED: 2026-09-15T18:09:23.251+00:00
+
+ABOUT US
+
+
+
+At LangChain, our mission is to make intelligent agents ubiquitous. We build the foundation for agent engineering in the real world, helping developers move from prototypes to production-ready AI agents that teams can rely on. We began as widely adopted open-source tools and have grown to also offer a platform for building, evaluating, deploying, and operating agents at scale.
+
+With $125M raised at Series B from IVP, Sequoia, Benchmark, CapitalG, and Sapphire Ventures, we’re at a stage where we’re continuing to develop new products, growth is accelerating, and all team members have meaningful impact on what we build and how we work together. LangChain is a place where your contributions can shape how this technology shows up in the real world.
+
+Today, our platform includes LangSmith (Observability, Evaluation, Deployment, Fleet, and Sandboxes), our open source frameworks (LangChain, LangGraph, and Deep Agents), and the newly launched LangSmith Engine for autonomous agent improvement. We have 100M+ monthly open source downloads, 6,000+ active LangSmith customers, and 5 of the Fortune 10 use LangSmith in production (+ 35% of the Fortune 500 overall), including teams at Klarna, Clay, Coinbase, Workday, Lyft, Cloudflare, Harvey, Rippling, Vanta, LinkedIn, Monday.com, Nvidia, and Bridgewater.
+
+
+
+
+
+
+ABOUT THE ROLE
+
+We're looking for a Deployed Architect to join our Professional Services team. You'll work directly with enterprise customers to design, deploy, and optimize production-grade AI infrastructure and agent systems. You'll be responsible for architecting scalable, secure infrastructure deployments and building reliable, well-evaluated agent applications that solve real business problems.
+
+This role combines software development, infrastructure/platform engineering, and customer-facing skills. You'll work on everything from Kubernetes cluster design to multi-agent system architecture, requiring deep technical expertise across both infrastructure and agent engineering domains.
+
+This role offers direct impact on customer success, the opportunity to shape best practices, and work with cutting-edge AI technology. You'll join a collaborative team environment with a strong engineering culture.
+
+
+
+
+
+KEY RESPONSIBILITIES
+
+ - Infrastructure & Platform Engineering: Design scalable, highly-available infrastructure for AI platform deployments (compute, storage, networking, security), enterprise integration patterns, Infrastructure as Code (Terraform, Helm), multi-region HA/DR strategies, and CI/CD pipelines
+
+ - Agent Engineering & Development: Design multi-agent systems using different patterns, implement agent logic using modern frameworks (langchain/langgraph), design comprehensive evaluation frameworks, optimize prompts with A/B testing, and guide deployment/operations
+
+ - Customer Engagement & Assessment: Lead technical maturity assessments, work directly with enterprise customers to understand requirements and present recommendations, and partner with Engagement Managers and Product/Engineering teams
+
+
+WHAT WE'RE LOOKING FOR
+
+
+
+REQUIRED EXPERIENCE
+
+7+ years of experience in a technical, hands-on customer-facing roles such as Solutions Architect or Forward Deployed Engineer. We also like former founders, so if you have an unusual background, but all the right skillsets, you are welcome to apply
+
+Infrastructure & Platform:
+
+ - 3+ years of experience designing and deploying production infrastructure on cloud platforms (GCP, AWS, or Azure)
+
+ - Strong Kubernetes experience (GKE, EKS, or AKS) including cluster design, autoscaling, and multi-zone deployments
+
+ - Experience with Infrastructure as Code (Terraform, Helm) and GitOps practices
+
+ - Knowledge of database systems (relational databases, in-memory data stores) including HA, replication, backup strategies, and sizing
+
+ - Experience designing high-availability and disaster recovery solutions
+
+ - Strong understanding of networking, security (SSO/RBAC, TLS, secrets management), and observability (Prometheus, Grafana, Datadog)
+
+ - Experience with CI/CD pipelines for infrastructure and applications
+
+Agent Engineering & Development:
+
+ - 1+ years of experience building production AI/ML applications or agents
+
+ - Strong experience with LLM frameworks (LangChain, LangGraph, or similar) for building agent-based applications
+
+ - Experience with state management patterns (short-term and long-term memory)
+
+ - Experience designing and implementing evaluation frameworks for AI applications
+
+ - Strong prompt engineering skills with experience in optimization and A/B testing
+
+ - Experience with vector stores, RAG patterns, and knowledge organization
+
+ - Experience with tool integration, API design, and error handling patterns
+
+ - Strong Python and/or TypeScript development skills
+
+Customer-Facing:
+
+ - Customer-facing experience with enterprise customers
+
+ - Experience conducting technical assessments or infrastructure audits
+
+ - Strong communication skills with ability to explain technical concepts to diverse audiences
+
+
+KEY ATTRIBUTES
+
+ - Strong problem-solving skills with ability to analyze complex requirements and design elegant solutions
+
+ - Excellent customer-facing communication skills, able to explain technical concepts to diverse audiences
+
+ - Experience working cross-functionally with engineering teams, product teams, and customers
+
+ - Consultative approach with ability to understand customer needs, provide recommendations, and guide implementation
+
+ - Ability to balance infrastructure architecture with agent development work
+
+ - Strong engineering background with hands-on development experience
+
+ - Willing to travel up to 20% of the time
+
+Location: Remote
+
+Compensation: $170,000-$215,000 base salary + equity 
+
+Looking to lead technical strategy across the customer journey from Proofs of Value (PoVs) to driving overall adoption? Please check out the Deployed Engineer listing focused on Account Strategy & Solutions.
+
+
+
+Compensation Philosophy:
+
+We offer competitive compensation that includes base salary, variable compensation for relevant roles, meaningful equity, benefits, and perks. Actual compensation and offerings will vary based on role, level, and location. Team members in the EU, UK, and APAC receive locally competitive benefits aligned with regional norms and regulations.
+
+
+
+
+BENEFITS
+
+Benefits include medical, dental, and vision coverage, flexible vacation, a 401(k) plan, meals on in-office days in the US and more.

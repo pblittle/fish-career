@@ -1,0 +1,87 @@
+TITLE: Deployed Engineer, Professional Services (APAC)
+COMPANY: LangChain
+LOCATION: Remote - Singapore (Remote)
+COMPENSATION: not stated
+URL: https://jobs.ashbyhq.com/langchain/0ee73994-b8a3-4a75-9675-da536abd3e10
+PUBLISHED: 2026-09-15T02:15:38.971+00:00
+
+ABOUT US
+
+
+
+At LangChain, our mission is to make intelligent agents ubiquitous. We build the foundation for agent engineering in the real world, helping developers move from prototypes to production-ready AI agents that teams can rely on. We began as widely adopted open-source tools and have grown to also offer a platform for building, evaluating, deploying, and operating agents at scale.
+
+With $125M raised at Series B from IVP, Sequoia, Benchmark, CapitalG, and Sapphire Ventures, we’re at a stage where we’re continuing to develop new products, growth is accelerating, and all team members have meaningful impact on what we build and how we work together. LangChain is a place where your contributions can shape how this technology shows up in the real world.
+
+Today, our platform includes LangSmith (Observability, Evaluation, Deployment, Fleet, and Sandboxes), our open source frameworks (LangChain, LangGraph, and Deep Agents), and the newly launched LangSmith Engine for autonomous agent improvement. We have 100M+ monthly open source downloads, 6,000+ active LangSmith customers, and 5 of the Fortune 10 use LangSmith in production (+ 35% of the Fortune 500 overall), including teams at Klarna, Clay, Coinbase, Workday, Lyft, Cloudflare, Harvey, Rippling, Vanta, LinkedIn, Monday.com, Nvidia, and Bridgewater.
+
+
+
+
+
+
+ABOUT THE ROLE
+
+We're looking for a Deployed Engineer to join our Professional Services team, working directly with enterprise customers to build reliable, production agents. You'll translate vague enterprise workflows into concrete software specs and guide engineering teams through the resulting solution, or build it for them. You might spend a week designing a customer's agent architecture, a few weeks co-building their evaluation pipeline, or a quarter embedded inside their team shipping alongside their engineers. You are someone who's built real AI systems for production and can defend the technical tradeoffs within them.
+
+
+
+
+KEY RESPONSIBILITIES
+
+ - Advising: Agent architecture design, evaluation strategy review, and best-practice production guidance.
+
+ - Building: Co-build with the customer's engineering team across the full Agent Development Lifecycle (ADLC) in outcome-scoped engagements.
+
+ - Embedding: Serve as a deployed engineer inside the customer's team for extended engagements, operating as a de facto member of their org to ship agent systems directly.
+
+ - Agent Engineering: ADLC end-to-end, architecture design, orchestration patterns, evals, custom conversational UIs, and production deployment.
+
+ - Applied AI: Post-training, supervised fine-tuning, harness engineering, trace mining, model selection and evaluation methodology.
+
+
+REQUIREMENTS
+
+ - 4+ years of software engineering experience with deep expertise in Python. TypeScript/JavaScript a plus.
+
+ - 2+ years of hands-on experience building and shipping production agent systems.
+
+ - Strong client-facing communication skills, with the ability to confidently articulate architectural decisions to technical stakeholders (engineers, architects, CTOs).
+
+ - Strong experience with LangChain/LangGraph/Deep Agents or comparable frameworks, including multi-agent patterns and state management (short and long-term memory).
+
+ - Deep familiarity designing and implementing evaluation methodologies for non-deterministic AI systems.
+
+ - Comfortable operating across the full spectrum from advisory to embedded delivery.
+
+ - Willing to travel up to 20% of the time.
+
+
+NICE TO HAVE
+
+ - Exposure to dataset curation and post-training techniques (SFT, DPO, RLHF) on open-weight models using tools like Axolotl, Unsloth, Hugging Face transformers, or TRL.
+
+ - Experience with trace mining to drive continuous improvement loops
+
+
+LOCATION: 
+
+Remote in Singapore 
+
+
+
+
+
+
+Looking to lead technical strategy across the customer journey from Proofs of Value (PoVs) to driving overall adoption? Please check out the Deployed Engineer listing focused on Account Strategy & Solutions.
+
+Compensation Philosophy:
+
+We offer competitive compensation that includes base salary, variable compensation for relevant roles, meaningful equity, benefits, and perks. Actual compensation and offerings will vary based on role, level, and location. Team members in the EU, UK, and APAC receive locally competitive benefits aligned with regional norms and regulations.
+
+
+
+
+BENEFITS
+
+Benefits include medical, dental, and vision coverage, flexible vacation, a 401(k) plan, meals on in-office days in the US and more.
