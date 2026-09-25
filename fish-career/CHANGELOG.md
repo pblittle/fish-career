@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/pblittle/fish-career/compare/v0.4.0...v0.5.0) (2026-09-25)
+
+
+### Features
+
+* **mcp:** a typed contract: schemas, annotations, resources, prompts ([#19](https://github.com/pblittle/fish-career/issues/19)) ([2321482](https://github.com/pblittle/fish-career/commit/2321482031a5721c33bfb44da4e48ce928b20f31))
+
 ## [0.4.0](https://github.com/pblittle/fish-career/compare/v0.3.0...v0.4.0) (2026-09-25)
 
 
