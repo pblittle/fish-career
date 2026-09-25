@@ -1,5 +1,17 @@
 # fish.career
 
+> fish.career is a local-first MCP server that finds job opportunities,
+> interprets their fit, scores them with an explicit rubric, and hones that
+> rubric against human judgment.
+
+**Find** opportunities on public ATS feeds you choose. **Interpret** titles,
+locations, compensation, and requirements into one normalized shape. **Score**
+them with a versioned decision rubric. **Hone** that rubric against blind human
+ranking and reproducible evaluation.
+
+The product boundary and repository strategy live in
+[`docs/adr/0001-product-boundary.md`](./docs/adr/0001-product-boundary.md).
+
 ## Why this exists
 
 LinkedIn is a middleman. Job postings originate on public, official,
