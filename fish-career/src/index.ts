@@ -33,9 +33,6 @@ import { markScored, readLedger, unscored } from './ledger.js';
 import { probeSlug } from './providers.js';
 import { scoreFiles } from './triage.js';
 
-ensureHome();
-loadEnv();
-
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { version } = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8')) as {
   version: string;
@@ -606,8 +603,32 @@ server.registerTool(
 );
 
 const main = async () => {
+  ensureHome();
+  loadEnv();
   const transport = new StdioServerTransport();
   await server.connect(transport);
 };
 
-main();
+const USAGE = `fish.career — a local-first MCP server that finds job opportunities,
+interprets their fit, scores them with an explicit rubric, and hones that
+rubric against human judgment.
+
+Usage:
+  fish-career                 start the MCP server over stdio (what hosts run)
+  fish-career demo [--keep]   run the credential-free end-to-end demo
+  fish-career --version
+  fish-career --help
+
+State lives in FISH_HOME (default ~/.config/fish); the package holds none.`;
+
+const command = process.argv[2];
+if (command === 'demo') {
+  const { runDemo } = await import('./demo.js');
+  await runDemo({ keep: process.argv.includes('--keep') });
+} else if (command === '--help' || command === '-h') {
+  console.log(USAGE);
+} else if (command === '--version' || command === '-v') {
+  console.log(version);
+} else {
+  await main();
+}

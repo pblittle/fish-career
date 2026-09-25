@@ -10,6 +10,7 @@ import {
   composite,
   DIMENSIONS,
   type JevAnswers,
+  type JevCall,
   profileHash,
   RUBRIC_VERSION,
   rankRows,
@@ -74,8 +75,10 @@ export async function scoreFiles(
     postingsDir: string;
     tracePath?: string;
     checkpoint?: (file: string, composite: number) => void;
+    judge?: (state: string) => Promise<JevCall>;
   },
 ): Promise<ScoreOutcome> {
+  const judge = opts.judge ?? callJev;
   const hash = profileHash(opts.profile);
   const rows: TriageRow[] = [];
   const errors: string[] = [];
@@ -92,7 +95,7 @@ export async function scoreFiles(
     }
     const started = Date.now();
     try {
-      const call = await callJev(stateFor(opts.profile, body));
+      const call = await judge(stateFor(opts.profile, body));
       const row = rowFromAnswers(file, call.answers, {
         title: body.match(/^TITLE: (.+)$/m)?.[1] ?? file,
         company: body.match(/^COMPANY: (.+)$/m)?.[1] ?? '?',
