@@ -1,5 +1,5 @@
 import { ApplicationError } from '../domain/errors.js';
-import type { PostingId, PostingRecord } from '../domain/posting.js';
+import { type PostingId, type PostingRecord, postingIdFromFile } from '../domain/posting.js';
 import type { CareerDependencies } from './dependencies.js';
 
 export interface PostingSummary {
@@ -42,11 +42,12 @@ export const listPostings = (deps: CareerDependencies) => async (): Promise<Post
 export const readPosting =
   (deps: CareerDependencies) =>
   async (input: { postingId: PostingId }): Promise<PostingRecord> => {
-    const record = await deps.postings.get(input.postingId);
+    const postingId = postingIdFromFile(input.postingId);
+    const record = await deps.postings.get(postingId);
     if (!record) {
       throw new ApplicationError(
         'POSTING_NOT_FOUND',
-        `No posting in the cache named ${input.postingId}.`,
+        `No posting in the cache named ${postingId}.`,
       );
     }
     return record;

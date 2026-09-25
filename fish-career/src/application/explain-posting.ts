@@ -5,6 +5,7 @@
 import { type JevAnswers, rowFromAnswers, type TriageRow } from '../domain/answers.js';
 import { ApplicationError } from '../domain/errors.js';
 import type { PostingId } from '../domain/posting.js';
+import { postingIdFromFile } from '../domain/posting.js';
 import { profileHash, questions, RUBRIC_VERSION, stateFor } from '../domain/rubric.js';
 import type { CareerDependencies } from './dependencies.js';
 
@@ -23,7 +24,7 @@ export interface Preview {
   questions: typeof questions;
 }
 
-const requireProfileAndRecord = async (deps: CareerDependencies, postingId: PostingId) => {
+const requireProfileAndRecord = async (deps: CareerDependencies, postingIdInput: PostingId) => {
   const profile = await deps.profile.read();
   if (!profile) {
     throw new ApplicationError(
@@ -31,6 +32,7 @@ const requireProfileAndRecord = async (deps: CareerDependencies, postingId: Post
       'No profile yet. Write one first: every score is a judgment against it.',
     );
   }
+  const postingId = postingIdFromFile(postingIdInput);
   const record = await deps.postings.get(postingId);
   if (!record) {
     throw new ApplicationError('POSTING_NOT_FOUND', `No posting in the cache named ${postingId}.`);

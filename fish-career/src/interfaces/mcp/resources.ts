@@ -2,7 +2,11 @@
 // postings, rubric, the latest calibration, and recent runs without calling
 // an action-shaped tool.
 
-import { type McpServer, ResourceTemplate } from '@modelcontextprotocol/server';
+import {
+  type McpServer,
+  ResourceNotFoundError,
+  ResourceTemplate,
+} from '@modelcontextprotocol/server';
 import type { CareerApplication } from '../../application/career-application.js';
 
 const json = (uri: string, value: unknown) => ({
@@ -73,13 +77,9 @@ export const registerResources = (server: McpServer, app: CareerApplication): vo
           contents: [{ uri: uri.href, mimeType: 'text/plain', text: record.text }],
         };
       } catch (err) {
-        return json(uri.href, {
-          error: {
-            code: 'POSTING_NOT_FOUND',
-            message: String((err as Error).message ?? err),
-            hint: 'List the cache from fish://postings.',
-          },
-        });
+        // A missing posting is a protocol-level not-found, so a client can
+        // branch on the error instead of sniffing a success body.
+        throw new ResourceNotFoundError(uri.href, String((err as Error).message ?? err));
       }
     },
   );

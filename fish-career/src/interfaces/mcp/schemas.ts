@@ -112,6 +112,7 @@ export const calibrationStartOutput = z.union([
 
 export const calibrationResultOutput = z.union([
   z.object({
+    at: z.string(),
     rho: z.number().nullable(),
     postingIds: z.array(z.string()),
     humanRanking: z.array(z.string()),

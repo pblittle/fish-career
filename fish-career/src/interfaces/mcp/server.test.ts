@@ -57,7 +57,12 @@ const board = (): Record<string, Posting[]> => ({
 
 const app = (): CareerApplication => {
   const deps: CareerDependencies = {
-    providers: { fixture: memoryProvider('fixture', board()) },
+    providers: {
+      fixture: memoryProvider('fixture', board()),
+      // An empty real provider, so watchlist_add's provider enum is satisfied
+      // without polluting the probe counts.
+      ashby: memoryProvider('ashby', {}),
+    },
     judge: fakeJudge,
     postings: memoryPostingRepository(),
     seen: memorySeenStore(),
@@ -180,18 +185,74 @@ describe('the MCP contract', () => {
     expect(structured(result).postingIds).toHaveLength(2);
   });
 
+  it('watchlist_add and watchlist_remove return structured outcomes', async () => {
+    const added = await client.callTool({
+      name: 'watchlist_add',
+      arguments: { name: 'Beta', provider: 'ashby', slug: 'beta' },
+    });
+    expect(structured(added)).toMatchObject({ name: 'Beta', added: true });
+    const again = await client.callTool({
+      name: 'watchlist_add',
+      arguments: { name: 'Beta', provider: 'ashby', slug: 'beta' },
+    });
+    expect(structured(again).added).toBe(false);
+    const removed = await client.callTool({
+      name: 'watchlist_remove',
+      arguments: { name: 'Acme' },
+    });
+    expect(structured(removed)).toMatchObject({ name: 'Acme', removed: true });
+  });
+
+  it('evaluate_ranking returns the satisfied count and violations', async () => {
+    await client.callTool({ name: 'fetch_postings', arguments: {} });
+    const result = await client.callTool({ name: 'evaluate_ranking', arguments: {} });
+    expect(structured(result)).toMatchObject({ satisfied: 1, total: 1, violations: [] });
+  });
+
+  it('calibration_submit and calibration_rescore return measured records', async () => {
+    await client.callTool({ name: 'fetch_postings', arguments: {} });
+    const started = await client.callTool({
+      name: 'calibration_start',
+      arguments: { count: 2, seed: 7 },
+    });
+    const postingIds = structured(started).postingIds as string[];
+    const submitted = await client.callTool({
+      name: 'calibration_submit',
+      arguments: { ranking: postingIds },
+    });
+    expect(submitted.isError).toBeFalsy();
+    expect(structured(submitted).rho).toBeTypeOf('number');
+    expect(structured(submitted).at).toBeTypeOf('string');
+    expect(structured(submitted).rows).toHaveLength(2);
+
+    const rescored = await client.callTool({ name: 'calibration_rescore', arguments: {} });
+    expect(rescored.isError).toBeFalsy();
+    expect(structured(rescored).previousRho).toBeTypeOf('number');
+  });
+
+  it('accepts a .txt suffix on posting IDs at every input boundary', async () => {
+    await client.callTool({ name: 'fetch_postings', arguments: {} });
+    const triaged = await client.callTool({
+      name: 'triage_postings',
+      arguments: { postingIds: ['acme-1.txt'] },
+    });
+    expect(triaged.isError).toBeFalsy();
+    expect(structured(triaged).rows).toHaveLength(1);
+    const read = await client.readResource({ uri: 'fish://postings/acme-1.txt' });
+    expect(textOf(read)).toContain('TITLE: Senior Backend Engineer');
+  });
+
   it('returns machine-readable codes with isError for expected failures', async () => {
     const result = await client.callTool({ name: 'profile_update', arguments: { content: '  ' } });
     expect(result.isError).toBe(true);
     expect(structured(result).error).toMatchObject({ code: 'NO_PROFILE' });
   });
 
-  it('reads a posting by URI and reports a miss as JSON, not a crash', async () => {
+  it('reads a posting by URI and reports a miss as a protocol error', async () => {
     await client.callTool({ name: 'fetch_postings', arguments: {} });
     const found = await client.readResource({ uri: 'fish://postings/acme-1' });
     expect(textOf(found)).toContain('TITLE: Senior Backend Engineer');
-    const missing = await client.readResource({ uri: 'fish://postings/nope' });
-    expect(textOf(missing)).toContain('POSTING_NOT_FOUND');
+    await expect(client.readResource({ uri: 'fish://postings/nope' })).rejects.toThrow();
   });
 
   it('reads the profile, rubric, watchlist, and runs resources', async () => {

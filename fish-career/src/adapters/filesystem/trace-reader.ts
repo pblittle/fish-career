@@ -6,6 +6,7 @@ import type { TraceRecord } from '../../ports/trace-sink.js';
 // file, which is fine at this scale and keeps the format replayable.
 export const jsonlTraceReader = (path: string): TraceReader => ({
   async recent(limit: number): Promise<TraceRecord[]> {
+    if (limit <= 0) return [];
     let raw: string;
     try {
       raw = readFileSync(path, 'utf8');
@@ -15,7 +16,7 @@ export const jsonlTraceReader = (path: string): TraceReader => ({
     return raw
       .split('\n')
       .filter((line) => line.trim().length > 0)
-      .slice(-Math.max(0, limit))
+      .slice(-limit)
       .flatMap((line) => {
         try {
           return [JSON.parse(line) as TraceRecord];

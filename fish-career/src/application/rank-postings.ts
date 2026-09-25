@@ -1,7 +1,7 @@
 import type { TriageRow } from '../domain/answers.js';
 import { ApplicationError } from '../domain/errors.js';
 import { stale, unscored } from '../domain/ledger.js';
-import type { PostingId } from '../domain/posting.js';
+import { type PostingId, postingIdFromFile } from '../domain/posting.js';
 import { profileHash, RUBRIC_VERSION } from '../domain/rubric.js';
 import type { CareerDependencies } from './dependencies.js';
 import { scorePostings } from './score-postings.js';
@@ -40,14 +40,15 @@ export const rankPostings =
     let ledgerOk = true;
 
     if (input.postingIds !== undefined) {
-      const missing = input.postingIds.filter((id) => !byId.has(id));
+      const wanted = input.postingIds.map(postingIdFromFile);
+      const missing = wanted.filter((id) => !byId.has(id));
       if (missing.length > 0) {
         throw new ApplicationError(
           'POSTING_NOT_FOUND',
           `No posting in the cache named ${missing.join(', ')}.`,
         );
       }
-      candidates = input.postingIds
+      candidates = wanted
         .map((id) => byId.get(id))
         .filter((r): r is NonNullable<typeof r> => r !== undefined);
     } else {

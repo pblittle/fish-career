@@ -34,7 +34,10 @@ annotations, and one success/error path:
 
 ### Results
 
-- `structuredContent` validated against the declared `outputSchema`.
+- `structuredContent` validated against the declared `outputSchema` on
+  success. The SDK skips that validation when `isError` is set, so the error
+  envelope is shaped by the same schema but enforced by this code and its
+  tests rather than by the protocol layer.
 - A concise text rendering alongside it for conversational hosts.
 - Expected failures: `isError: true`, with
   `structuredContent.error = { code, message, hint? }` and the stable codes

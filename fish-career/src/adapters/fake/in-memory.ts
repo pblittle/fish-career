@@ -167,7 +167,8 @@ export const memoryTraceReader = (
 ): TraceReader & { records: TraceRecord[] } => ({
   records,
   async recent(limit: number) {
-    return records.slice(-Math.max(0, limit));
+    if (limit <= 0) return [];
+    return records.slice(-limit);
   },
 });
 
