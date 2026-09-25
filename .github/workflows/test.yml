@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  # The required status check context is "test"; keep this job single-node so
+  # the ruleset stays satisfied, and run the other supported versions in
+  # compat below.
   test:
     runs-on: ubuntu-latest
     steps:
@@ -22,6 +25,22 @@ jobs:
       - run: npm run build --prefix fish-career
       - run: npm run verify:pack --prefix fish-career
 
+  compat:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci --prefix fish-career
+      - run: npm test --prefix fish-career
+      - run: npm run typecheck --prefix fish-career
+      - run: npm run build --prefix fish-career
+
   commitlint:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
@@ -31,6 +50,6 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci --prefix fish-career
       - run: fish-career/node_modules/.bin/commitlint --from ${{ github.event.pull_request.base.sha || 'origin/main' }} --to ${{ github.event.pull_request.head.sha || 'HEAD' }}
