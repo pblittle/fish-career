@@ -8,7 +8,7 @@
     {
       "better": "langchain-d1dc8b4d-5f7f-46b3-bfd9-dfcb375a614b.txt",
       "worse": "langchain-0ee73994-b8a3-4a75-9675-da536abd3e10.txt",
-      "source": "profile.md, location: \"Remote US only\" — both are remote, only one is in the US."
+      "source": "profile.md, location: \"Remote US only\"; both are remote, only one is in the US."
     },
     {
       "better": "langchain-0a5dd30c-6da1-4095-bd96-b16f27eeb333.txt",

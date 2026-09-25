@@ -22,7 +22,7 @@ rather than a model's taste. Everything below serves that.
 
 ## See it work
 
-The demo runs the real pipeline—fetch, triage, evaluate, calibrate—over
+The demo runs the real pipeline (fetch, triage, evaluate, calibrate) over
 bundled fixtures with **no API key and no network**, in a temp directory that
 is removed afterwards:
 
@@ -98,7 +98,7 @@ low-confidence judgment, and the table marks those cells with `?`.
 Ask the host to `watchlist_add` with a company name and a candidate slug.
 The first call probes all four public ATS APIs and writes nothing; read a
 title or two from the board it finds, then call again with `confirm=true` to
-write the entry. Slugs collide—verifying identity is the point of the split.
+write the entry. Slugs collide, and verifying identity is the point of the split.
 `watchlist_list` shows what you are watching.
 
 ### 5. Fetch and triage
@@ -266,7 +266,7 @@ There is no telemetry, no analytics, and no account. Optionally, setting
 profile text) while the local JSONL trace stays the source of truth.
 Details and the threat model: [`docs/privacy.md`](./docs/privacy.md).
 
-Personal state can live in a private checkout—the public repository ships
+Personal state can live in a private checkout. The public repository ships
 fixtures and examples only. Point `FISH_HOME` at it and keep profile,
 watchlist, postings, and calibrations out of any public tree.
 

@@ -15,8 +15,8 @@ That progression ended with open questions about identity and shape:
 
 - Is `fish.career` one module in a larger planned platform, `fish.agency`?
 - Should the repository be split now to create architectural symmetry?
-- Should the work in front of the team be platformization—identity, tenancy,
-  billing, a plugin model—before the current product is easy to install and use?
+- Should the work in front of the team be platformization (identity, tenancy,
+  billing, a plugin model) before the current product is easy to install and use?
 
 `fish.agency` is not part of the current product. It is broader but ambiguous,
 it can imply recruiting or creative services, and the name is already in public
@@ -38,7 +38,7 @@ would add tax to every decision and a buyer for none of it.
    architectural symmetry.** It stays a single public repository containing one
    application core (`src/`) with multiple interfaces over it: MCP over stdio
    and a CLI. Platformization, in this phase, means clean application contracts
-   and replaceable adapters inside the working product—not extra repositories
+   and replaceable adapters inside the working product, not extra repositories
    or packages.
 
 4. **`fish.agency` is removed from the architecture documents.** It may remain

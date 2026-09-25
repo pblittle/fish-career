@@ -18,7 +18,7 @@ protocol responses are typed instead of text-only.
 | `evaluate` | `evaluate_ranking` | Symmetry with the calibration tools |
 | `calibrate_start` / `calibrate_submit` / `calibrate_rescore` | `calibration_start` / `calibration_submit` / `calibration_rescore` | One namespace for the calibration round |
 | `update_profile` | `profile_update` | One namespace for profile actions |
-| — | `watchlist_remove` | New: removal was edit-the-file only |
+| n/a | `watchlist_remove` | New: removal was edit-the-file only |
 
 Posting identifiers in every input and output are stable posting IDs (the
 cache filename stem, e.g. `langchain-0a5dd30c-...`), not filenames. A
