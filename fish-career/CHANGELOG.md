@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/pblittle/fish-career/compare/v0.5.0...v0.6.0) (2026-09-25)
+
+
+### Features
+
+* **eval:** measure ranking quality against a labeled dataset ([#24](https://github.com/pblittle/fish-career/issues/24)) ([5d34f49](https://github.com/pblittle/fish-career/commit/5d34f49b308fb80ce423f394c987245595fb72eb))
+* **observability:** run-scoped traces and a LangSmith sink ([#26](https://github.com/pblittle/fish-career/issues/26)) ([25a7ccb](https://github.com/pblittle/fish-career/commit/25a7ccb0cd25fc442fb55854dc2445bd53aeb371))
+
 ## [0.5.0](https://github.com/pblittle/fish-career/compare/v0.4.0...v0.5.0) (2026-09-25)
 
 
