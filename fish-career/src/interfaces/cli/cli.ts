@@ -68,11 +68,14 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
   try {
     switch (command) {
       case 'fetch': {
-        const days = rest.includes('--all')
-          ? null
-          : valueFor(rest, '--days') !== undefined
-            ? Number(valueFor(rest, '--days'))
-            : undefined;
+        let days: number | null | undefined;
+        if (rest.includes('--all')) {
+          days = null;
+        } else if (valueFor(rest, '--days') !== undefined) {
+          const n = Number(valueFor(rest, '--days'));
+          if (!Number.isFinite(n) || n <= 0) return fail(io, '--days needs a positive number.');
+          days = n;
+        }
         const outcome = await app.fetchPostings({ companies: valuesFor(rest, '--company'), days });
         for (const c of outcome.perCompany) {
           io.out(`${c.name}: ${c.total} postings, ${c.remote} remote, ${c.written} new`);
@@ -117,11 +120,23 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
       case 'calibrate': {
         const [sub, ...args] = rest;
         if (sub === 'start') {
-          const count = valueFor(args, '--count');
-          const seed = valueFor(args, '--seed');
+          let count: number | undefined;
+          if (valueFor(args, '--count') !== undefined) {
+            const n = Number(valueFor(args, '--count'));
+            if (!Number.isInteger(n) || n < 2 || n > 30) {
+              return fail(io, '--count needs an integer between 2 and 30.');
+            }
+            count = n;
+          }
+          let seed: number | undefined;
+          if (valueFor(args, '--seed') !== undefined) {
+            const n = Number(valueFor(args, '--seed'));
+            if (!Number.isInteger(n)) return fail(io, '--seed needs an integer.');
+            seed = n;
+          }
           const started = await app.startCalibration({
-            ...(count !== undefined ? { count: Number(count) } : {}),
-            ...(seed !== undefined ? { seed: Number(seed) } : {}),
+            ...(count !== undefined ? { count } : {}),
+            ...(seed !== undefined ? { seed } : {}),
           });
           const summaries = await app.listPostings();
           const byId = new Map(summaries.map((s) => [s.postingId, s]));

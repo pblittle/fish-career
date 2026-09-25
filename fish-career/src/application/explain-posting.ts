@@ -49,7 +49,21 @@ export const explainPosting =
         'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge.',
       );
     }
-    const call = await judge.ask(stateFor(profile, record.text));
+    const call = await judge.ask(stateFor(profile, record.text)).catch(async (err) => {
+      // Every judge call leaves a trace, successes and failures alike.
+      await deps.traces.write({
+        at: deps.clock.now().toISOString(),
+        postingId: record.id,
+        status: 'error',
+        latencyMs: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        profileHash: profileHash(profile),
+        rubric: RUBRIC_VERSION,
+        error: String((err as Error).message ?? err),
+      });
+      throw err;
+    });
     const row = rowFromAnswers(record.id, call.answers, {
       title: record.title,
       company: record.company,

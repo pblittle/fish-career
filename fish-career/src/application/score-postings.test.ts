@@ -99,4 +99,13 @@ describe('scorePostings', () => {
       scorePostings(deps({ judge: null }))([record('a')], { profile: PROFILE }),
     ).rejects.toMatchObject({ code: 'NO_JUDGE' });
   });
+
+  it('returns rows in the judge order, ranked, not in input order', async () => {
+    const weak = record('weak');
+    const strong = { ...record('strong'), text: record('strong').text };
+    // The weak posting has no skill overlap; the strong one has all of it.
+    weak.text = `TITLE: Weak\nCOMPANY: Acme\nLOCATION: Remote (Remote)\n\n${'Copywriting and spreadsheets. '.repeat(6)}`;
+    const result = await scorePostings(deps())([weak, strong], { profile: PROFILE });
+    expect(result.rows.map((r) => r.postingId)).toEqual(['strong', 'weak']);
+  });
 });

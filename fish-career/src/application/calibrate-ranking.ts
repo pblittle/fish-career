@@ -78,10 +78,26 @@ const measure = async (
   const records = await deps.postings.list();
   const byId = new Map(records.map((r) => [r.id, r]));
   const { rows, errors } = await scorePostings(deps)(
-    postingIds.map((id) => byId.get(id)).filter((r): r is NonNullable<typeof r> => r !== undefined),
+    postingIds
+      .map((id) => byId.get(id))
+      .filter((r): r is NonNullable<typeof r> => r !== undefined)
+      // Scored in ID order so composite ties resolve the same way every run,
+      // whatever order the slice was drawn in.
+      .sort((a, b) => a.id.localeCompare(b.id)),
     { profile },
   );
-  const human = [...humanRanking].sort((a, b) => humanRanking.indexOf(a) - humanRanking.indexOf(b));
+  // A posting that failed to score cannot be ranked; including it as -1 would
+  // silently corrupt the correlation, so it is excluded and reported.
+  const scoredIds = new Set(rows.map((r) => r.postingId));
+  const human = [...humanRanking]
+    .sort((a, b) => humanRanking.indexOf(a) - humanRanking.indexOf(b))
+    .filter((id) => scoredIds.has(id));
+  const excluded = humanRanking.length - human.length;
+  if (excluded > 0) {
+    errors.push(
+      `${excluded} of the ranked postings could not be scored and were excluded from the correlation.`,
+    );
+  }
   const rho = spearman(
     human.map((_, i) => i),
     human.map((id) => rows.findIndex((r) => r.postingId === id)),

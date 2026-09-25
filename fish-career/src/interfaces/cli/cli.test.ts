@@ -180,4 +180,21 @@ describe('runCli', () => {
     expect(await runCli(['calibrate', 'reuse'], { app, io: sink.io })).toBe(0);
     expect(startCalibration).toHaveBeenCalledWith({ count: 2, seed: 77 });
   });
+
+  it('rejects a non-numeric --days instead of silently fetching nothing', async () => {
+    const app = stubApp();
+    const sink = io();
+    expect(await runCli(['fetch', '--days', 'abc'], { app, io: sink.io })).toBe(1);
+    expect(sink.err.join('\n')).toContain('--days needs a positive number');
+    expect(app.fetchPostings).not.toHaveBeenCalled();
+  });
+
+  it('rejects an out-of-range --count', async () => {
+    const app = stubApp();
+    const sink = io();
+    expect(await runCli(['calibrate', 'start', '--count', 'abc'], { app, io: sink.io })).toBe(1);
+    expect(sink.err.join('\n')).toContain('--count needs an integer between 2 and 30');
+    expect(await runCli(['calibrate', 'start', '--count', '99'], { app, io: sink.io })).toBe(1);
+    expect(app.startCalibration).not.toHaveBeenCalled();
+  });
 });

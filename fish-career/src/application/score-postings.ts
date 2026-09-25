@@ -2,11 +2,14 @@
 // each posting, ask the judge once, build the row, checkpoint the ledger
 // (when the run is a triage), and leave a trace either way. The only
 // differences between callers are which postings they pass and whether the
-// ledger is marked.
+// ledger is marked. Rows come back ranked, so every caller reads the judge's
+// order the same way; callers that need a different grouping (variant
+// collapse) re-sort on their own.
 
 import { rowFromAnswers, type TriageRow } from '../domain/answers.js';
 import { ApplicationError } from '../domain/errors.js';
 import type { PostingRecord } from '../domain/posting.js';
+import { rankRows } from '../domain/ranking.js';
 import { profileHash, RUBRIC_VERSION, stateFor } from '../domain/rubric.js';
 import type { CareerDependencies } from './dependencies.js';
 
@@ -73,5 +76,5 @@ export const scorePostings =
         });
       }
     }
-    return { rows, errors };
+    return { rows: rankRows(rows), errors };
   };

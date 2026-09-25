@@ -122,6 +122,19 @@ export const memoryPostingRepository = (initial: PostingRecord[] = []): PostingR
     },
     async save(company: string, posting: Posting): Promise<PostingId> {
       const id = `${safe(company)}-${safe(posting.key.split(':').pop() ?? posting.key)}`;
+      // The same header format the filesystem adapter writes, so fakes and the
+      // real cache are interchangeable for the judge.
+      const text = [
+        `TITLE: ${posting.title}`,
+        `COMPANY: ${company}`,
+        `LOCATION: ${posting.location}${posting.workplace ? ` (${posting.workplace})` : ''}`,
+        `COMPENSATION: ${posting.comp || 'not stated'}`,
+        `URL: ${posting.url}`,
+        `PUBLISHED: ${posting.date}`,
+        '',
+        posting.text,
+        '',
+      ].join('\n');
       records.set(id, {
         id,
         file: `${id}.txt`,
@@ -131,7 +144,7 @@ export const memoryPostingRepository = (initial: PostingRecord[] = []): PostingR
         compensation: posting.comp,
         url: posting.url,
         published: posting.date,
-        text: posting.text,
+        text,
       });
       return id;
     },

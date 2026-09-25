@@ -167,6 +167,48 @@ describe('the complete workflow over in-memory ports', () => {
     ).rejects.toMatchObject({ code: 'INVALID_RANKING' });
   });
 
+  it('a human order that disagrees with the judge produces a negative rho', async () => {
+    const h = harness();
+    await fetchAndRank(h);
+    const { postingIds } = await h.app.startCalibration({ count: 3, seed: 3 });
+    const judgeOrder = (await h.app.rankPostings({ postingIds })).rows.map((r) => r.postingId);
+    const { record } = await h.app.submitCalibration({ ranking: [...judgeOrder].reverse() });
+    expect(record.rho).toBe(-1);
+    // The record keeps the judge's ranked rows whatever the human order was.
+    expect(record.rows.map((r) => r.postingId)).toEqual(judgeOrder);
+  });
+
+  it('excludes a posting that failed to score from the correlation, and says so', async () => {
+    const judge = {
+      ask: async (state: string) => {
+        if (state.includes('Junior Backend Engineer')) throw new Error('judge exploded');
+        return fakeJudge.ask(state);
+      },
+    };
+    const h = harness({ judge });
+    await h.app.fetchPostings();
+    const started = await h.app.startCalibration({ count: 4, seed: 1 });
+    expect(started.postingIds).toHaveLength(4);
+    const { record, errors } = await h.app.submitCalibration({ ranking: started.postingIds });
+    expect(record.rows).toHaveLength(3);
+    expect(record.humanRanking).toHaveLength(3);
+    expect(errors.some((e) => e.includes('excluded from the correlation'))).toBe(true);
+  });
+
+  it('traces a failed explain call instead of leaving it invisible', async () => {
+    const traces = memoryTraceSink();
+    const judge = {
+      ask: async () => {
+        throw new Error('judge exploded');
+      },
+    };
+    const h = harness({ judge, traces });
+    await h.app.fetchPostings();
+    await expect(h.app.explainPosting({ postingId: 'acme-1' })).rejects.toThrow('judge exploded');
+    expect(traces.records).toHaveLength(1);
+    expect(traces.records[0]).toMatchObject({ postingId: 'acme-1', status: 'error' });
+  });
+
   it('probes, adds, and removes companies through the watchlist port', async () => {
     const h = harness();
     const probe = await h.app.probeCompany({ slug: 'acme' });
