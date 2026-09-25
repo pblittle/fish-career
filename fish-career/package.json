@@ -1,6 +1,6 @@
 {
   "name": "fish-career",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Rank remote job postings against a profile you trust. Reads the public ATS boards directly, scores arrivals with typed weighted questions, and measures whether the ranking agrees with your own judgment.",
   "keywords": [
     "job",

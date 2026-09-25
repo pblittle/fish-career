@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/pblittle/fish-career/compare/v0.3.0...v0.4.0) (2026-09-25)
+
+
+### Features
+
+* **demo:** run the whole pipeline end to end with no credentials ([#7](https://github.com/pblittle/fish-career/issues/7)) ([6212a2e](https://github.com/pblittle/fish-career/commit/6212a2ee859682252f10ef2a0596142138329f29))
+
 ## [0.3.0](https://github.com/pblittle/fish.career/compare/v0.2.0...v0.3.0) (2026-09-23)
 
 
