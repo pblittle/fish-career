@@ -71,16 +71,16 @@ node fetch.mjs && node triage.mjs
 
 Optional cron (fetch only; scoring is interactive):
 
-```
+```text
 0 8 * * * cd ~/sandbox/fish && node fetch.mjs >> fetch.log 2>&1
 ```
 
 ## Setup
 
-1. TypeSafe API key from https://console.typesafe.ai/keys into `.env`
+1. TypeSafe API key from <https://console.typesafe.ai/keys> into `.env`
    (copy from `.env.example`):
 
-   ```
+   ```text
    TYPESAFE_API_KEY=...
    ```
 

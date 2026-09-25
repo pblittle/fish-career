@@ -5,7 +5,7 @@ decision isn't here, it wasn't one.
 
 ## One engine, two surfaces
 
-```
+```text
 fetch.mjs  triage.mjs          index.ts (MCP server)
      \        |                      /
       \       |                     /
