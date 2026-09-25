@@ -48,3 +48,15 @@ design problem, not a testing problem.
 release-please reads conventional commits on `main` and opens a release
 PR (version bump + changelog). Merging that PR tags `vX.Y.Z` and cuts
 the GitHub release. Never hand-tag.
+
+Publishing to npm runs from the release workflow with trusted publishing
+(OIDC, provenance, no stored token). It is gated on the repository
+variable `NPM_PUBLISH_ENABLED` being `true`, so releases do not fail
+before the package is configured:
+
+1. On npmjs.com, add a trusted publisher for `fish-career`: repository
+   `pblittle/fish-career`, workflow `release-please.yml`.
+2. Set the repository variable `NPM_PUBLISH_ENABLED=true`
+   (`gh variable set NPM_PUBLISH_ENABLED --body true`).
+3. The next release publishes automatically; a manual run of the
+   `publish` workflow also works.

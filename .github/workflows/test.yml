@@ -9,11 +9,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
       - run: npm ci --prefix fish-career
       - run: npm test --prefix fish-career
       - run: npm run typecheck --prefix fish-career
@@ -31,6 +35,6 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci --prefix fish-career
       - run: fish-career/node_modules/.bin/commitlint --from ${{ github.event.pull_request.base.sha || 'origin/main' }} --to ${{ github.event.pull_request.head.sha || 'HEAD' }}

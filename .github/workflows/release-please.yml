@@ -12,8 +12,11 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - id: release
+        uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
@@ -22,9 +25,21 @@ jobs:
       # not let them merge. workflow_dispatch is the documented exception to
       # that guard: dispatch the checks onto the release branch's head.
       - name: Trigger checks on the release PR
+        if: steps.release.outputs.release_created != 'true'
         run: |
           ref=$(gh api "repos/$GITHUB_REPOSITORY/pulls" --jq '[.[] | select(.head.ref | startswith("release-please"))][0].head.ref // empty')
           if [ -n "$ref" ]; then gh workflow run test.yml --ref "$ref"; fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
+
+  # A release created by release-please carries the GITHUB_TOKEN, so the
+  # `release: published` event in publish.yml never fires for it. Publish from
+  # the same run instead, after the action reports the release exists.
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' && vars.NPM_PUBLISH_ENABLED == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/publish.yml
