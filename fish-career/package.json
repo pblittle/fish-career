@@ -52,6 +52,9 @@
     "smoke": "node scripts/smoke-stdio.mjs",
     "quality": "node dist/index.js quality",
     "record:eval": "node scripts/record-eval-baseline.mjs",
+    "agents:sync": "node scripts/sync-agent-layer.mjs",
+    "agents:check": "node scripts/sync-agent-layer.mjs --check",
+    "health": "npm run lint && npm run typecheck && npm run test && npm run lint:md && npm run build && npm run verify:pack && npm run agents:check && node dist/index.js demo",
     "prepack": "npm run build"
   },
   "dependencies": {

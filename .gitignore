@@ -6,7 +6,8 @@
 /opencode.json
 /resume-clean.md
 /profile.md
-/.claude/
+/.claude/*
+!/.claude/skills/
 fish-career/node_modules/
 fish-career/dist/
 /PROMPT.md
