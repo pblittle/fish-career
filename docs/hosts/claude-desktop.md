@@ -22,13 +22,13 @@ profile, watchlist, postings, and state:
 ```
 
 Restart Claude Desktop. The tools appear under the tools menu. Then follow the
-five-minute setup in the [README](../README.md#five-minute-setup).
+quickstart in the [README](../README.md#quickstart).
 
 If you installed the package from npm instead of source, the same entry works
 with `"command": "npx"` and `"args": ["-y", "fish-career"]`.
 
 ## Verifying the connection
 
-Ask Claude to run `get_profile`. Before a profile exists it answers that there
-is none at `$FISH_HOME/profile.md`; that is the server working. Then run
-`update_profile` with your profile text.
+Ask Claude to read the `fish://profile/current` resource. Before a profile
+exists it answers that there is none at `$FISH_HOME/profile.md`; that is the
+server working. Then run `profile_update` with your profile text.
