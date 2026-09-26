@@ -24,8 +24,8 @@ src/domain        pure policy: posting, rubric, answers, ranking,
 src/ports         the interfaces the application may use
 src/application   use cases: fetchPostings, rankPostings, evaluateRanking,
                   calibrateRanking, watchlist, postings, rubric summary
-src/adapters      ats (four boards), judge (Jev, fake), filesystem, fake (in-memory)
-src/interfaces    mcp (server), cli (commands, demo)
+src/adapters      ats (four boards), judge (Jev, fake), filesystem, fake (in-memory), trace (JSONL, LangSmith)
+src/interfaces    mcp (server, tools, resources, prompts), cli (commands, demo)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
@@ -87,6 +87,22 @@ model was not confident; that is surfaced, not smoothed over. A blocker at
 0.5+ demotes a row below every clean row whatever the composite says, because
 an unmet hard requirement is not a matter of taste.
 
+## The protocol surface is typed
+
+The MCP surface is an API for models, so every tool declares an input schema
+and an output schema and returns `structuredContent` beside a text rendering.
+Passive state is exposed as resources and the repeatable workflows ship as
+prompts. Each tool carries honest safety annotations (`readOnlyHint`,
+`destructiveHint`, `idempotentHint`, `openWorldHint`), a tool that both probes
+and writes is split in two rather than made argument-dependent, and an
+expected domain failure returns `isError: true` with a stable code and a
+recovery hint instead of prose.
+
+**Why:** a model is the client. A human can read a Markdown table, but a client
+that composes calls needs a shape it can validate, and a client that decides
+what to run needs to know what a call will do before it runs it. The migration
+from the 0.4 surface is `docs/mcp-migration.md`.
+
 ## Judgment is data
 
 Weights, level descriptions, and blocker instructions live in `DIMENSIONS` in
@@ -139,7 +155,13 @@ the model's mood.
   a 429, a 5xx, or a dropped connection costs a backoff and a retry; any other
   4xx is the request's own fault and throws at once. `fetchImpl` and
   `retryBaseMs` are injectable so the policy is tested without a network or
-  real sleeps.
+     real sleeps.
+- **Traces are a port with two sinks.** Every judge call is written to
+  `state/traces.jsonl`, and `FISH_TRACE=langsmith` mirrors it to LangSmith.
+  The local trace stays the source of truth and a failing mirror never fails
+  a run; the mirror carries hashes, the model, token counts, and typed
+  answers, never the posting or profile text. One `runId` joins the calls of
+  a scoring run.
 - **Calibration draws are seeded.** The seed is recorded with the pending
   slice, so the same slice can be redrawn and a disagreement re-examined.
 - **Region-labelled variants collapse.** One vacancy in five offices is one row

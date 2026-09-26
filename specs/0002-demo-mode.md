@@ -20,7 +20,7 @@ credentials and no network.
   `FISH_HOME` for the run, and removes it unless `--keep` is passed. The
   user's real state is never read or written.
 - No network: the fixture provider reads `demo/postings/`, and the judge is a
-  deterministic stand-in (`src/fake-judge.ts`) that answers the same typed
+  deterministic stand-in (`src/adapters/judge/fake.ts`) that answers the same typed
   questions with inspectable string rules. The demo says so in its first
   lines; it never implies a model ran.
 - The fixture set is real public board data (LangChain's Ashby board) plus a

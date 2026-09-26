@@ -1,7 +1,7 @@
 # Privacy and data flow
 
 fish.career is a local-first tool. It runs as a stdio MCP server on your
-machine, holds no account, and sends nothing anywhere except the two calls
+machine, holds no account, and sends nothing anywhere except the calls
 below. This document states what is stored, what leaves the machine, and what
 the threat model does and does not cover.
 

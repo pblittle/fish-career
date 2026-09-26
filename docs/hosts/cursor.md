@@ -19,4 +19,4 @@ Reload the window, then use the tools from Cursor's agent. From npm, the same
 entry works with `"command": "npx"` and `"args": ["-y", "fish-career"]`.
 
 The agent can follow the workflow in the
-[README](../README.md#five-minute-setup).
+[README](../README.md#quickstart).
