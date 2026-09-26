@@ -225,12 +225,6 @@ profile, watchlist, postings, and calibrations out of any public one.
 - One profile per `FISH_HOME`. No auto-applying, no authenticated scraping,
   no LinkedIn.
 
-## Naming
-
-The name is the domain: `fish.career`, where the dot replaces the dash and
-becomes the real TLD. The engine and the package are `fish-career`; the
-command is `fish`.
-
 ## Development
 
 ```bash
@@ -254,6 +248,17 @@ The pipeline contract:
 [`specs/0001-posting-pipeline.md`](./specs/0001-posting-pipeline.md). Releases
 are cut by release-please from conventional commits; see
 [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+
+## Naming
+
+> Me and Eric B. and a nice big plate of fish, which is my favorite
+> dish, but without no money it's still a wish.
+>
+> Eric B. & Rakim, "Paid in Full"
+
+The name is the domain: `fish.career`, where the dot replaces the dash and
+becomes the real TLD. The engine and the package are `fish-career`; the
+command is `fish`.
 
 ## License
 
