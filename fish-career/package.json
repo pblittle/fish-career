@@ -7,10 +7,8 @@
     "career",
     "mcp",
     "mcp-server",
-    "ats",
-    "local-first",
-    "typescript",
-    "jev"
+    "jev",
+    "ats"
   ],
   "license": "MIT",
   "author": "Little Bets, LLC",
