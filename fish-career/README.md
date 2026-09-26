@@ -4,7 +4,7 @@ A local-first MCP server that finds job opportunities, interprets their fit,
 scores them with an explicit rubric, and hones that rubric against human
 judgment.
 
-This is the published package. The repository has the full story, the
+This is the package README. The repository has the full story, the
 architecture, and the specs: **<https://github.com/pblittle/fish-career>**
 
 ## Quick start
@@ -12,10 +12,13 @@ architecture, and the specs: **<https://github.com/pblittle/fish-career>**
 Requires Node 20.12+. State lives in `FISH_HOME` (default `~/.config/fish`),
 never in the package.
 
-Try the whole pipeline with no API key and no network:
+The package is not published to npm yet. From a source checkout, build once
+and run the whole pipeline with no API key and no network:
 
 ```sh
-npx -y fish-career demo
+npm ci --prefix fish-career
+npm run build --prefix fish-career
+node fish-career/dist/index.js demo
 ```
 
 Connect an MCP host (Claude Desktop, opencode, Cursor) to the stdio server:
@@ -24,16 +27,19 @@ Connect an MCP host (Claude Desktop, opencode, Cursor) to the stdio server:
 {
   "mcpServers": {
     "fish-career": {
-      "command": "npx",
-      "args": ["-y", "fish-career"]
+      "command": "node",
+      "args": ["/absolute/path/to/repo/fish-career/dist/index.js"]
     }
   }
 }
 ```
 
+Once the first npm release lands, `npx -y fish-career` is the one-command path
+for the demo and the server.
+
 Then, from the host: write a profile, probe a company, add it to the
 watchlist, fetch arrivals, triage them, and calibrate the rubric against your
-own blind ranking. The repository README walks the whole five-minute setup.
+own blind ranking. The repository README walks the whole setup.
 
 ## Tools
 
@@ -64,7 +70,9 @@ tests do not.
 Everything read and written hangs off `FISH_HOME`: profile, watchlist,
 postings cache, `.env`, and run state. The package holds none of it. Postings
 come from public, no-auth ATS APIs; the profile is sent to the judge on
-scoring calls and nowhere else.
+scoring calls and nowhere else. An optional LangSmith trace mirror carries
+hashes, the model, token counts, and typed answers, never the profile or
+posting text.
 
 ## License
 
