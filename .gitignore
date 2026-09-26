@@ -13,3 +13,5 @@ fish-career/dist/
 /PROMPT.md
 /preferences.json
 /watchlist.json
+examples/*/node_modules/
+examples/*/dist/

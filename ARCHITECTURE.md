@@ -175,6 +175,10 @@ the model's mood.
   shims over the built `fish` CLI and add nothing of their own.
 - **`MIN_SCORABLE_TEXT`.** A body too thin to judge is resolved through the
   provider's detail endpoint or baselined, never scored on nothing.
+- **Frameworks are optional.** LangGraph appears only in
+  `examples/langgraph`, where it sequences the application API and pauses for
+  human review. The ranking engine has no framework dependency, and the
+  example's tests run offline against the fake adapters.
 
 ## Naming
 

@@ -1,0 +1,24 @@
+{
+  "name": "fish-career-langgraph-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Optional LangGraph orchestration over the fish.career application API: fetch, triage, human review with an interrupt, feedback, and an optional recheck.",
+  "scripts": {
+    "start": "tsx src/triage-graph.ts",
+    "test": "vitest run",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.2.12",
+    "@langchain/langgraph": "^1.4.18",
+    "fish-career": "file:../../fish-career",
+    "zod": "^4.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  }
+}
