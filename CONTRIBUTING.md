@@ -19,7 +19,8 @@ authentication key and a signing key).
 CI enforces [Conventional Commits](https://www.conventionalcommits.org)
 on every PR: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `perf:`,
 `ci:`, `chore:`, `style:`. Scopes in use: `fetch`, `triage`, `eval`,
-`mcp`, `cli`. Subjects are lowercase, descriptive, and may run long:
+`mcp`, `cli`, `core`, `package`, `agents`, `skills`. Subjects are lowercase,
+descriptive, and may run long:
 say what changed and why, not "fix bug".
 
 ## Specs come first
@@ -32,16 +33,25 @@ change without a spec is a draft.
 
 `main` takes no direct pushes. Branch, PR, green CI.
 
-## Style and tests
+## Setup and the gate
 
 ```sh
-npm --prefix fish-career run lint      # biome: format + lint
-npm --prefix fish-career test          # vitest; every change keeps the tree green
-npm --prefix fish-career run typecheck
+npm ci --prefix fish-career
+npm --prefix fish-career run health   # what green means here
 ```
 
-Tests are not optional. A layer of work that cannot be tested is a
-design problem, not a testing problem.
+`health` runs lint, typecheck, test, markdownlint, build, the pack
+verification, the agent-layer drift check, and the credential-free demo. CI
+runs the same set on Node 20 plus a stdio smoke and an Inspector discovery
+call, and repeats test, typecheck, and build on Node 22 and 24. `AGENTS.md` is
+the full operating contract.
+
+Skill files under `.claude/skills/` are mirrored to `.opencode/skill/`; after
+editing a skill run `npm --prefix fish-career run agents:sync`, and
+`agents:check` (already inside `health`) fails when the two drift.
+
+Tests are not optional. A layer of work that cannot be tested is a design
+problem, not a testing problem.
 
 ## Releases
 
