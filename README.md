@@ -251,11 +251,6 @@ are cut by release-please from conventional commits; see
 
 ## Naming
 
-> Me and Eric B. and a nice big plate of fish, which is my favorite
-> dish, but without no money it's still a wish.
->
-> Eric B. & Rakim, "Paid in Full"
-
 The name is the domain: `fish.career`, where the dot replaces the dash and
 becomes the real TLD. The engine and the package are `fish-career`; the
 command is `fish`.
