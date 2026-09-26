@@ -68,6 +68,10 @@ Future API ──────┘         │
 - **Variants collapse, arrivals only.** One region-labelled vacancy posted
   per office is one row naming the other offices. Every posting a poll
   observes is marked seen, written or not, so later polls deliver the diff.
+- **Frameworks are optional.** [`examples/langgraph`](./examples/langgraph)
+  sequences the same application API (fetch, triage, a human-review
+  interrupt, an optional re-measure) with LangGraph. The ranking engine never
+  imports it, and the example's tests run offline against the fake adapters.
 
 ## Quickstart
 
