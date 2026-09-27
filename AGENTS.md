@@ -50,10 +50,11 @@ npm --prefix fish-career run health
 ```
 
 It runs, in order: `lint`, `typecheck`, `test`, `lint:md`, `build`,
-`verify:pack`, `agents:check`, and the credential-free `demo`. CI runs the
-same gates on Node 20, plus a stdio smoke and an Inspector discovery call,
-with `test`, `typecheck`, and `build` repeated on 22 and 24. Nothing is
-pushed until it passes. If a gate fails, fix the work; do not loosen the gate.
+`verify:pack`, `agents:check`, `check:boundaries`, and the credential-free
+`demo`. CI runs the same gates on Node 20, plus a stdio smoke and an Inspector
+discovery call, with `test`, `typecheck`, and `build` repeated on 22 and 24.
+Nothing is pushed until it passes. If a gate fails, fix the work; do not
+loosen the gate.
 
 The agent layer has one canonical home. The skills live in `.claude/skills/`,
 the `.opencode/skill/` copies are generated, and drift fails the build:
