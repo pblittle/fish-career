@@ -39,9 +39,11 @@ FISH_HOME=~/.config/fish npm start -- --live
 
 ## Tracing
 
-The application's judge calls are traced to `$FISH_HOME/state/traces.jsonl`
-always, and to LangSmith when `FISH_TRACE=langsmith` and
-`LANGSMITH_API_KEY` are set. LangGraph's own tracing uses the LangChain
-variables (`LANGSMITH_TRACING=true`, `LANGSMITH_API_KEY`); both can be on at
-once, and the two traces answer different questions: the graph trace shows
-the orchestration, the application trace shows the judge calls.
+In live mode the application's judge calls are traced to
+`$FISH_HOME/state/traces.jsonl` always, and to LangSmith when
+`FISH_TRACE=langsmith` and `LANGSMITH_API_KEY` are set. Fake mode traces to
+memory at `src/app.ts`, because it uses no `FISH_HOME` at all. LangGraph's own
+tracing uses the LangChain variables (`LANGSMITH_TRACING=true`,
+`LANGSMITH_API_KEY`); both can be on at once, and the two traces answer
+different questions: the graph trace shows the orchestration, the application
+trace shows the judge calls.

@@ -189,5 +189,3 @@ const main = async (): Promise<void> => {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await main();
 }
-
-export { Command, isInterrupted };
