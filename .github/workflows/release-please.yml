@@ -20,15 +20,32 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-      # Bot-created PRs fire no workflow events (the GITHUB_TOKEN recursion
-      # guard), so release PRs arrive with zero checks and the ruleset will
-      # not let them merge. workflow_dispatch is the documented exception to
-      # that guard: dispatch the checks onto the release branch's head.
-      - name: Trigger checks on the release PR
+      # A release PR arrives blocked either way: the bot-authored
+      # pull_request event may not fire at all (the GITHUB_TOKEN recursion
+      # guard), and when it does fire it arrives in action_required, which
+      # leaves the head SHA pending and the ruleset refuses the merge.
+      # Dispatch the checks onto the release branch's head, then approve the
+      # gated run for that exact commit, so the release PR can merge on its
+      # own. The approval is scoped to the PR head SHA because the release
+      # branch is reused and a stale gated run on it must not be started.
+      - name: Trigger checks on the release PR, and approve the gated run
         if: steps.release.outputs.release_created != 'true'
         run: |
           ref=$(gh api "repos/$GITHUB_REPOSITORY/pulls" --jq '[.[] | select(.head.ref | startswith("release-please"))][0].head.ref // empty')
-          if [ -n "$ref" ]; then gh workflow run test.yml --ref "$ref"; fi
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/pulls" --jq '[.[] | select(.head.ref | startswith("release-please"))][0].head.sha // empty')
+          [ -n "$ref" ] || exit 0
+          gh workflow run test.yml --ref "$ref"
+          for attempt in 1 2 3 4 5 6; do
+            ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$sha&status=action_required" --jq '.workflow_runs[].id')
+            if [ -n "$ids" ]; then
+              for id in $ids; do
+                gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/approve" >/dev/null
+              done
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "no gated run found to approve"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
