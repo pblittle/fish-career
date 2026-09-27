@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/pblittle/fish-career/compare/v0.6.0...v0.7.0) (2026-09-27)
+
+
+### Features
+
+* **check:** enforce the engine's dependency boundary, and cover the example in the required check ([#34](https://github.com/pblittle/fish-career/issues/34)) ([40c8f37](https://github.com/pblittle/fish-career/commit/40c8f37887b94fa8e2ecd7795d956737f2bfa217))
+
 ## [0.6.0](https://github.com/pblittle/fish-career/compare/v0.5.0...v0.6.0) (2026-09-25)
 
 
