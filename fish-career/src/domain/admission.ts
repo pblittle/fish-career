@@ -2,14 +2,21 @@
 // window/dedupe/thin-text semantics are testable without a network.
 //
 //   skip          the seen index (or this poll) already holds it
-//   baseline      out of the recency window: observed, never written
+//   out-of-window observed, never written: older than the recency window
 //   needs-detail  text too thin to score; fetch the detail endpoint, then
 //                 re-admit with the result in opts.resolved
+//   thin-text     text stays too thin to score; observed, never written
 //   write         in window with scorable text; Admission.text is what to write
+//
+// The two drop reasons are split so fetch can count them apart, and the
+// out-of-window bucket is degenerate after the first poll: the default
+// window is null then, so it only fires on the first run or when the caller
+// passes an explicit window (--days). An arrival is dropped on first contact
+// or not at all.
 
 import { MIN_SCORABLE_TEXT, type Posting } from './posting.js';
 
-export type AdmissionDecision = 'skip' | 'baseline' | 'needs-detail' | 'write';
+export type AdmissionDecision = 'skip' | 'out-of-window' | 'needs-detail' | 'thin-text' | 'write';
 
 export interface Admission {
   posting: Posting;
@@ -34,7 +41,7 @@ export function admitPostings(
     const t = Date.parse(posting.date);
     const inWindow = cutoff === null || Number.isNaN(t) || t >= cutoff;
     if (!inWindow) {
-      out.push({ posting, decision: 'baseline', text: '' });
+      out.push({ posting, decision: 'out-of-window', text: '' });
       continue;
     }
     const resolved = opts.resolved?.[posting.key];
@@ -42,7 +49,7 @@ export function admitPostings(
     if (!text || text.length < MIN_SCORABLE_TEXT) {
       out.push({
         posting,
-        decision: resolved === undefined ? 'needs-detail' : 'baseline',
+        decision: resolved === undefined ? 'needs-detail' : 'thin-text',
         text: '',
       });
       continue;

@@ -19,6 +19,7 @@ protocol responses are typed instead of text-only.
 | `calibrate_start` / `calibrate_submit` / `calibrate_rescore` | `calibration_start` / `calibration_submit` / `calibration_rescore` | One namespace for the calibration round |
 | `update_profile` | `profile_update` | One namespace for profile actions |
 | n/a | `watchlist_remove` | New: removal was edit-the-file only |
+| n/a | `verdict_record` | New: the operator's grade on a cached arrival, the ground truth the loop measures against |
 
 Posting identifiers in every input and output are stable posting IDs (the
 cache filename stem, e.g. `langchain-0a5dd30c-...`), not filenames. A
@@ -33,7 +34,7 @@ cache filename stem, e.g. `langchain-0a5dd30c-...`), not filenames. A
   `NO_JUDGE`, `NO_PROFILE`, `EMPTY_WATCHLIST`, `NOTHING_TO_SCORE`,
   `NO_PREFERENCES`, `POSTING_NOT_FOUND`, `INVALID_RANKING`,
   `NO_PENDING_CALIBRATION`, `NO_CALIBRATION_HISTORY`, `INVALID_COMPANY`,
-  `LEDGER_UNREADABLE`.
+  `LEDGER_UNREADABLE`, `INVALID_GRADE`, `VERDICTS_UNREADABLE`.
 - Tool annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`,
   `openWorldHint`) now describe each tool's safety.
 
@@ -51,4 +52,5 @@ cache filename stem, e.g. `langchain-0a5dd30c-...`), not filenames. A
 
 `fish fetch`, `fish triage`, `fish evaluate`, `fish calibrate ...`,
 `fish watchlist ...`, `fish profile ...`, and `fish postings ...` keep their
-names and behavior; the root `*.mjs` shims still map the retired flags.
+names and behavior; `fish arrivals [grade ... | summary]` is new, and the
+root `*.mjs` shims still map the retired flags.

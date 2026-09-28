@@ -14,6 +14,8 @@ export type ErrorCode =
   | 'NO_CALIBRATION_HISTORY'
   | 'LEDGER_UNREADABLE'
   | 'INVALID_COMPANY'
+  | 'INVALID_GRADE'
+  | 'VERDICTS_UNREADABLE'
   | 'UNKNOWN';
 
 export class ApplicationError extends Error {

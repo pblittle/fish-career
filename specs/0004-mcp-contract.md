@@ -16,7 +16,7 @@ whether the call was safe to repeat.
 
 ### Tools
 
-Ten action tools, each with an input schema, an output schema, safety
+Eleven action tools, each with an input schema, an output schema, safety
 annotations, and one success/error path:
 
 | Tool | Purpose | readOnly | destructive | idempotent | openWorld |
@@ -25,12 +25,18 @@ annotations, and one success/error path:
 | `watchlist_add` | Write a verified company | no | no | yes | no |
 | `watchlist_remove` | Remove a company | no | yes | yes | no |
 | `fetch_postings` | Poll boards, write arrivals | no | no | yes | yes |
+| `verdict_record` | Record the operator's grade for an arrival | no | yes | yes | no |
 | `triage_postings` | Score and rank postings | no | no | no | yes |
 | `evaluate_ranking` | Hold the ranking to stated preferences | no | no | no | yes |
 | `calibration_start` | Draw a seeded blind slice | no | no | no | no |
 | `calibration_submit` | Record the human order, measure | no | no | no | yes |
 | `calibration_rescore` | Re-measure under the current rubric | no | no | no | yes |
 | `profile_update` | Replace the profile | no | yes | yes | no |
+
+`verdict_record` is destructive because latest-wins replaces the posting's
+earlier verdict and keeps no history; it is idempotent because a repeated
+call converges on one record per posting. The verdict's scale and store are
+spec 0007's.
 
 ### Results
 

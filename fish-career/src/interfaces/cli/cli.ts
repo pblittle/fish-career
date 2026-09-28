@@ -34,6 +34,7 @@ Usage:
   fish                        start the MCP server over stdio (what hosts run)
   fish demo [--keep]          run the credential-free end-to-end demo
   fish fetch [--company X] [--days N] [--all]
+  fish arrivals [grade <postingId> <0|1|2|3> | summary]
   fish triage [--rescore] [postingId...]
   fish evaluate
   fish quality [--k N] [--json]     ranking quality against the labeled dataset
@@ -91,6 +92,17 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
         io.out(
           `\n${outcome.arrivals.length} new posting${outcome.arrivals.length === 1 ? '' : 's'} written to the cache.`,
         );
+        const drops = outcome.perCompany.reduce(
+          (sum, c) => ({
+            notRemote: sum.notRemote + c.drops.notRemote,
+            thinText: sum.thinText + c.drops.thinText,
+            outOfWindow: sum.outOfWindow + c.drops.outOfWindow,
+          }),
+          { notRemote: 0, thinText: 0, outOfWindow: 0 },
+        );
+        io.out(
+          `Dropped before writing: ${drops.notRemote} not remote, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
+        );
         if (outcome.firstRun) {
           io.out(`First run: only postings newer than ${days ?? 14} days were written.`);
         }
@@ -98,6 +110,53 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           io.out(`Boards that failed: ${outcome.failures.join(', ')}`);
         }
         if (outcome.arrivals.length > 0) io.out('Rank them with: fish triage');
+        return 0;
+      }
+
+      case 'arrivals': {
+        const [sub, ...args] = rest;
+        if (sub === 'grade') {
+          const [id, labelRaw] = positional(args);
+          if (!id || labelRaw === undefined) {
+            return fail(io, 'Usage: fish arrivals grade <postingId> <0|1|2|3>');
+          }
+          const label = Number(labelRaw);
+          if (!Number.isInteger(label) || label < 0 || label > 3) {
+            return fail(io, 'A grade is 0, 1, 2, or 3.');
+          }
+          const { graded, pending } = await app.recordVerdict({
+            postingId: postingIdFromFile(id),
+            label,
+          });
+          io.out(`recorded. ${graded} graded, ${pending} pending.`);
+          return 0;
+        }
+        if (sub === 'summary') {
+          const summary = await app.verdictSummary();
+          const cov = summary.coverage === null ? 'n/a' : `${(summary.coverage * 100).toFixed(1)}%`;
+          io.out(`${summary.graded} graded of ${summary.cached} written (coverage ${cov})`);
+          const { precision } = summary;
+          if (precision.value === null || precision.wilson === null) {
+            io.out(`precision@arrival   no read (n=${precision.n} below the floor)`);
+          } else {
+            io.out(
+              `precision@arrival   ${(precision.value * 100).toFixed(1)}%    (label >= 2 of ${precision.n} graded)`,
+            );
+            io.out(
+              `wilson 95%          [${(precision.wilson.low * 100).toFixed(1)}%, ${(precision.wilson.high * 100).toFixed(1)}%]`,
+            );
+          }
+          return 0;
+        }
+        if (sub !== undefined) {
+          return fail(io, 'Usage: fish arrivals [grade <postingId> <0|1|2|3> | summary]');
+        }
+        const listing = await app.listArrivals();
+        for (const a of listing.arrivals) {
+          if (a.label !== null) continue;
+          io.out(`${a.company}: ${a.title}   [${a.postingId}]`);
+        }
+        io.out(`${listing.ungraded} ungraded arrival${listing.ungraded === 1 ? '' : 's'}.`);
         return 0;
       }
 

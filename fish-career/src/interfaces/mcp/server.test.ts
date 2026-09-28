@@ -16,6 +16,7 @@ import {
   memorySeenStore,
   memoryTraceReader,
   memoryTraceSink,
+  memoryVerdictStore,
   memoryWatchlistStore,
 } from '../../adapters/fake/in-memory.js';
 import { memoryProvider } from '../../adapters/fake/providers.js';
@@ -67,6 +68,7 @@ const app = (): CareerApplication => {
     judge: fakeJudge,
     postings: memoryPostingRepository(),
     seen: memorySeenStore(),
+    verdicts: memoryVerdictStore(),
     ledger: memoryLedger(),
     traces,
     traceReader: memoryTraceReader(traces.records),
@@ -112,6 +114,7 @@ describe('the MCP contract', () => {
       'fetch_postings',
       'profile_update',
       'triage_postings',
+      'verdict_record',
       'watchlist_add',
       'watchlist_probe',
       'watchlist_remove',
@@ -127,6 +130,11 @@ describe('the MCP contract', () => {
     expect(add?.annotations?.readOnlyHint).toBe(false);
     const remove = tools.find((t) => t.name === 'watchlist_remove');
     expect(remove?.annotations?.destructiveHint).toBe(true);
+    const verdict = tools.find((t) => t.name === 'verdict_record');
+    expect(verdict?.annotations?.readOnlyHint).toBe(false);
+    expect(verdict?.annotations?.destructiveHint).toBe(true);
+    expect(verdict?.annotations?.idempotentHint).toBe(true);
+    expect(verdict?.annotations?.openWorldHint).toBe(false);
   });
 
   it('exposes the passive state as resources and templates', async () => {
@@ -160,7 +168,43 @@ describe('the MCP contract', () => {
     const result = await client.callTool({ name: 'fetch_postings', arguments: {} });
     expect(result.isError).toBeFalsy();
     expect(structured(result).arrivals).toHaveLength(2);
-    expect((result.content as { text: string }[])[0]?.text).toContain('2 new postings');
+    const text = (result.content as { text: string }[])[0]?.text ?? '';
+    expect(text).toContain('2 new postings');
+    expect(text).toContain(
+      'Dropped before writing: 0 not remote, 0 too thin to score, 0 out of window.',
+    );
+  });
+
+  it('verdict_record records a grade, replaces it latest-wins, and rejects an unknown posting', async () => {
+    await client.callTool({ name: 'fetch_postings', arguments: {} });
+    const first = await client.callTool({
+      name: 'verdict_record',
+      arguments: { postingId: 'acme-1.txt', label: 3 },
+    });
+    expect(first.isError).toBeFalsy();
+    expect(structured(first)).toMatchObject({
+      postingId: 'acme-1',
+      label: 3,
+      replaced: false,
+      graded: 1,
+      pending: 1,
+    });
+    expect(structured(first).profileHash).toBeTypeOf('string');
+    expect(structured(first).rubric).toBe(1);
+    expect(structured(first).at).toBeTypeOf('string');
+
+    const regrade = await client.callTool({
+      name: 'verdict_record',
+      arguments: { postingId: 'acme-1', label: 1 },
+    });
+    expect(structured(regrade)).toMatchObject({ label: 1, replaced: true, graded: 1, pending: 1 });
+
+    const unknown = await client.callTool({
+      name: 'verdict_record',
+      arguments: { postingId: 'nope', label: 2 },
+    });
+    expect(unknown.isError).toBe(true);
+    expect(structured(unknown).error).toMatchObject({ code: 'POSTING_NOT_FOUND' });
   });
 
   it('triage_postings returns ranked rows with dimension cells', async () => {

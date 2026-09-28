@@ -1,6 +1,7 @@
 import type { CalibrationRecord } from '../domain/calibration.js';
 import type { PostingId } from '../domain/posting.js';
 import type { Preference } from '../domain/preferences.js';
+import type { Verdict, VerdictRead } from '../domain/verdicts.js';
 
 export interface WatchlistEntry {
   name: string;
@@ -36,15 +37,25 @@ export interface CalibrationStore {
 }
 
 // Every remote posting a poll observes is marked seen, written or not, so
-// later polls deliver arrivals only.
+// later polls deliver arrivals only. observedAt is the first-observation
+// time, set when a posting is first marked seen and preserved thereafter.
 export interface SeenEntry {
   title: string;
   date?: string;
   file?: string;
   observed?: boolean;
+  observedAt?: string;
 }
 
 export interface SeenStore {
   read(): Promise<Record<string, SeenEntry>>;
   write(seen: Record<string, SeenEntry>): Promise<void>;
+}
+
+// The operator's verdicts, keyed by posting ID. read() reports corruption
+// instead of silently treating it as empty, because a verdict is human
+// judgment that cannot be recomputed; save() is latest-wins for the posting.
+export interface VerdictStore {
+  read(): Promise<VerdictRead>;
+  save(verdict: Verdict): Promise<void>;
 }

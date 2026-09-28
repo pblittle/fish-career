@@ -14,6 +14,25 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       perCompany: [],
       firstRun: false,
     })),
+    listArrivals: vi.fn(async () => ({ arrivals: [], graded: 0, ungraded: 0 })),
+    recordVerdict: vi.fn(async () => ({
+      verdict: {
+        postingId: 'acme-1',
+        label: 2 as const,
+        profileHash: 'abc123def456',
+        rubric: 1,
+        at: '2026-09-27T12:00:00.000Z',
+      },
+      replaced: false,
+      graded: 1,
+      pending: 1,
+    })),
+    verdictSummary: vi.fn(async () => ({
+      cached: 0,
+      graded: 0,
+      coverage: null,
+      precision: { n: 0, relevant: 0, value: null, wilson: null, floor: 45, belowFloor: true },
+    })),
     rankPostings: vi.fn(async () => ({
       rows: [],
       errors: [],
@@ -57,12 +76,20 @@ const io = () => {
 };
 
 describe('runCli', () => {
-  it('fetch calls the use case and prints the per-company diff', async () => {
+  it('fetch calls the use case, prints the per-company diff, and counts the drops', async () => {
     const app = stubApp({
       fetchPostings: vi.fn(async () => ({
         arrivals: [],
         failures: [],
-        perCompany: [{ name: 'Acme', total: 3, remote: 2, written: 1 }],
+        perCompany: [
+          {
+            name: 'Acme',
+            total: 3,
+            remote: 2,
+            written: 1,
+            drops: { notRemote: 1, thinText: 2, outOfWindow: 3 },
+          },
+        ],
         firstRun: true,
       })),
     });
@@ -72,6 +99,100 @@ describe('runCli', () => {
     expect(app.fetchPostings).toHaveBeenCalled();
     expect(sink.out.join('\n')).toContain('Acme: 3 postings, 2 remote, 1 new');
     expect(sink.out.join('\n')).toContain('First run');
+    expect(sink.out.join('\n')).toContain(
+      'Dropped before writing: 1 not remote, 2 too thin to score, 3 out of window.',
+    );
+  });
+
+  it('arrivals lists the ungraded and counts them', async () => {
+    const app = stubApp({
+      listArrivals: vi.fn(async () => ({
+        arrivals: [
+          {
+            postingId: 'acme-1',
+            company: 'Acme',
+            title: 'Senior Backend Engineer',
+            comp: '',
+            published: '',
+            label: null,
+          },
+          {
+            postingId: 'acme-2',
+            company: 'Acme',
+            title: 'Junior Backend Engineer',
+            comp: '',
+            published: '',
+            label: 2 as const,
+          },
+        ],
+        graded: 1,
+        ungraded: 1,
+      })),
+    });
+    const sink = io();
+    const code = await runCli(['arrivals'], { app, io: sink.io });
+    expect(code).toBe(0);
+    const text = sink.out.join('\n');
+    expect(text).toContain('Acme: Senior Backend Engineer   [acme-1]');
+    expect(text).not.toContain('acme-2');
+    expect(text).toContain('1 ungraded arrival.');
+  });
+
+  it('arrivals grade records the verdict and prints the counts', async () => {
+    const app = stubApp();
+    const sink = io();
+    const code = await runCli(['arrivals', 'grade', 'acme-1.txt', '2'], { app, io: sink.io });
+    expect(code).toBe(0);
+    expect(app.recordVerdict).toHaveBeenCalledWith({ postingId: 'acme-1', label: 2 });
+    expect(sink.out.join('\n')).toContain('recorded. 1 graded, 1 pending.');
+  });
+
+  it('arrivals grade rejects a label outside 0-3 without calling the use case', async () => {
+    const app = stubApp();
+    const sink = io();
+    expect(await runCli(['arrivals', 'grade', 'acme-1', '9'], { app, io: sink.io })).toBe(1);
+    expect(sink.err.join('\n')).toContain('A grade is 0, 1, 2, or 3.');
+    expect(app.recordVerdict).not.toHaveBeenCalled();
+  });
+
+  it('arrivals summary says no read below the floor', async () => {
+    const app = stubApp({
+      verdictSummary: vi.fn(async () => ({
+        cached: 10,
+        graded: 12,
+        coverage: 1.2,
+        precision: { n: 12, relevant: 8, value: null, wilson: null, floor: 45, belowFloor: true },
+      })),
+    });
+    const sink = io();
+    expect(await runCli(['arrivals', 'summary'], { app, io: sink.io })).toBe(0);
+    const text = sink.out.join('\n');
+    expect(text).toContain('12 graded of 10 written (coverage 120.0%)');
+    expect(text).toContain('precision@arrival   no read (n=12 below the floor)');
+  });
+
+  it('arrivals summary reports precision and the Wilson interval above the floor', async () => {
+    const app = stubApp({
+      verdictSummary: vi.fn(async () => ({
+        cached: 60,
+        graded: 50,
+        coverage: 50 / 60,
+        precision: {
+          n: 50,
+          relevant: 30,
+          value: 0.6,
+          wilson: { low: 0.46, high: 0.73 },
+          floor: 45,
+          belowFloor: false,
+        },
+      })),
+    });
+    const sink = io();
+    expect(await runCli(['arrivals', 'summary'], { app, io: sink.io })).toBe(0);
+    const text = sink.out.join('\n');
+    expect(text).toContain('50 graded of 60 written (coverage 83.3%)');
+    expect(text).toContain('precision@arrival   60.0%    (label >= 2 of 50 graded)');
+    expect(text).toContain('wilson 95%          [46.0%, 73.0%]');
   });
 
   it('triage passes explicit posting IDs through and prints the table', async () => {

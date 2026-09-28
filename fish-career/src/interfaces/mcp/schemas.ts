@@ -66,9 +66,33 @@ export const fetchPostingsOutput = z.union([
     ),
     failures: z.array(z.string()),
     perCompany: z.array(
-      z.object({ name: z.string(), total: z.number(), remote: z.number(), written: z.number() }),
+      z.object({
+        name: z.string(),
+        total: z.number(),
+        remote: z.number(),
+        written: z.number(),
+        drops: z.object({
+          notRemote: z.number(),
+          thinText: z.number(),
+          outOfWindow: z.number(),
+        }),
+      }),
     ),
     firstRun: z.boolean(),
+  }),
+  errorEnvelope,
+]);
+
+export const verdictRecordOutput = z.union([
+  z.object({
+    postingId: z.string(),
+    label: z.number().int().min(0).max(3).describe('3 act, 2 look, 1 miss, 0 should not surface'),
+    profileHash: z.string().describe('The profile the verdict was made against'),
+    rubric: z.number().describe('The rubric version current when the verdict was made'),
+    at: z.string().describe('When the operator made the call'),
+    replaced: z.boolean().describe('True when a re-grade replaced an earlier verdict'),
+    graded: z.number().describe('Cached arrivals with a verdict'),
+    pending: z.number().describe('Cached arrivals still ungraded'),
   }),
   errorEnvelope,
 ]);
@@ -156,7 +180,10 @@ const HINTS: Partial<Record<ErrorCode, string>> = {
   NO_PENDING_CALIBRATION: 'Start one with calibration_start.',
   NO_CALIBRATION_HISTORY: 'Run calibration_start and calibration_submit first.',
   INVALID_COMPANY: 'Probe the company first to see which boards carry it.',
+  INVALID_GRADE: 'Use 3 act, 2 look, 1 miss, or 0 should not surface.',
   LEDGER_UNREADABLE: 'Check FISH_HOME/state/scored.json; the next triage run will rewrite it.',
+  VERDICTS_UNREADABLE:
+    'Check FISH_HOME/state/verdicts.json; nothing is recorded or measured until it parses.',
 };
 
 // An expected failure is a result, not a thrown error: the client gets a

@@ -24,10 +24,10 @@ describe('admitPostings', () => {
     expect(a?.decision).toBe('write');
   });
 
-  it('baselines an unseen posting older than the window: observed, not written', () => {
+  it('drops an unseen posting older than the window: observed, not written', () => {
     const old = posting('a', { date: new Date(now - 30 * DAY).toISOString() });
     const [a] = admitPostings([old], {}, now - 14 * DAY);
-    expect(a?.decision).toBe('baseline');
+    expect(a?.decision).toBe('out-of-window');
   });
 
   it('writes everything when there is no window', () => {
@@ -47,7 +47,7 @@ describe('admitPostings', () => {
     expect(out[1]?.decision).toBe('skip');
   });
 
-  it('baselines an unparseable date rather than dropping or writing it blind', () => {
+  it('never drops an unparseable date as out of window: it cannot be placed, so it is kept', () => {
     // No window: undated postings are written (nothing to compare against).
     const [a] = admitPostings([posting('a', { date: '' })], {}, null);
     expect(a?.decision).toBe('write');
@@ -56,7 +56,7 @@ describe('admitPostings', () => {
     expect(b?.decision).toBe('write');
   });
 
-  it('baselines a posting whose text is too short to score', () => {
+  it('asks for detail on a posting whose text is too short to score', () => {
     const thin = posting('a', { text: 'short' });
     const [a] = admitPostings([thin], {}, null);
     expect(a?.decision).toBe('needs-detail');
@@ -68,10 +68,10 @@ describe('admitPostings', () => {
     expect(a?.decision).toBe('needs-detail');
   });
 
-  it('baselines a posting that stays thin after detail (caller reports back)', () => {
+  it('drops a posting that stays thin after detail (caller reports back)', () => {
     const thin = posting('a', { text: 'short' });
     const [a] = admitPostings([thin], {}, null, { resolved: { a: 'still short' } });
-    expect(a?.decision).toBe('baseline');
+    expect(a?.decision).toBe('thin-text');
   });
 
   it('writes when resolved detail text is usable', () => {

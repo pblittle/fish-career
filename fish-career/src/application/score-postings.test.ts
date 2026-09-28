@@ -5,6 +5,7 @@ import {
   memoryPostingRepository,
   memoryTraceReader,
   memoryTraceSink,
+  memoryVerdictStore,
 } from '../adapters/fake/in-memory.js';
 import { fakeJudge } from '../adapters/judge/fake.js';
 import type { PostingRecord } from '../domain/posting.js';
@@ -28,6 +29,7 @@ const deps = (over: Partial<CareerDependencies> = {}): CareerDependencies => ({
   judge: fakeJudge,
   postings: memoryPostingRepository(),
   seen: { read: async () => ({}), write: async () => {} },
+  verdicts: memoryVerdictStore(),
   ledger: memoryLedger(),
   traces: memoryTraceSink(),
   traceReader: memoryTraceReader(),

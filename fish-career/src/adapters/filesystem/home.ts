@@ -19,6 +19,7 @@ export interface HomePaths {
   ledger: string;
   traces: string;
   seen: string;
+  verdicts: string;
   calibrations: string;
   calibrationPending: string;
 }
@@ -39,6 +40,7 @@ export const homePaths = (home: string): HomePaths => {
     ledger: join(state, 'scored.json'),
     traces: join(state, 'traces.jsonl'),
     seen: join(state, 'seen.json'),
+    verdicts: join(state, 'verdicts.json'),
     calibrations: join(state, 'calibrations'),
     calibrationPending: join(state, 'calibration-pending.json'),
   };

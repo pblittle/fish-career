@@ -20,10 +20,12 @@ Future API ──────┘         │
 
 ```text
 src/domain        pure policy: posting, rubric, answers, ranking,
-                  preferences, calibration, ledger, admission, random, errors
+                  preferences, calibration, ledger, admission, verdicts,
+                  random, errors
 src/ports         the interfaces the application may use
 src/application   use cases: fetchPostings, rankPostings, evaluateRanking,
-                  calibrateRanking, watchlist, postings, rubric summary
+                  calibrateRanking, verdicts and arrivals, watchlist,
+                  postings, rubric summary
 src/adapters      ats (four boards), judge (Jev, fake), filesystem, fake (in-memory), trace (JSONL, LangSmith)
 src/interfaces    mcp (server, tools, resources, prompts), cli (commands, demo)
 src/bootstrap     createApplicationFromHome, createServerFromHome
@@ -125,7 +127,7 @@ are no longer asking and nothing tells you which half. Invalidation is
 automatic so the operator never babysits it. A crash costs at most the row in
 flight, because every row checkpoints the moment it is scored.
 
-## There are three measurements, and the golden metrics are the acceptance test
+## There are four measurements, and the golden metrics are the acceptance test
 
 - **`evaluate`**: holds the ranking to pairwise preferences that quote their
   own source line in the profile. No human step. Runs in CI against a golden
@@ -138,6 +140,11 @@ flight, because every row checkpoints the moment it is scored.
   weight-sensitivity pass. The recorded baseline's metrics are a golden
   fixture; a rubric change that moves them must update it deliberately, so
   the build fails until the change is owned.
+- **`arrivals`**: the loop on the real cache. The operator grades what fetch
+  wrote on the eval's 0-3 scale, and precision@arrival plus coverage measure
+  the pipeline against that judgment, with a Wilson interval and a floor
+  below which the report says no read. Latest-wins, provenance recorded and
+  never invalidating, and never fed into the golden metrics.
 
 **Why:** "the model scored some jobs" is not a claim about anything. The
 measurements are what turn the rubric into something with an acceptance
@@ -174,7 +181,8 @@ the model's mood.
 - **The engine depends on the MCP SDK and `zod`.** The root CLI scripts are
   shims over the built `fish` CLI and add nothing of their own.
 - **`MIN_SCORABLE_TEXT`.** A body too thin to judge is resolved through the
-  provider's detail endpoint or baselined, never scored on nothing.
+  provider's detail endpoint or dropped as thin text, never scored on
+  nothing.
 - **Frameworks are optional.** LangGraph appears only in
   `examples/langgraph`, where it sequences the application API and pauses for
   human review. The ranking engine has no framework dependency, and the

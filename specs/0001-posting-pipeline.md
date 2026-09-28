@@ -25,7 +25,8 @@ operator's own judgment rather than a model's taste.
   written or not; later polls deliver arrivals only. A recency window
   applies on the first poll (or an explicit `--days`).
 - A body too thin to score is resolved through the provider's detail
-  endpoint, or baselined if it stays thin.
+  endpoint, or dropped as thin text if it stays thin (the split drop
+  reasons are spec 0007's).
 
 ### triage: postings to ranked rows
 

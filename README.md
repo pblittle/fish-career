@@ -118,7 +118,7 @@ in [`docs/getting-started.md`](./docs/getting-started.md).
 
 ## The MCP surface
 
-Ten action tools, each with an input schema, an output schema, safety
+Eleven action tools, each with an input schema, an output schema, safety
 annotations, and structured results. Passive state lives in resources, and
 the workflows ship as prompts.
 
@@ -128,6 +128,7 @@ the workflows ship as prompts.
 | `watchlist_add` | Write a verified company | additive, idempotent |
 | `watchlist_remove` | Remove a company | destructive |
 | `fetch_postings` | Poll watched boards, write unseen remote postings | open-world |
+| `verdict_record` | Record your grade for a cached arrival | latest-wins replace, idempotent |
 | `triage_postings` | Score postings, return the ranked table | writes ledger + traces |
 | `evaluate_ranking` | Hold the ranking to the profile's stated preferences | measurement |
 | `calibration_start` | Draw a seeded blind slice | local write |
@@ -157,6 +158,7 @@ call. `fish` with no arguments starts the MCP server.
 ```bash
 fish demo [--keep]                          # the credential-free demo
 fish fetch [--company X] [--days N] [--all] # poll and write arrivals
+fish arrivals [grade <postingId> <0-3> | summary] # grade arrivals, report precision
 fish triage [--rescore] [postingId...]      # score and rank
 fish evaluate                               # hold the ranking to your preferences
 fish quality [--k N] [--json]               # ranking quality against the labeled dataset
@@ -199,6 +201,16 @@ The metrics are a golden fixture. A rubric change that moves them fails CI
 until `eval/expected-metrics.json` is updated deliberately, and
 `npm --prefix fish-career run record:eval` re-records the baseline from a
 live judge run.
+
+`arrivals` is the loop on the real cache. Grade what fetch wrote on the same
+0-3 scale (`fish arrivals grade <postingId> 2`), and `fish arrivals summary`
+reports coverage and precision@arrival — the share of graded arrivals you
+called worth a look or better — with a Wilson 95% interval. Below a
+code-constant floor the report says "no read" instead of guessing. A verdict
+records the profile hash and rubric version current when you made the call,
+but a later change to either never invalidates your judgment; re-grading is
+latest-wins and no history is kept. Verdicts stay out of the golden eval:
+`quality` measures the rubric, `arrivals` measures the pipeline against you.
 
 ## Privacy and data flow
 
