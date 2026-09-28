@@ -4,8 +4,8 @@ The [README](../README.md) installs the package and connects a host. This
 walks the loop that follows: give the server a profile, watch companies,
 fetch and triage, then calibrate the ranking against your own judgment.
 
-Every step has an MCP tool equivalent. Ask your host for the tool by name if
-you would rather stay in chat.
+Every step has an MCP tool; the tool names appear in each section. Ask your
+host for the tool by name if you would rather stay in chat.
 
 ## 1. Give it a profile
 
@@ -49,9 +49,13 @@ fish triage    # score the arrivals, print the ranked table
 ```
 
 `fetch` polls the watched boards, keeps remote postings, writes the arrivals
-you have never seen, and returns the diff. `triage` scores them against the
-profile with the judge and prints per-dimension scores, confidences, and
-blocker flags. Triage needs a TypeSafe API key in `$FISH_HOME/.env`:
+you have never seen, and returns the diff. It also reports why postings were
+dropped: not remote, too thin to score, out of window. The out-of-window
+bucket only fires on the first poll, which defaults to the last 14 days, or
+when you pass `--days`; after that a remote posting is dropped on first
+contact or never. `triage` scores the arrivals against the profile with the
+judge and prints per-dimension scores, confidences, and blocker flags. Triage
+needs a TypeSafe API key in `$FISH_HOME/.env`:
 
 ```text
 TYPESAFE_API_KEY=...

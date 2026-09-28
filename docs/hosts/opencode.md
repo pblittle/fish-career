@@ -19,6 +19,7 @@ opencode reads MCP servers from `opencode.json` (project) or
 
 Restart opencode. The fish.career tools are available to the agent in any
 session, and the agent can follow the workflow in the
-[README](../README.md#quickstart).
+[README](../../README.md#quickstart).
 
-From npm, the same entry works with `"command": ["npx", "-y", "fish-career"]`.
+Once the package is published, the same entry works from npm with
+`"command": ["npx", "-y", "fish-career"]`.

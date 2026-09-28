@@ -42,7 +42,7 @@ cache filename stem, e.g. `langchain-0a5dd30c-...`), not filenames. A
 
 - Resources: `fish://profile/current`, `fish://watchlist`, `fish://postings`,
   `fish://postings/{postingId}`, `fish://rubric/current`,
-  `fish://calibrations/latest`, `fish://runs/latest`.
+  `fish://calibrations/latest`, `fish://runs/latest`, `fish://runs/{runId}`.
 - Prompts: `career-search-onboarding`, `review-new-arrivals`,
   `explain-ranking`, `calibrate-rubric`, `audit-profile`. They replace the
   checked-in starter prompt; they carry no seniority, geography, or

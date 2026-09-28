@@ -2,15 +2,58 @@
 
 [![test](https://github.com/pblittle/fish-career/actions/workflows/test.yml/badge.svg)](https://github.com/pblittle/fish-career/actions/workflows/test.yml)
 
-fish.career is a local-first MCP server that finds job opportunities,
-interprets their fit, scores them with an explicit rubric, and hones that
-rubric against human judgment.
+fish.career is local-first job search: an MCP server and CLI that rank postings
+against your profile, explain every score, and measure the ranking against your
+own judgment.
 
 The scarce resource is your attention. Job boards optimize for the opposite:
 an unbounded feed, ranked by signals you cannot see and cannot argue with.
 fish.career turns that stream into a small ranked table with the reasons
-attached, and measures whether the ranking tracks your own judgment rather
+attached, and proves measurably that the ordering tracks your judgment rather
 than a model's taste.
+
+## Quickstart
+
+Requires Node 20.12+. The package is not on npm yet, so install from source:
+
+```bash
+git clone https://github.com/pblittle/fish-career.git
+cd fish-career
+npm ci --prefix fish-career
+npm run build --prefix fish-career
+```
+
+See the whole pipeline run over bundled fixtures with no API key, no network,
+and no user state, in a temp directory it removes afterwards:
+
+```bash
+node fish-career/dist/index.js demo
+```
+
+The demo prints a ranked table, holds the ranking to the fixture profile's
+stated preferences, and compares a blind human order against the judge. The
+judge in the demo is a documented stand-in (`src/adapters/judge/fake.ts`), not
+a model, and the demo says so in its first lines.
+
+Point a host at the server by adding it to your MCP config. Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "fish-career": {
+      "command": "node",
+      "args": ["/absolute/path/to/repo/fish-career/dist/index.js"],
+      "env": { "FISH_HOME": "/absolute/path/to/fish-state" }
+    }
+  }
+}
+```
+
+`/absolute/path/to/repo` is the clone; `fish-career/` is the package directory
+inside it. Host notes: [Claude Desktop](./docs/hosts/claude-desktop.md) ·
+[opencode](./docs/hosts/opencode.md) · [Cursor](./docs/hosts/cursor.md). The
+walkthrough that follows — profile, watchlist, fetch and triage, grade
+arrivals, calibrate — is in [`docs/getting-started.md`](./docs/getting-started.md).
 
 ## Why this exists
 
@@ -66,59 +109,18 @@ Future API ──────┘         │
 - **A blocker demotes.** A posting naming a hard requirement you cannot meet
   is not the top row whatever its composite, and it says so in the table.
 - **Variants collapse, arrivals only.** One region-labelled vacancy posted
-  per office is one row naming the other offices. Every posting a poll
+  per office is one row naming the other offices. Every remote posting a poll
   observes is marked seen, written or not, so later polls deliver the diff.
 - **Frameworks are optional.** [`examples/langgraph`](./examples/langgraph)
   sequences the same application API (fetch, triage, a human-review
   interrupt, an optional re-measure) with LangGraph. The ranking engine never
   imports it, and the example's tests run offline against the fake adapters.
 
-## Quickstart
-
-Requires Node 20.12+. The package is not on npm yet, so install from source:
-
-```bash
-git clone https://github.com/pblittle/fish-career.git
-cd fish-career
-npm ci --prefix fish-career
-npm run build --prefix fish-career
-```
-
-See the whole pipeline run over bundled fixtures with no API key, no network,
-and no user state, in a temp directory it removes afterwards:
-
-```bash
-node fish-career/dist/index.js demo
-```
-
-The demo prints a ranked table, holds the ranking to the fixture profile's
-stated preferences, and compares a blind human order against the judge. The
-judge in the demo is a documented stand-in (`src/adapters/judge/fake.ts`), not
-a model, and the demo says so in its first lines.
-
-Point a host at the server by adding it to your MCP config. Claude Desktop:
-
-```json
-{
-  "mcpServers": {
-    "fish-career": {
-      "command": "node",
-      "args": ["/absolute/path/to/repo/fish-career/dist/index.js"],
-      "env": { "FISH_HOME": "/absolute/path/to/fish-state" }
-    }
-  }
-}
-```
-
-`/absolute/path/to/repo` is the clone; `fish-career/` is the package directory
-inside it. Host notes: [Claude Desktop](./docs/hosts/claude-desktop.md) ·
-[opencode](./docs/hosts/opencode.md) · [Cursor](./docs/hosts/cursor.md). The
-walkthrough that follows (profile, watchlist, fetch and triage, calibrate) is
-in [`docs/getting-started.md`](./docs/getting-started.md).
+The architecture and its reasons: [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 ## The MCP surface
 
-Eleven action tools, each with an input schema, an output schema, safety
+Eleven tools, each with an input schema, an output schema, safety
 annotations, and structured results. Passive state lives in resources, and
 the workflows ship as prompts.
 
@@ -157,8 +159,8 @@ call. `fish` with no arguments starts the MCP server.
 
 ```bash
 fish demo [--keep]                          # the credential-free demo
-fish fetch [--company X] [--days N] [--all] # poll and write arrivals
-fish arrivals [grade <postingId> <0-3> | summary] # grade arrivals, report precision
+fish fetch [--company X] [--days N] [--all] # poll, write arrivals, report drops
+fish arrivals [grade <postingId> <0|1|2|3> | summary] # grade arrivals, report precision
 fish triage [--rescore] [postingId...]      # score and rank
 fish evaluate                               # hold the ranking to your preferences
 fish quality [--k N] [--json]               # ranking quality against the labeled dataset
@@ -184,10 +186,6 @@ standing measurement: 17 labeled postings, graded 0-3 with a note on each,
 covering the hard cases (on-site and hybrid blockers, out-of-geography
 remote, overqualification, missing compensation, ambiguous location,
 duplicate regional listings, an adversarial posting, a too-thin posting).
-
-```bash
-fish quality            # deterministic, offline, no API key
-```
 
 Against the recorded baseline: pairwise accuracy 92.3%, Kendall tau 73.7%,
 Spearman 86.3%, precision@5 100%, nDCG@5 98.4%, every blocked posting below
@@ -245,31 +243,26 @@ profile, watchlist, postings, and calibrations out of any public one.
 
 ```bash
 npm ci --prefix fish-career
-npm test --prefix fish-career          # vitest; deterministic, no network
-npm run typecheck --prefix fish-career
-npm run lint --prefix fish-career      # biome
-npm run lint:md --prefix fish-career   # markdownlint
-npm run verify:pack --prefix fish-career
-npm run smoke --prefix fish-career     # stdio contract smoke on the built server
-npm run quality --prefix fish-career   # ranking quality report, offline
+npm --prefix fish-career run health     # the gate CI runs
+npm test --prefix fish-career           # vitest; deterministic, no network
 node fish-career/dist/index.js demo
 ```
 
-Behavior changes land with a spec in [`specs/`](./specs) and significant
-architecture decisions with an ADR in [`docs/adr/`](./docs/adr). The
-architecture and its reasons: [`ARCHITECTURE.md`](./ARCHITECTURE.md). The
-product boundary and repository strategy:
-[`docs/adr/0001-product-boundary.md`](./docs/adr/0001-product-boundary.md).
-The pipeline contract:
-[`specs/0001-posting-pipeline.md`](./specs/0001-posting-pipeline.md). Releases
-are cut by release-please from conventional commits; see
-[`CONTRIBUTING.md`](./CONTRIBUTING.md).
+A behavior change lands with a spec in [`specs/`](./specs); an architectural
+decision lands as an ADR in [`docs/adr/`](./docs/adr). Releases are cut by
+release-please from conventional commits. The details, including signing and
+the npm publish gate: [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-## Naming
+## Where to look next
 
-The name is the domain: `fish.career`, where the dot replaces the dash and
-becomes the real TLD. The engine and the package are `fish-career`; the
-command is `fish`.
+- [`docs/getting-started.md`](./docs/getting-started.md) — the full walkthrough
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — the decisions and why
+- [`docs/quality-report.md`](./docs/quality-report.md) — the ranking-quality measurement in full
+- [`docs/privacy.md`](./docs/privacy.md) — what is stored and what leaves the machine
+- [`docs/mcp-migration.md`](./docs/mcp-migration.md) — upgrading from the 0.4 MCP surface
+- [`examples/langgraph`](./examples/langgraph) — the same application API under LangGraph
+- [`specs/`](./specs) — behavior contracts, starting at [`specs/0001-posting-pipeline.md`](./specs/0001-posting-pipeline.md)
+- [`docs/adr/`](./docs/adr) — architecture decisions
 
 ## License
 

@@ -15,8 +15,9 @@ Cursor reads MCP servers from `~/.cursor/mcp.json` (global) or
 }
 ```
 
-Reload the window, then use the tools from Cursor's agent. From npm, the same
-entry works with `"command": "npx"` and `"args": ["-y", "fish-career"]`.
+Reload the window, then use the tools from Cursor's agent. Once the package is
+published, the same entry works from npm with `"command": "npx"` and
+`"args": ["-y", "fish-career"]`.
 
 The agent can follow the workflow in the
-[README](../README.md#quickstart).
+[README](../../README.md#quickstart).

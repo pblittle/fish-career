@@ -6,10 +6,10 @@ and keep it true. A rule that no longer matches the repo is a bug.
 
 ## What this is
 
-fish.career is a local-first MCP server that finds job opportunities,
-interprets their fit, scores them with an explicit rubric, and hones that
-rubric against human judgment. One application core, two surfaces: the MCP
-server and the `fish` CLI call the same use cases and only render.
+fish.career is local-first job search: an MCP server and CLI that rank postings
+against your profile, explain every score, and measure the ranking against your
+own judgment. One application core, two surfaces: the MCP server and the `fish`
+CLI call the same use cases and only render.
 
 The product judgment lives in the `product-spine` skill. The hard boundaries
 live in `architecture-guardrails`. Reviews run through the `fish-arbiter`
