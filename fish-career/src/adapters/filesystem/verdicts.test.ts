@@ -1,4 +1,4 @@
-import { mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -60,6 +60,15 @@ describe('fileVerdictStore.read', () => {
     expect(r.verdicts).toEqual({});
   });
 
+  it('reports a present-but-unreadable path instead of calling it empty', async () => {
+    // A directory where the store file should be: readFileSync fails with
+    // EISDIR, not ENOENT, so the store exists but cannot be read and must
+    // not be mistaken for a fresh empty.
+    const r = await fileVerdictStore(home()).read();
+    expect(r.ok).toBe(false);
+    expect(r.verdicts).toEqual({});
+  });
+
   it('rejects entries whose label is not a grade', async () => {
     const p = join(home(), 'verdicts.json');
     writeFileSync(p, JSON.stringify({ a: { label: 7 } }));
@@ -85,6 +94,16 @@ describe('fileVerdictStore.save', () => {
     const p = join(home(), 'nested', 'verdicts.json');
     await fileVerdictStore(p).save(verdict('a', 2));
     expect((await fileVerdictStore(p).read()).verdicts.a?.label).toBe(2);
+  });
+
+  it('refuses to save over a corrupt store and leaves it byte-identical', async () => {
+    const p = join(home(), 'verdicts.json');
+    writeFileSync(p, '{truncated');
+    const before = readFileSync(p);
+    await expect(fileVerdictStore(p).save(verdict('a', 2))).rejects.toThrow(
+      'refusing to overwrite',
+    );
+    expect(readFileSync(p)).toEqual(before);
   });
 
   it('leaves no temp file behind', async () => {

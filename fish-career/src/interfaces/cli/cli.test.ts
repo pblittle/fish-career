@@ -104,6 +104,22 @@ describe('runCli', () => {
     );
   });
 
+  it('fetch --all on a first run says no recency window was applied', async () => {
+    const app = stubApp({
+      fetchPostings: vi.fn(async () => ({
+        arrivals: [],
+        failures: [],
+        perCompany: [],
+        firstRun: true,
+      })),
+    });
+    const sink = io();
+    expect(await runCli(['fetch', '--all'], { app, io: sink.io })).toBe(0);
+    const text = sink.out.join('\n');
+    expect(text).toContain('First run: no recency window applied.');
+    expect(text).not.toContain('14 days');
+  });
+
   it('arrivals lists the ungraded and counts them', async () => {
     const app = stubApp({
       listArrivals: vi.fn(async () => ({
@@ -151,6 +167,14 @@ describe('runCli', () => {
     const app = stubApp();
     const sink = io();
     expect(await runCli(['arrivals', 'grade', 'acme-1', '9'], { app, io: sink.io })).toBe(1);
+    expect(sink.err.join('\n')).toContain('A grade is 0, 1, 2, or 3.');
+    expect(app.recordVerdict).not.toHaveBeenCalled();
+  });
+
+  it('arrivals grade rejects an empty label instead of coercing it to 0', async () => {
+    const app = stubApp();
+    const sink = io();
+    expect(await runCli(['arrivals', 'grade', 'acme-1', ''], { app, io: sink.io })).toBe(1);
     expect(sink.err.join('\n')).toContain('A grade is 0, 1, 2, or 3.');
     expect(app.recordVerdict).not.toHaveBeenCalled();
   });

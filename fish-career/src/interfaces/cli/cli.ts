@@ -104,7 +104,11 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           `Dropped before writing: ${drops.notRemote} not remote, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
         );
         if (outcome.firstRun) {
-          io.out(`First run: only postings newer than ${days ?? 14} days were written.`);
+          io.out(
+            days === null
+              ? 'First run: no recency window applied.'
+              : `First run: only postings newer than ${days ?? 14} days were written.`,
+          );
         }
         if (outcome.failures.length > 0) {
           io.out(`Boards that failed: ${outcome.failures.join(', ')}`);
@@ -120,10 +124,13 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           if (!id || labelRaw === undefined) {
             return fail(io, 'Usage: fish arrivals grade <postingId> <0|1|2|3>');
           }
-          const label = Number(labelRaw);
-          if (!Number.isInteger(label) || label < 0 || label > 3) {
+          // Validate the raw token before any coercion: Number('') is 0,
+          // and recording a grade 0 the operator never typed would write
+          // over irreplaceable ground truth.
+          if (!/^[0-3]$/.test(labelRaw)) {
             return fail(io, 'A grade is 0, 1, 2, or 3.');
           }
+          const label = Number(labelRaw);
           const { graded, pending } = await app.recordVerdict({
             postingId: postingIdFromFile(id),
             label,

@@ -13,13 +13,19 @@ import { writeFileAtomic } from './home.js';
 // A corrupt verdict store is REPORTED, not silently treated as empty: a
 // verdict is the operator's own judgment and cannot be recomputed by paying
 // for another judge run, so overwriting it would destroy ground truth. The
-// application refuses to record while read() is not ok.
+// application refuses to record while read() is not ok, and save() refuses
+// too, so a bypassing caller cannot clobber an unreadable store either.
 const read = (path: string): VerdictRead => {
   let raw: string;
   try {
     raw = readFileSync(path, 'utf8');
-  } catch {
-    return { ok: true, verdicts: {} }; // No verdicts yet: a true empty.
+  } catch (err) {
+    // Only a missing file is a true empty. A permission error, a directory
+    // in the path, or any other failure is a store that may hold verdicts
+    // and cannot be read; calling it empty would license a later write to
+    // destroy them.
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return { ok: true, verdicts: {} };
+    return { ok: false, verdicts: {} };
   }
   try {
     const parsed: unknown = JSON.parse(raw);
@@ -46,6 +52,11 @@ export const fileVerdictStore = (path: string): VerdictStore => ({
   },
   async save(verdict: Verdict): Promise<void> {
     const prior = read(path);
+    if (!prior.ok) {
+      throw new Error(
+        `The verdict store at ${path} could not be read; refusing to overwrite it. Fix or remove it first.`,
+      );
+    }
     mkdirSync(dirname(path), { recursive: true });
     writeFileAtomic(path, JSON.stringify(upsertVerdict(prior.verdicts, verdict), null, 2));
   },
