@@ -33,9 +33,18 @@ Read it as: inner layers know nothing about outer ones.
 - `src/interfaces` render. `src/bootstrap` wires.
 
 The acceptance rule from spec 0003, which is testable and must stay true: **no
-file under `src/interfaces` or `src/application` imports `node:fs` or calls
-`fetch`.** That is what lets the whole workflow run over in-memory adapters
-with no filesystem, clock, or network.
+non-test file under `src/domain` or `src/application` imports an I/O builtin
+(`node:fs`, `node:child_process`, `node:net`, `node:http`, `node:http2`,
+`node:https`, `node:tls`, `node:dns`, `node:dgram`, `node:worker_threads`,
+`node:module`) or calls `fetch`; no
+non-test file under `src/interfaces` calls `fetch`; no non-test file under
+`src/interfaces/mcp` imports one of those builtins; under `src/`, `fetch`
+appears only in non-test files under `src/adapters`; and `src/interfaces/cli`
+is the process edge, where a non-test file may import `node:fs` for a
+user-named file, bundled package data, and the demo harness's temp home.**
+Test files are out of scope and may import those builtins freely. That is
+what lets the whole workflow run over in-memory adapters with no filesystem,
+clock, or network.
 
 ## One core, many surfaces
 
