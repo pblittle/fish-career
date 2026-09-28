@@ -32,7 +32,6 @@ ranking against your own judgment.
 
 Usage:
   fish                        start the MCP server over stdio (what hosts run)
-  fish demo [--keep]          run the credential-free end-to-end demo
   fish fetch [--company X] [--days N] [--all]
   fish arrivals [grade <postingId> <0|1|2|3> | summary]
   fish triage [--rescore] [postingId...]

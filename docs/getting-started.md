@@ -61,8 +61,10 @@ needs a TypeSafe API key in `$FISH_HOME/.env`:
 TYPESAFE_API_KEY=...
 ```
 
-Key from <https://console.typesafe.ai/keys>. Over MCP, the tools are
-`fetch_postings` and `triage_postings`.
+Key from <https://console.typesafe.ai/keys>. No key yet? Put `FISH_JUDGE=fake`
+in the same file and the deterministic stand-in (`src/adapters/judge/fake.ts`)
+answers the same typed questions, so the whole loop runs before you spend
+anything. Over MCP, the tools are `fetch_postings` and `triage_postings`.
 
 ## 4. Grade arrivals
 

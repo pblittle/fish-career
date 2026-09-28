@@ -29,7 +29,7 @@
 //   - under src/, fetch appears only in non-test files under src/adapters;
 //   - src/interfaces/cli is the process edge, and a non-test file there may
 //     import node:fs: reading a user-named file, reading bundled package data,
-//     and the demo harness's temp home. Personal state still travels only
+//     and bundled package data. Personal state still travels only
 //     through ports.
 //
 // That is what keeps the application core runnable over in-memory adapters,

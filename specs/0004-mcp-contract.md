@@ -47,7 +47,10 @@ spec 0007's.
 - A concise text rendering alongside it for conversational hosts.
 - Expected failures: `isError: true`, with
   `structuredContent.error = { code, message, hint? }` and the stable codes
-  enumerated in `docs/mcp-migration.md`.
+  `NO_JUDGE`, `NO_PROFILE`, `EMPTY_WATCHLIST`, `NOTHING_TO_SCORE`,
+  `NO_PREFERENCES`, `POSTING_NOT_FOUND`, `INVALID_RANKING`,
+  `NO_PENDING_CALIBRATION`, `NO_CALIBRATION_HISTORY`, `INVALID_COMPANY`,
+  `LEDGER_UNREADABLE`, `INVALID_GRADE`, `VERDICTS_UNREADABLE`.
 
 ### Resources
 
@@ -74,9 +77,8 @@ over the SDK's in-memory transport.
 
 ## Migration
 
-Renames, splits, and the filename-to-ID change are documented in
-`docs/mcp-migration.md`. `.txt` suffixes on posting IDs are accepted and
-stripped.
+Posting IDs are stable cache filename stems. A `.txt` suffix on input is
+accepted and stripped.
 
 ## Non-goals
 

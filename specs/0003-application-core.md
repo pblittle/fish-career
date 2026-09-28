@@ -23,7 +23,7 @@ src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
                   trace-sink, stores, clock
 src/application   use cases over a dependencies object
 src/adapters      ats, judge (jev, fake), filesystem, fake (in-memory)
-src/interfaces    mcp (server), cli (commands, demo)
+src/interfaces    mcp (server), cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
@@ -60,8 +60,6 @@ on read, so existing state survives.
 
 - Calibration draws use a seeded random source; the seed is recorded with the
   pending slice, and `--seed` redraws it.
-- The demo runs the real use cases over in-memory adapters and bundled
-  fixtures: no network, no API key, no user state.
 
 ### Errors
 
@@ -75,14 +73,10 @@ the MCP contract work in a later spec maps the codes to protocol errors.
 
 - The `fish` CLI is the blessed interface: `fetch`, `triage`, `evaluate`,
   `calibrate start|submit|reuse|rescore`, `watchlist list|probe|add|remove`,
-  `profile get|set`, `postings list|read|explain`, `demo`.
+  `profile get|set`, `postings list|read|explain`.
 - `postings explain` returns the raw typed answers and cost for one posting;
   `--dry-run` prints the request without sending it. `calibrate reuse` redraws
   the pending slice from its recorded seed.
-- The root `fetch.mjs`, `triage.mjs`, and `probe-boards.mjs` become shims over
-  the CLI and keep their old `FISH_HOME` default; the shims map retired flags
-  (`--explain`, `--dry-run`, `--reuse`, `--sample`, `--evaluate`) onto the
-  commands above.
 - The MCP tool names and behavior are unchanged by this spec; the typed,
   structured MCP contract is a separate change.
 
@@ -95,8 +89,7 @@ the MCP contract work in a later spec maps the codes to protocol errors.
 ## Acceptance
 
 - `npm --prefix fish-career test` green, including a complete-workflow test
-  over in-memory ports and a demo test with `fetch` stubbed to throw.
-- `fish demo` exits 0 with no API key and no network.
+  over in-memory ports with `fetch` stubbed to throw.
 - The I/O boundary, scoped to shipped source. No non-test file under
   `src/domain` or `src/application` imports an I/O builtin (`node:fs`,
   `node:child_process`, `node:net`, `node:http`, `node:http2`, `node:https`,
@@ -106,7 +99,7 @@ the MCP contract work in a later spec maps the codes to protocol errors.
   `src/interfaces/mcp` imports one of those builtins; under `src/`, `fetch`
   appears only in non-test files under `src/adapters`. `src/interfaces/cli`
   is the process edge, and a non-test file there may import `node:fs` for a
-  user-named file, bundled package data, and the demo harness's temp home;
+  user-named file and bundled package data;
   personal state still travels only through ports.
   `fish-career/scripts/check-boundaries.mjs` enforces this over `.ts`, `.mts`,
   and `.cts` files, and `npm --prefix fish-career run health` runs it.

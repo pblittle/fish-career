@@ -19,7 +19,6 @@
   },
   "files": [
     "dist",
-    "demo",
     "eval"
   ],
   "engines": {
@@ -33,12 +32,8 @@
   "bugs": {
     "url": "https://github.com/pblittle/fish-career/issues"
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
@@ -53,7 +48,7 @@
     "agents:sync": "node scripts/sync-agent-layer.mjs",
     "agents:check": "node scripts/sync-agent-layer.mjs --check",
     "check:boundaries": "node scripts/check-boundaries.mjs",
-    "health": "npm run lint && npm run typecheck && npm run test && npm run lint:md && npm run build && npm run verify:pack && npm run agents:check && npm run check:boundaries && node dist/index.js demo",
+    "health": "npm run lint && npm run typecheck && npm run test && npm run lint:md && npm run build && npm run verify:pack && npm run agents:check && npm run check:boundaries",
     "prepack": "npm run build"
   },
   "dependencies": {

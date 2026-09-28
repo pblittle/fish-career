@@ -41,7 +41,7 @@ non-test file under `src/interfaces` calls `fetch`; no non-test file under
 `src/interfaces/mcp` imports one of those builtins; under `src/`, `fetch`
 appears only in non-test files under `src/adapters`; and `src/interfaces/cli`
 is the process edge, where a non-test file may import `node:fs` for a
-user-named file, bundled package data, and the demo harness's temp home.**
+user-named file and bundled package data.**
 Test files are out of scope and may import those builtins freely. That is
 what lets the whole workflow run over in-memory adapters with no filesystem,
 clock, or network.

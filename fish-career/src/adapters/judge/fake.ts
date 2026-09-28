@@ -1,6 +1,6 @@
 // A deterministic stand-in for the judge. It exists so the pipeline can run
-// end to end with no API key and no network: the demo, the example host
-// configs, and any test that wants a scored table without recorded answers.
+// end to end with no API key and no network: the tests, the example host
+// configs, and any run with `FISH_JUDGE=fake`.
 //
 // It is NOT Jev and does not pretend to be. It reads the same state string a
 // real judge receives and answers the same typed questions with simple,

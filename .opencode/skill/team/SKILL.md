@@ -95,6 +95,7 @@ drifting across sessions, extract it to a host-native agent then, not before.
 ## Where a session is limited
 
 There is no `TYPESAFE_API_KEY` and no model key in CI or a cloud session.
-Tests, `quality`, and the demo use the fake judge and fake providers, and they
-are the proof that runs anywhere. Live judge proofs run on the founder's
-machine. Say which surface you ran on.
+Tests and `quality` use the fake judge and fake providers, and they are the
+proof that runs anywhere; `FISH_JUDGE=fake` gives a real run the same
+deterministic stand-in. Live judge proofs run on the founder's machine. Say
+which surface you ran on.

@@ -6,15 +6,12 @@
 import { createApplicationFromHome } from './bootstrap/create-application.js';
 import { createServerFromHome, packageVersion } from './bootstrap/create-server.js';
 import { runCli, USAGE } from './interfaces/cli/cli.js';
-import { runDemo } from './interfaces/cli/demo.js';
 import { startStdioServer } from './interfaces/mcp/server.js';
 
 const argv = process.argv.slice(2);
 const command = argv[0];
 
-if (command === 'demo') {
-  await runDemo({ keep: argv.includes('--keep') });
-} else if (command === '--help' || command === '-h') {
+if (command === '--help' || command === '-h') {
   console.log(USAGE);
 } else if (command === '--version' || command === '-v') {
   console.log(packageVersion());

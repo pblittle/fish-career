@@ -1,6 +1,6 @@
-// The application: one object of use cases over the ports. MCP, CLI, the
-// demo, and any future surface call these methods; none of them read a
-// directory, build a prompt, or decide a ranking themselves.
+// The application: one object of use cases over the ports. MCP, the CLI,
+// and any future surface call these methods; none of them read a directory,
+// build a prompt, or decide a ranking themselves.
 
 import type { CalibrationRecord } from '../domain/calibration.js';
 import type { TraceRecord } from '../ports/trace-sink.js';

@@ -72,5 +72,5 @@ the same thing however it was asked for. See
 ## Acceptance
 
 - `npm --prefix fish-career test` green, including the golden eval slice.
-- `node triage.mjs --evaluate` reports every revealed preference satisfied.
+- `fish evaluate` reports every revealed preference satisfied.
 - Every scored row is reproducible from `state/traces.jsonl`.

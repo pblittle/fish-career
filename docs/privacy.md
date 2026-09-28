@@ -53,9 +53,9 @@ launched it.
 **In scope, defended:**
 
 - **Secrets stay out of the package and the public repository.** The key
-  lives in `FISH_HOME/.env`; the package publishes `dist/`, `demo/`, and
-  `eval/` only, and the pack verification fails if personal state or `.env`
-  appears in the tarball.
+  lives in `FISH_HOME/.env`; the package publishes `dist/` and `eval/` only,
+  and the pack verification fails if personal state or `.env` appears in the
+  tarball.
 - **Posting text is untrusted data.** It is never executed, and it cannot
   change the pipeline's behavior. It is passed to the judge, which means a
   posting could try to prompt-inject the judge; the mitigation is structural:
