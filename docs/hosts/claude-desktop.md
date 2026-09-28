@@ -24,8 +24,8 @@ profile, watchlist, postings, and state:
 Restart Claude Desktop. The tools appear under the tools menu. Then follow the
 quickstart in the [README](../../README.md#quickstart).
 
-If you installed the package from npm instead of source, the same entry works
-with `"command": "npx"` and `"args": ["-y", "fish-career"]`.
+Once the package is published, the same entry works from npm with
+`"command": "npx"` and `"args": ["-y", "fish-career"]`.
 
 ## Verifying the connection
 

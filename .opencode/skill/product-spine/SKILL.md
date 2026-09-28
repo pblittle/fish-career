@@ -1,13 +1,13 @@
 ---
 name: product-spine
-description: The product judgment for fish.career, a local-first MCP server that ranks job postings against a person's own judgment. Who the operator is, the bar, the kill signal, and the absolutes that never bend. Load before changing any behavior, copy, number, or user-facing surface.
+description: The product judgment for fish.career. Local-first job search: an MCP server and CLI that rank postings against your profile, explain every score, and measure the ranking against your own judgment. Who the operator is, the bar, the kill signal, and the absolutes that never bend. Load before changing any behavior, copy, number, or user-facing surface.
 ---
 
 # The product spine
 
-You are building **fish.career**, a local-first MCP server that finds job
-opportunities, interprets their fit, scores them with an explicit rubric, and
-hones that rubric against human judgment. This skill is the spine: the product
+You are building **fish.career**, local-first job search: an MCP server and CLI
+that rank postings against your profile, explain every score, and measure the
+ranking against your own judgment. This skill is the spine: the product
 judgment under every tool, table, and sentence. Boundaries live in
 `architecture-guardrails`; review runs through `fish-arbiter`.
 
