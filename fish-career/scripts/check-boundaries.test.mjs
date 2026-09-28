@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { checkBoundaries } from './check-boundaries.mjs';
 
@@ -16,6 +16,12 @@ const fixture = ({ source = '', deps = {}, devDeps = {} }) => {
   mkdirSync(join(root, 'src'), { recursive: true });
   writeFileSync(join(root, 'src', 'index.ts'), source);
   return root;
+};
+
+const addFile = (root, rel, source) => {
+  const full = join(root, 'src', rel);
+  mkdirSync(dirname(full), { recursive: true });
+  writeFileSync(full, source);
 };
 
 afterEach(() => {
@@ -73,5 +79,131 @@ describe('checkBoundaries', () => {
     const root = fixture({ source: "import 'a-framework';\n" });
     writeFileSync(join(root, 'src', 'other.ts'), "import 'another-framework';\n");
     expect(checkBoundaries({ packageRoot: root }).violations).toHaveLength(2);
+  });
+});
+
+describe('the spec 0003 I/O boundary', () => {
+  it('rejects node:fs under src/domain and src/application', () => {
+    const root = fixture({});
+    addFile(root, 'domain/posting.ts', "import { readFileSync } from 'node:fs';\n");
+    addFile(
+      root,
+      'application/fetch-postings.ts',
+      "import { readFileSync } from 'node:fs/promises';\n",
+    );
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(2);
+    expect(
+      violations.some(
+        (v) =>
+          v.includes('src/domain/posting.ts') &&
+          v.includes('node:fs') &&
+          v.includes('src/domain and src/application'),
+      ),
+    ).toBe(true);
+    expect(
+      violations.some(
+        (v) => v.includes('src/application/fetch-postings.ts') && v.includes('node:fs/promises'),
+      ),
+    ).toBe(true);
+  });
+
+  it('rejects a fetch call under src/domain and src/application', () => {
+    const root = fixture({});
+    addFile(root, 'domain/quality.ts', 'const res = await fetch(url);\n');
+    addFile(root, 'application/fetch-postings.ts', 'return fetch(url);\n');
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(2);
+    expect(
+      violations.some((v) => v.includes('src/domain/quality.ts') && v.includes('calls fetch')),
+    ).toBe(true);
+  });
+
+  it('does not flag an identifier that merely contains the word fetch', () => {
+    const root = fixture({});
+    addFile(
+      root,
+      'application/fetch-postings.ts',
+      'export const fetchPostings = () => 1;\napp.fetchPostings();\n',
+    );
+    expect(checkBoundaries({ packageRoot: root }).violations).toEqual([]);
+  });
+
+  it('rejects node:fs under src/interfaces/mcp', () => {
+    const root = fixture({});
+    addFile(root, 'interfaces/mcp/tools.ts', "import { readFileSync } from 'node:fs';\n");
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toContain('src/interfaces/mcp/tools.ts');
+    expect(violations[0]).toContain('src/interfaces/mcp');
+  });
+
+  it('rejects a fetch call under src/interfaces', () => {
+    const root = fixture({});
+    addFile(root, 'interfaces/mcp/tools.ts', 'const res = await fetch(url);\n');
+    addFile(root, 'interfaces/cli/cli.ts', 'await fetch(url);\n');
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(2);
+    expect(violations.every((v) => v.includes('calls fetch') && v.includes('src/interfaces'))).toBe(
+      true,
+    );
+  });
+
+  it('allows node:fs under src/interfaces/cli, static or dynamic', () => {
+    const root = fixture({});
+    addFile(root, 'interfaces/cli/quality.ts', "import { readFileSync } from 'node:fs';\n");
+    addFile(root, 'interfaces/cli/cli.ts', "const { readFileSync } = await import('node:fs');\n");
+    expect(checkBoundaries({ packageRoot: root }).violations).toEqual([]);
+  });
+
+  it('rejects fetch outside src/adapters, even in ports or bootstrap', () => {
+    const root = fixture({});
+    addFile(root, 'ports/ats-provider.ts', 'return fetch(url);\n');
+    addFile(root, 'bootstrap/version.ts', 'return fetch(url);\n');
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(2);
+    expect(violations.every((v) => v.includes('src/adapters') && v.includes('allowed only'))).toBe(
+      true,
+    );
+  });
+
+  it('allows fetch under src/adapters', () => {
+    const root = fixture({});
+    addFile(root, 'adapters/ats/providers.ts', 'const res = await fetch(url);\n');
+    expect(checkBoundaries({ packageRoot: root }).violations).toEqual([]);
+  });
+
+  it('allows node:fs in a test file under src/domain, src/application, or src/interfaces/mcp', () => {
+    const root = fixture({});
+    addFile(root, 'domain/preferences.test.ts', "import { readFileSync } from 'node:fs';\n");
+    addFile(
+      root,
+      'application/fetch-postings.test.ts',
+      "import { readFileSync } from 'node:fs';\n",
+    );
+    addFile(root, 'interfaces/mcp/server.test.ts', "import { readFileSync } from 'node:fs';\n");
+    expect(checkBoundaries({ packageRoot: root }).violations).toEqual([]);
+  });
+
+  it('allows a fetch call in a test file under src/interfaces', () => {
+    const root = fixture({});
+    addFile(root, 'interfaces/mcp/server.test.ts', 'await fetch(url);\n');
+    expect(checkBoundaries({ packageRoot: root }).violations).toEqual([]);
+  });
+
+  it('still checks the dependency allowlist in test files', () => {
+    const root = fixture({});
+    addFile(
+      root,
+      'domain/preferences.test.ts',
+      "import { StateGraph } from '@langchain/langgraph';\n",
+    );
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toContain('@langchain/langgraph');
+  });
+
+  it('passes on the real tree, which is the tree the rule must fit', () => {
+    expect(checkBoundaries().violations).toEqual([]);
   });
 });
