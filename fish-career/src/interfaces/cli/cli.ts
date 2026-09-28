@@ -26,7 +26,7 @@ export interface CliDeps {
 const defaultEvalDir = (): string =>
   join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'eval');
 
-export const USAGE = `fish.career: a local-first MCP server and CLI for job search
+export const USAGE = `fish.career: local-first job search — an MCP server and CLI
 that rank postings against your profile, explain every score, and measure the
 ranking against your own judgment.
 
