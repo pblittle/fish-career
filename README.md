@@ -2,9 +2,9 @@
 
 [![test](https://github.com/pblittle/fish-career/actions/workflows/test.yml/badge.svg)](https://github.com/pblittle/fish-career/actions/workflows/test.yml)
 
-fish.career is a local-first MCP server and CLI that finds job opportunities,
-scores them with an explicit rubric, and measures the ranking against your own
-judgment.
+fish.career is local-first job search: an MCP server and CLI that rank postings
+against your profile, explain every score, and measure the ranking against your
+own judgment.
 
 The scarce resource is your attention. Job boards optimize for the opposite:
 an unbounded feed, ranked by signals you cannot see and cannot argue with.

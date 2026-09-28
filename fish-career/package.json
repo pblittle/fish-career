@@ -1,7 +1,7 @@
 {
   "name": "fish-career",
   "version": "0.8.0",
-  "description": "A local-first MCP server and CLI that finds job opportunities, scores them with an explicit rubric, and measures the ranking against your own judgment.",
+  "description": "Local-first job search: an MCP server and CLI that rank postings against your profile, explain every score, and measure the ranking against your own judgment.",
   "keywords": [
     "job-search",
     "career",

@@ -1,7 +1,8 @@
 # fish-career
 
-A local-first MCP server and CLI that finds job opportunities, scores them
-with an explicit rubric, and measures the ranking against your own judgment.
+Local-first job search: an MCP server and CLI that rank postings against your
+profile, explain every score, and measure the ranking against your own
+judgment.
 
 This is the package README. The repository has the architecture, the specs,
 and the full walkthrough: **<https://github.com/pblittle/fish-career>**
