@@ -17,7 +17,7 @@ holds no state at all.
 | `preferences.json` | Pairwise preferences the ranking must satisfy, each with its source line |
 | `.env` | `TYPESAFE_API_KEY`, read at startup |
 | `postings/` | Cached posting text from public ATS APIs |
-| `state/seen.json` | Every posting observed, so polls deliver arrivals only |
+| `state/seen.json` | Every remote posting observed, with `observedAt`, its first-observation time, so polls deliver arrivals only |
 | `state/scored.json` | Ledger of scores with profile hash and rubric version |
 | `state/traces.jsonl` | One record per judge call: latency, tokens, raw answers |
 | `state/verdicts.json` | Your grades on cached arrivals, with the profile hash and rubric version current when you made each call |
@@ -53,9 +53,9 @@ launched it.
 **In scope, defended:**
 
 - **Secrets stay out of the package and the public repository.** The key
-  lives in `FISH_HOME/.env`; the package publishes `dist/` and `demo/` only,
-  and the pack verification fails if personal state or `.env` appears in the
-  tarball.
+  lives in `FISH_HOME/.env`; the package publishes `dist/`, `demo/`, and
+  `eval/` only, and the pack verification fails if personal state or `.env`
+  appears in the tarball.
 - **Posting text is untrusted data.** It is never executed, and it cannot
   change the pipeline's behavior. It is passed to the judge, which means a
   posting could try to prompt-inject the judge; the mitigation is structural:

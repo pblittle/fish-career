@@ -57,10 +57,10 @@ separate repositories make drift the default.
 The split triggers are enumerated in `docs/adr/0001-product-boundary.md`; the
 short version is a hosted product, multi-user identity, private data, a
 divergent release cadence, a second team, or billing and notification
-infrastructure. The extraction is already cheap: the package publishes `dist/`
-only, ships a `bin`, and owns no state, so "publish `fish-career` and depend on
-it" is additive. Deferring the split is a decision; making the extraction cheap
-is what pays for it.
+infrastructure. The extraction is already cheap: the package publishes
+`dist/`, `demo/`, and `eval/`, ships a `bin`, and owns no state, so "publish
+`fish-career` and depend on it" is additive. Deferring the split is a decision;
+making the extraction cheap is what pays for it.
 
 ## State lives outside the package
 
