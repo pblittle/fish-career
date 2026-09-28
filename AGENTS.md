@@ -32,11 +32,11 @@ The dependency direction is inward and never reverses: `domain` under
 `application` under `interfaces`; `adapters` implement ports and depend
 inward; `bootstrap` wires. No non-test file under `src/domain` or
 `src/application` imports an I/O builtin (`node:fs`, `node:child_process`,
-`node:net`, `node:http`, `node:https`, `node:dns`, `node:worker_threads`,
-`node:module`) or calls `fetch`; no non-test file under `src/interfaces`
-calls `fetch`; no non-test file under `src/interfaces/mcp` imports one of
-those builtins; and under `src/`, `fetch` lives only in non-test files under
-`src/adapters`. `src/interfaces/cli` is the process edge: a non-test file
+`node:net`, `node:http`, `node:http2`, `node:https`, `node:tls`, `node:dns`,
+`node:dgram`, `node:worker_threads`, `node:module`) or calls `fetch`; no
+non-test file under `src/interfaces` calls `fetch`; no non-test file under
+`src/interfaces/mcp` imports one of those builtins; and under `src/`, `fetch`
+lives only in non-test files under `src/adapters`. `src/interfaces/cli` is the process edge: a non-test file
 there may import `node:fs` for a user-named file, bundled package data, and
 the demo harness's temp home. That is spec 0003's acceptance rule, which
 `check-boundaries` enforces; test files are out of scope and may import

@@ -150,7 +150,18 @@ describe('the spec 0003 I/O boundary', () => {
   });
 
   it('rejects every banned builtin under the core and src/interfaces/mcp', () => {
-    const builtins = ['child_process', 'net', 'http', 'https', 'dns', 'worker_threads', 'module'];
+    const builtins = [
+      'child_process',
+      'net',
+      'http',
+      'http2',
+      'https',
+      'tls',
+      'dns',
+      'dgram',
+      'worker_threads',
+      'module',
+    ];
     const root = fixture({});
     builtins.forEach((name, i) => {
       addFile(root, `domain/io-${i}.ts`, `import 'node:${name}';\n`);

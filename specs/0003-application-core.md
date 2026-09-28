@@ -99,8 +99,9 @@ the MCP contract work in a later spec maps the codes to protocol errors.
 - `fish demo` exits 0 with no API key and no network.
 - The I/O boundary, scoped to shipped source. No non-test file under
   `src/domain` or `src/application` imports an I/O builtin (`node:fs`,
-  `node:child_process`, `node:net`, `node:http`, `node:https`, `node:dns`,
-  `node:worker_threads`, `node:module`) or calls `fetch`; no non-test file
+  `node:child_process`, `node:net`, `node:http`, `node:http2`, `node:https`,
+  `node:tls`, `node:dns`, `node:dgram`, `node:worker_threads`,
+  `node:module`) or calls `fetch`; no non-test file
   under `src/interfaces` calls `fetch`; no non-test file under
   `src/interfaces/mcp` imports one of those builtins; under `src/`, `fetch`
   appears only in non-test files under `src/adapters`. `src/interfaces/cli`

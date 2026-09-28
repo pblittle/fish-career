@@ -20,8 +20,9 @@
 // every file, tests included.
 //
 //   - no non-test file under src/domain or src/application imports an I/O
-//     builtin (node:fs, node:child_process, node:net, node:http, node:https,
-//     node:dns, node:worker_threads, node:module) or calls fetch;
+//     builtin (node:fs, node:child_process, node:net, node:http, node:http2,
+//     node:https, node:tls, node:dns, node:dgram, node:worker_threads,
+//     node:module) or calls fetch;
 //   - no non-test file under src/interfaces calls fetch;
 //   - no non-test file under src/interfaces/mcp imports one of those
 //     builtins;
@@ -59,7 +60,7 @@ const SPECIFIER = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g;
 // covers its subpaths (node:fs/promises). Keep this list in step with the
 // rule text in spec 0003 and AGENTS.md.
 const BANNED_BUILTIN =
-  /^node:(?:fs|child_process|net|http|https|dns|worker_threads|module)(?:\/|$)/;
+  /^node:(?:fs|child_process|net|http2|https|http|tls|dns|dgram|worker_threads|module)(?:\/|$)/;
 // A fetch call site. Identifiers that merely contain the word (fetchPostings)
 // do not match, but neither does an alias that never says `fetch(`.
 const FETCH_CALL = /\bfetch\s*\(/;
