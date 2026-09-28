@@ -98,18 +98,23 @@ the MCP contract work in a later spec maps the codes to protocol errors.
   over in-memory ports and a demo test with `fetch` stubbed to throw.
 - `fish demo` exits 0 with no API key and no network.
 - The I/O boundary, scoped to shipped source. No non-test file under
-  `src/domain` or `src/application` imports `node:fs` or calls `fetch`; no
-  non-test file under `src/interfaces` calls `fetch`; no non-test file under
-  `src/interfaces/mcp` imports `node:fs`; under `src/`, `fetch` appears only
-  in non-test files under `src/adapters`. `src/interfaces/cli` is the process
-  edge, and a non-test file there may import `node:fs` for a user-named file,
-  bundled package data, and the demo harness's temp home; personal state still
-  travels only through ports. `fish-career/scripts/check-boundaries.mjs`
-  enforces this, and `npm --prefix fish-career run health` runs it.
-- Test files are out of scope of that rule and may import `node:fs` freely:
-  they are excluded from the build (`tsconfig.build.json`) and from the
-  package (`files`), and the invariant is about the runtime boundary. The
-  earlier unqualified wording implied otherwise and was already violated by
-  `src/domain/preferences.test.ts`, `src/interfaces/cli/quality.test.ts`, and
-  `src/interfaces/cli/demo.test.ts`. The dependency allowlist in the same
-  check still covers every file, tests included.
+  `src/domain` or `src/application` imports an I/O builtin (`node:fs`,
+  `node:child_process`, `node:net`, `node:http`, `node:https`, `node:dns`,
+  `node:worker_threads`, `node:module`) or calls `fetch`; no non-test file
+  under `src/interfaces` calls `fetch`; no non-test file under
+  `src/interfaces/mcp` imports one of those builtins; under `src/`, `fetch`
+  appears only in non-test files under `src/adapters`. `src/interfaces/cli`
+  is the process edge, and a non-test file there may import `node:fs` for a
+  user-named file, bundled package data, and the demo harness's temp home;
+  personal state still travels only through ports.
+  `fish-career/scripts/check-boundaries.mjs` enforces this over `.ts`, `.mts`,
+  and `.cts` files, and `npm --prefix fish-career run health` runs it.
+- Test files are out of scope of that rule and may import those builtins
+  freely: they are excluded from the build (`tsconfig.build.json`) and from
+  the package (`files`), and the invariant is about the runtime boundary. The
+  earlier unqualified wording named only `node:fs` and covered only
+  `src/interfaces` and `src/application`; it was already violated by
+  `src/interfaces/cli/quality.test.ts` and
+  `src/interfaces/cli/demo.test.ts`. `src/domain/preferences.test.ts` was
+  outside that wording (and is test-exempt now). The dependency allowlist in
+  the same check still covers every file, tests included.

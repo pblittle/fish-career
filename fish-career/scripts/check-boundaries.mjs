@@ -13,15 +13,18 @@
 //
 // This also enforces spec 0003's I/O boundary, as amended on 2026-09-27.
 // The rule is about the shipped runtime, so it scopes to non-test files; a
-// non-test file is any file not ending in .test.ts. Test harnesses (excluded
-// from the build by tsconfig.build.json and from the package by `files`) may
-// import node:fs freely. The allowlist half above still covers every file,
-// tests included.
+// non-test file is a .ts, .mts, or .cts file that does not end in .test.ts,
+// .test.mts, or .test.cts. Test harnesses (excluded from the build by
+// tsconfig.build.json and from the package by `files`) are out of scope and
+// may import these builtins freely. The allowlist half above still covers
+// every file, tests included.
 //
-//   - no non-test file under src/domain or src/application imports node:fs or
-//     calls fetch;
+//   - no non-test file under src/domain or src/application imports an I/O
+//     builtin (node:fs, node:child_process, node:net, node:http, node:https,
+//     node:dns, node:worker_threads, node:module) or calls fetch;
 //   - no non-test file under src/interfaces calls fetch;
-//   - no non-test file under src/interfaces/mcp imports node:fs;
+//   - no non-test file under src/interfaces/mcp imports one of those
+//     builtins;
 //   - under src/, fetch appears only in non-test files under src/adapters;
 //   - src/interfaces/cli is the process edge, and a non-test file there may
 //     import node:fs: reading a user-named file, reading bundled package data,
@@ -32,11 +35,14 @@
 // and the MCP server, which runs in a host, honest about the same boundary.
 // The CLI is the process edge.
 //
-// node:fs is detected through import specifiers, static and dynamic. fetch is
-// a global, so it cannot be caught by its import specifier; the scan looks for
-// call sites instead. Known limits of that scan: it does not parse, so the
-// word `fetch(` inside a comment or a string is reported (a false positive),
-// and an alias such as `const f = fetch; f()` is missed (a false negative).
+// The banned builtins are detected through import specifiers, static and
+// dynamic. fetch is a global, so it cannot be caught by its import specifier,
+// and the scan looks for call sites instead. Known limits of this non-parsing
+// scan: the word `fetch(` inside a comment or a string is reported (a false
+// positive); an alias (`const f = fetch; f()`), an optional call
+// (`fetch?.()`), bracket access (`globalThis['fetch']`), a computed dynamic
+// import specifier (`import(specifier)`), and `require`/`createRequire` are
+// missed (false negatives).
 //
 // Run by CI and available as `npm run check:boundaries`.
 
@@ -49,18 +55,26 @@ const PACKAGE_ROOT = resolve(HERE, '..');
 
 // Matches `from 'x'`, bare `import 'x'`, and `import('x')` in one pass.
 const SPECIFIER = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g;
-// node:fs and its subpaths (node:fs/promises).
-const NODE_FS = /^node:fs(?:\/|$)/;
+// The I/O and process builtins the shipped core never reaches for; node:fs
+// covers its subpaths (node:fs/promises). Keep this list in step with the
+// rule text in spec 0003 and AGENTS.md.
+const BANNED_BUILTIN =
+  /^node:(?:fs|child_process|net|http|https|dns|worker_threads|module)(?:\/|$)/;
 // A fetch call site. Identifiers that merely contain the word (fetchPostings)
 // do not match, but neither does an alias that never says `fetch(`.
 const FETCH_CALL = /\bfetch\s*\(/;
+
+const SOURCE_SUFFIXES = ['.ts', '.mts', '.cts'];
+const TEST_SUFFIXES = ['.test.ts', '.test.mts', '.test.cts'];
+const isSource = (name) => SOURCE_SUFFIXES.some((suffix) => name.endsWith(suffix));
+const isTestFile = (name) => TEST_SUFFIXES.some((suffix) => name.endsWith(suffix));
 
 const walk = (dir) => {
   const out = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) out.push(...walk(full));
-    else if (entry.name.endsWith('.ts')) out.push(full);
+    else if (isSource(entry.name)) out.push(full);
   }
   return out;
 };
@@ -90,14 +104,14 @@ export const checkBoundaries = ({ packageRoot = PACKAGE_ROOT, sourceDir } = {}) 
     const adapters = inZone('adapters');
     // The I/O rule scopes to shipped source; tests are not part of the runtime
     // boundary. The dependency allowlist still applies to every file.
-    const isTest = file.endsWith('.test.ts');
+    const isTest = isTestFile(file);
 
     for (const match of text.matchAll(SPECIFIER)) {
       const spec = match[1];
       specifiers.add(spec);
 
       if (spec.startsWith('node:')) {
-        if (!isTest && NODE_FS.test(spec)) {
+        if (!isTest && BANNED_BUILTIN.test(spec)) {
           if (core) {
             violations.push(
               `${where} imports ${spec}, which src/domain and src/application forbid (spec 0003)`,

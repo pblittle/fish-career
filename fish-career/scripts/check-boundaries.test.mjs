@@ -149,6 +149,42 @@ describe('the spec 0003 I/O boundary', () => {
     );
   });
 
+  it('rejects every banned builtin under the core and src/interfaces/mcp', () => {
+    const builtins = ['child_process', 'net', 'http', 'https', 'dns', 'worker_threads', 'module'];
+    const root = fixture({});
+    builtins.forEach((name, i) => {
+      addFile(root, `domain/io-${i}.ts`, `import 'node:${name}';\n`);
+      addFile(root, `interfaces/mcp/io-${i}.ts`, `import 'node:${name}';\n`);
+    });
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(builtins.length * 2);
+    for (const name of builtins) {
+      expect(violations.some((v) => v.includes(`node:${name}`))).toBe(true);
+    }
+  });
+
+  it('rejects a dynamic import of a banned builtin under the core and src/interfaces/mcp', () => {
+    const root = fixture({});
+    addFile(root, 'domain/lazy.ts', "const { readFileSync } = await import('node:fs');\n");
+    addFile(root, 'interfaces/mcp/lazy.ts', "const { connect } = await import('node:net');\n");
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(2);
+    expect(violations.some((v) => v.includes('node:fs'))).toBe(true);
+    expect(violations.some((v) => v.includes('node:net'))).toBe(true);
+  });
+
+  it('covers .mts and .cts sources, and treats their test files as tests', () => {
+    const root = fixture({});
+    addFile(root, 'domain/io.mts', "import { readFileSync } from 'node:fs';\n");
+    addFile(root, 'application/io.cts', "import { connect } from 'node:net';\n");
+    addFile(root, 'domain/preferences.test.mts', "import { readFileSync } from 'node:fs';\n");
+    addFile(root, 'application/fetch-postings.test.cts', "import { connect } from 'node:net';\n");
+    const { violations } = checkBoundaries({ packageRoot: root });
+    expect(violations).toHaveLength(2);
+    expect(violations.some((v) => v.includes('io.mts'))).toBe(true);
+    expect(violations.some((v) => v.includes('io.cts'))).toBe(true);
+  });
+
   it('allows node:fs under src/interfaces/cli, static or dynamic', () => {
     const root = fixture({});
     addFile(root, 'interfaces/cli/quality.ts', "import { readFileSync } from 'node:fs';\n");
@@ -188,6 +224,7 @@ describe('the spec 0003 I/O boundary', () => {
   it('allows a fetch call in a test file under src/interfaces', () => {
     const root = fixture({});
     addFile(root, 'interfaces/mcp/server.test.ts', 'await fetch(url);\n');
+    addFile(root, 'interfaces/mcp/server.test.mts', 'await fetch(url);\n');
     expect(checkBoundaries({ packageRoot: root }).violations).toEqual([]);
   });
 
