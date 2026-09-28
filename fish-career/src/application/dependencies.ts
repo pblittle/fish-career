@@ -1,6 +1,6 @@
 // Everything a use case may reach for, stated once. The application never
 // imports a filesystem, a network client, or a global; bootstrap wires the
-// real adapters, tests wire fakes, and the demo wires fixtures.
+// real adapters and tests wire fakes.
 
 import type { RandomSource } from '../domain/random.js';
 import type { AtsProviders } from '../ports/ats-provider.js';

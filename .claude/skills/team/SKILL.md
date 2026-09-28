@@ -24,7 +24,7 @@ Carry what it needs in the brief.
 | `evaluation-scientist` | `src/application/evaluate-ranking.ts`, `src/application/calibrate-ranking.ts`, `src/domain/rubric.ts`, `src/domain/calibration.ts`, `src/adapters/judge/`, `src/adapters/trace/`, `fish-career/eval/` | measurement: metrics, holdout sets, sensitivity, trace provenance, experiment tooling |
 | `provider-engineer` | `src/adapters/ats/`, `src/domain/posting.ts` | provider contracts: normalization, empty and malformed boards, pagination, rate limits, duplicates, thin data |
 | `docs-critic` | `README.md`, `docs/`, `specs/`, package docs (not `docs/plans/`) | claims versus implementation, onboarding, adoption and operations docs |
-| `release-warden` | `.github/`, `fish-career/package.json`, `fish-career/scripts/`, release config | CI, packaging, tarball verification, the health gate, release and provenance |
+| `release-warden` | `.github/`, `fish-career/package.json`, `fish-career/scripts/` | CI, packaging, tarball verification, the health gate |
 
 The host's own general subagent is the sixth member: tests and docs for a
 change another member made, dispatched onto that member's branch after it
@@ -95,6 +95,7 @@ drifting across sessions, extract it to a host-native agent then, not before.
 ## Where a session is limited
 
 There is no `TYPESAFE_API_KEY` and no model key in CI or a cloud session.
-Tests, `quality`, and the demo use the fake judge and fake providers, and they
-are the proof that runs anywhere. Live judge proofs run on the founder's
-machine. Say which surface you ran on.
+Tests and `quality` use the fake judge and fake providers, and they are the
+proof that runs anywhere; `FISH_JUDGE=fake` gives a real run the same
+deterministic stand-in. Live judge proofs run on the founder's machine. Say
+which surface you ran on.

@@ -1,8 +1,8 @@
 import type { Posting } from '../../domain/posting.js';
 import type { AtsProvider, AtsProviders } from '../../ports/ats-provider.js';
 
-// A provider backed by an object: slug to postings. Tests and the demo use it
-// to exercise the fetch use case with no network.
+// A provider backed by an object: slug to postings. The tests use it to
+// exercise the fetch use case with no network.
 export const memoryProviders = (
   boards: Record<string, Record<string, Posting[]>>,
 ): AtsProviders => {

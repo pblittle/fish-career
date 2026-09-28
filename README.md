@@ -23,17 +23,19 @@ npm ci --prefix fish-career
 npm run build --prefix fish-career
 ```
 
-See the whole pipeline run over bundled fixtures with no API key, no network,
-and no user state, in a temp directory it removes afterwards:
+Or drive the loop from the CLI. Link it once so the bare `fish` name exists
+(`npm --prefix fish-career link`), and put `FISH_JUDGE=fake` in
+`$FISH_HOME/.env` to score with the deterministic stand-in
+(`src/adapters/judge/fake.ts`) before spending anything; a TypeSafe key turns
+on the real judge. A flow to start from:
 
 ```bash
-node fish-career/dist/index.js demo
+fish profile set <path>                      # the judgment target; see docs/getting-started.md
+fish watchlist probe <slug>                  # read a title or two; slugs collide
+fish watchlist add "Company" <provider> <slug>
+fish fetch
+fish triage
 ```
-
-The demo prints a ranked table, holds the ranking to the fixture profile's
-stated preferences, and compares a blind human order against the judge. The
-judge in the demo is a documented stand-in (`src/adapters/judge/fake.ts`), not
-a model, and the demo says so in its first lines.
 
 Point a host at the server by adding it to your MCP config. Claude Desktop:
 
@@ -92,7 +94,7 @@ Future API ──────┘         │
 
 - **One application core, many surfaces.** The MCP server and the `fish` CLI
   call the same use cases; neither reads a directory, builds a judge prompt,
-  or decides an order. The demo runs the whole workflow over in-memory
+  or decides an order. The test suite runs the whole workflow over in-memory
   adapters, which is what proves the core has no hidden filesystem, network,
   or clock dependency.
 - **The judge is untrusted.** One request per posting: five typed Score
@@ -149,8 +151,8 @@ the workflows ship as prompts.
 Every tool result carries `structuredContent` that validates against its
 declared output schema, plus a text rendering for chat hosts. Expected
 failures return `isError: true` with a stable code (`NO_PROFILE`,
-`NOTHING_TO_SCORE`, `POSTING_NOT_FOUND`, ...) and a hint. Upgrading from the
-0.4 tool names: [`docs/mcp-migration.md`](./docs/mcp-migration.md).
+`NOTHING_TO_SCORE`, `POSTING_NOT_FOUND`, ...) and a hint. The full contract
+and the complete code list: [`specs/0004-mcp-contract.md`](./specs/0004-mcp-contract.md).
 
 ## The command line
 
@@ -158,7 +160,6 @@ The same use cases are available as `fish`, which is what the scripts below
 call. `fish` with no arguments starts the MCP server.
 
 ```bash
-fish demo [--keep]                          # the credential-free demo
 fish fetch [--company X] [--days N] [--all] # poll, write arrivals, report drops
 fish arrivals [grade <postingId> <0|1|2|3> | summary] # grade arrivals, report precision
 fish triage [--rescore] [postingId...]      # score and rank
@@ -174,9 +175,7 @@ fish postings list | read <postingId> | explain <postingId> [--dry-run]
 ```
 
 From a source checkout, run it as `node fish-career/dist/index.js <command>`
-or link it (`npm --prefix fish-career link`). The root `fetch.mjs`,
-`triage.mjs`, and `probe-boards.mjs` are shims over these commands and keep
-their old `FISH_HOME` default.
+or link it (`npm --prefix fish-career link`).
 
 ## Ranking quality
 
@@ -245,13 +244,11 @@ profile, watchlist, postings, and calibrations out of any public one.
 npm ci --prefix fish-career
 npm --prefix fish-career run health     # the gate CI runs
 npm test --prefix fish-career           # vitest; deterministic, no network
-node fish-career/dist/index.js demo
 ```
 
 A behavior change lands with a spec in [`specs/`](./specs); an architectural
-decision lands as an ADR in [`docs/adr/`](./docs/adr). Releases are cut by
-release-please from conventional commits. The details, including signing and
-the npm publish gate: [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+decision lands as an ADR in [`docs/adr/`](./docs/adr). Signing, commit
+conventions, and the gate: [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## Where to look next
 
@@ -259,7 +256,6 @@ the npm publish gate: [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md) — the decisions and why
 - [`docs/quality-report.md`](./docs/quality-report.md) — the ranking-quality measurement in full
 - [`docs/privacy.md`](./docs/privacy.md) — what is stored and what leaves the machine
-- [`docs/mcp-migration.md`](./docs/mcp-migration.md) — upgrading from the 0.4 MCP surface
 - [`examples/langgraph`](./examples/langgraph) — the same application API under LangGraph
 - [`specs/`](./specs) — behavior contracts, starting at [`specs/0001-posting-pipeline.md`](./specs/0001-posting-pipeline.md)
 - [`docs/adr/`](./docs/adr) — architecture decisions

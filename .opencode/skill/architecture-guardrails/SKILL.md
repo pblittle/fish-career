@@ -41,7 +41,7 @@ non-test file under `src/interfaces` calls `fetch`; no non-test file under
 `src/interfaces/mcp` imports one of those builtins; under `src/`, `fetch`
 appears only in non-test files under `src/adapters`; and `src/interfaces/cli`
 is the process edge, where a non-test file may import `node:fs` for a
-user-named file, bundled package data, and the demo harness's temp home.**
+user-named file and bundled package data.**
 Test files are out of scope and may import those builtins freely. That is
 what lets the whole workflow run over in-memory adapters with no filesystem,
 clock, or network.
@@ -83,7 +83,8 @@ Use cases throw `ApplicationError` with a code from the closed set in
 `src/domain/errors.ts` (`NO_JUDGE`, `NO_PROFILE`, `EMPTY_WATCHLIST`,
 `NOTHING_TO_SCORE`, `NO_PREFERENCES`, `POSTING_NOT_FOUND`, `INVALID_RANKING`,
 `NO_PENDING_CALIBRATION`, `NO_CALIBRATION_HISTORY`, `LEDGER_UNREADABLE`,
-`INVALID_COMPANY`, `UNKNOWN`). Surfaces render the message and map the code to
+`INVALID_COMPANY`, `INVALID_GRADE`, `VERDICTS_UNREADABLE`, `UNKNOWN`).
+Surfaces render the message and map the code to
 the protocol (`isError: true` plus a recovery hint over MCP); they do not
 invent codes. An expected domain failure is a result with a name, not an
 exception to swallow.

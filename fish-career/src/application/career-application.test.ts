@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   fixedClock,
   memoryCalibrationStore,
@@ -106,6 +106,17 @@ const fetchAndRank = async (h: Harness) => {
 };
 
 describe('the complete workflow over in-memory ports', () => {
+  // The spec's proof: the complete workflow over in-memory ports never
+  // touches the network. A regression that adds a call fails here, loudly.
+  beforeEach(() => {
+    vi.stubGlobal('fetch', () => {
+      throw new Error('the workflow must not touch the network');
+    });
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('fetches arrivals, scores them, and leaves the cache and ledger consistent', async () => {
     const h = harness();
     const { fetched, ranked } = await fetchAndRank(h);

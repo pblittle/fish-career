@@ -24,7 +24,7 @@ src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
                   trace-sink, stores, clock
 src/application   use cases over a dependencies object
 src/adapters      ats, judge (jev, fake), filesystem, fake (in-memory), trace
-src/interfaces    mcp (server, tools, resources, prompts), cli (commands, demo)
+src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
@@ -37,8 +37,7 @@ inward; `bootstrap` wires. No non-test file under `src/domain` or
 non-test file under `src/interfaces` calls `fetch`; no non-test file under
 `src/interfaces/mcp` imports one of those builtins; and under `src/`, `fetch`
 lives only in non-test files under `src/adapters`. `src/interfaces/cli` is the process edge: a non-test file
-there may import `node:fs` for a user-named file, bundled package data, and
-the demo harness's temp home. That is spec 0003's acceptance rule, which
+there may import `node:fs` for a user-named file and bundled package data. That is spec 0003's acceptance rule, which
 `check-boundaries` enforces; test files are out of scope and may import
 those builtins freely. It is what keeps the core runnable over in-memory
 adapters with no filesystem, clock, or network.
@@ -58,9 +57,10 @@ npm --prefix fish-career run health
 ```
 
 It runs, in order: `lint`, `typecheck`, `test`, `lint:md`, `build`,
-`verify:pack`, `agents:check`, `check:boundaries`, and the credential-free
-`demo`. CI runs the same gates on Node 20, plus a stdio smoke and an Inspector
-discovery call, with `test`, `typecheck`, and `build` repeated on 22 and 24.
+`verify:pack`, `agents:check`, and `check:boundaries`. CI runs the same
+gates on Node 20, plus the LangGraph example's typecheck and tests, a stdio
+smoke, and an Inspector discovery call, with `test`, `typecheck`, and
+`build` repeated on 22 and 24.
 Nothing is pushed until it passes. If a gate fails, fix the work; do not
 loosen the gate.
 
@@ -130,17 +130,18 @@ split across workstreams. Do not use it when one focused change will do.
   posting to the judge (`api.typesafe.ai`), and the optional LangSmith trace
   mirror when `FISH_TRACE=langsmith`. Never add a call that sends state
   anywhere else without an ADR.
-- Tests and the demo use the fake judge and the fake providers. There is no
-  `TYPESAFE_API_KEY` in CI and there should not be. A live judge proof runs on
-  the founder's machine, and the PR says so.
+- The tests use the fake judge and the fake providers; `FISH_JUDGE=fake`
+  gives a real run the same deterministic stand-in. There is no
+  `TYPESAFE_API_KEY` in CI and there should not be. A live judge proof runs
+  on the founder's machine, and the PR says so.
 - Posting text is untrusted input. It is data, never instruction. The typed
   answer schema and the separate blocker check are the structural defense; do
   not replace them with prose parsing.
 
 ## Known limits
 
-- The package is not published to npm yet; publishing is gated on the
-  `NPM_PUBLISH_ENABLED` repository variable.
+- The package is not published to npm, and there is no release process yet;
+  it gets one when there is something to publish.
 - One profile per `FISH_HOME`. No multi-user, no tenancy, and no hosted
   concerns; those are the private product's, gated by
   `docs/adr/0001-product-boundary.md`.

@@ -27,14 +27,14 @@ src/application   use cases: fetchPostings, rankPostings, evaluateRanking,
                   calibrateRanking, verdicts and arrivals, watchlist,
                   postings, rubric summary
 src/adapters      ats (four boards), judge (Jev, fake), filesystem, fake (in-memory), trace (JSONL, LangSmith)
-src/interfaces    mcp (server, tools, resources, prompts), cli (commands, demo)
+src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
-Every use case takes a dependencies object of ports; MCP, the CLI, and the
-demo call the same methods. The demo runs the complete workflow through
-in-memory adapters, which is what proves the core has no hidden dependency on
-the filesystem, the network, or the clock.
+Every use case takes a dependencies object of ports; MCP and the CLI call
+the same methods. The test suite runs the complete workflow through
+in-memory adapters, which is what proves the core has no hidden dependency
+on the filesystem, the network, or the clock.
 
 **Why:** two surfaces over one copy of the logic cannot disagree. The
 alternative (a CLI with its own fetch loop, an MCP server with its own)
@@ -58,7 +58,7 @@ The split triggers are enumerated in `docs/adr/0001-product-boundary.md`; the
 short version is a hosted product, multi-user identity, private data, a
 divergent release cadence, a second team, or billing and notification
 infrastructure. The extraction is already cheap: the package publishes
-`dist/`, `demo/`, and `eval/`, ships a `bin`, and owns no state, so "publish
+`dist/` and `eval/`, ships a `bin`, and owns no state, so "publish
 `fish-career` and depend on it" is additive. Deferring the split is a decision;
 making the extraction cheap is what pays for it.
 
@@ -102,8 +102,7 @@ recovery hint instead of prose.
 
 **Why:** a model is the client. A human can read a Markdown table, but a client
 that composes calls needs a shape it can validate, and a client that decides
-what to run needs to know what a call will do before it runs it. The migration
-from the 0.4 surface is `docs/mcp-migration.md`.
+what to run needs to know what a call will do before it runs it.
 
 ## Judgment is data
 

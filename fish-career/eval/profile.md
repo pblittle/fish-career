@@ -1,4 +1,4 @@
-# Candidate profile (demo fixture)
+# Candidate profile (fixture)
 
 Senior platform / forward-deployed engineer, individual contributor.
 Remote US only; not open to relocation.

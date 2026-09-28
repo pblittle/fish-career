@@ -12,14 +12,16 @@ and the full walkthrough: **<https://github.com/pblittle/fish-career>**
 Requires Node 20.12+. State lives in `FISH_HOME` (default `~/.config/fish`),
 never in the package.
 
-The package is not published to npm yet. From a source checkout, build once
-and run the whole pipeline with no API key and no network:
+The package is not published to npm yet. From a source checkout, build once:
 
 ```sh
 npm ci --prefix fish-career
 npm run build --prefix fish-career
-node fish-career/dist/index.js demo
 ```
+
+With `FISH_JUDGE=fake` in `$FISH_HOME/.env` the deterministic stand-in judge
+answers the same typed questions, so scoring runs with no key; the fetches
+still go to the public ATS boards. A TypeSafe key turns on the real judge.
 
 Connect an MCP host (Claude Desktop, opencode, Cursor) to the stdio server:
 
@@ -35,7 +37,7 @@ Connect an MCP host (Claude Desktop, opencode, Cursor) to the stdio server:
 ```
 
 Once the first npm release lands, `npx -y fish-career` starts the stdio
-server, and `npx -y fish-career demo` runs the demo.
+server.
 
 Then, from the host: write a profile, probe a company, add it to the
 watchlist, fetch arrivals, triage them, grade what you would act on, and
@@ -53,8 +55,8 @@ workflows ship as prompts; the repository README lists them with the CLI.
 Every tool returns structured content validated against a declared output
 schema, plus text for chat hosts; expected failures carry a stable code.
 
-Scoring requires a TypeSafe API key in `FISH_HOME/.env`; the demo and the
-tests do not.
+Scoring requires a TypeSafe API key in `FISH_HOME/.env`, or `FISH_JUDGE=fake`
+for the deterministic stand-in; the tests use the fakes.
 
 ## State and privacy
 

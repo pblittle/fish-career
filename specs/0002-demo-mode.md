@@ -1,6 +1,8 @@
 # 0002: demo mode, a credential-free end-to-end run
 
-Status: accepted · 2026-09-25
+Status: superseded · 2026-09-28 — the demo was removed as pre-1.0 ceremony.
+The keyless path is now the real pipeline with `FISH_JUDGE=fake` (see the
+README quickstart). The contract below records what was built, not what runs.
 
 ## Problem
 

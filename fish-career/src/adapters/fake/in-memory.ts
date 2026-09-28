@@ -1,5 +1,5 @@
-// In-memory adapters. Tests and the demo run the complete workflow through
-// these, which is the proof that the application core does not depend on the
+// In-memory adapters. The tests run the complete workflow through these,
+// which is the proof that the application core does not depend on the
 // filesystem, the network, or the clock.
 
 import type { CalibrationRecord } from '../../domain/calibration.js';
