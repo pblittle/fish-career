@@ -28,9 +28,8 @@
 //     builtins;
 //   - under src/, fetch appears only in non-test files under src/adapters;
 //   - src/interfaces/cli is the process edge, and a non-test file there may
-//     import node:fs: reading a user-named file, reading bundled package data,
-//     and bundled package data. Personal state still travels only
-//     through ports.
+//     import node:fs for a user-named file and bundled package data. Personal
+//     state still travels only through ports.
 //
 // That is what keeps the application core runnable over in-memory adapters,
 // and the MCP server, which runs in a host, honest about the same boundary.

@@ -83,7 +83,8 @@ Use cases throw `ApplicationError` with a code from the closed set in
 `src/domain/errors.ts` (`NO_JUDGE`, `NO_PROFILE`, `EMPTY_WATCHLIST`,
 `NOTHING_TO_SCORE`, `NO_PREFERENCES`, `POSTING_NOT_FOUND`, `INVALID_RANKING`,
 `NO_PENDING_CALIBRATION`, `NO_CALIBRATION_HISTORY`, `LEDGER_UNREADABLE`,
-`INVALID_COMPANY`, `UNKNOWN`). Surfaces render the message and map the code to
+`INVALID_COMPANY`, `INVALID_GRADE`, `VERDICTS_UNREADABLE`, `UNKNOWN`).
+Surfaces render the message and map the code to
 the protocol (`isError: true` plus a recovery hint over MCP); they do not
 invent codes. An expected domain failure is a result with a name, not an
 exception to swallow.

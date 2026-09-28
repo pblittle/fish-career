@@ -1,6 +1,6 @@
 # 0003: the application core, its ports, and its adapters
 
-Status: accepted · 2026-09-25 · boundary rule amended 2026-09-27
+Status: accepted · 2026-09-25 · boundary rule amended 2026-09-27, 2026-09-28
 
 ## Problem
 
@@ -108,7 +108,6 @@ the MCP contract work in a later spec maps the codes to protocol errors.
   the package (`files`), and the invariant is about the runtime boundary. The
   earlier unqualified wording named only `node:fs` and covered only
   `src/interfaces` and `src/application`; it was already violated by
-  `src/interfaces/cli/quality.test.ts` and
-  `src/interfaces/cli/demo.test.ts`. `src/domain/preferences.test.ts` was
+  `src/interfaces/cli/quality.test.ts`. `src/domain/preferences.test.ts` was
   outside that wording (and is test-exempt now). The dependency allowlist in
   the same check still covers every file, tests included.

@@ -23,13 +23,14 @@ npm ci --prefix fish-career
 npm run build --prefix fish-career
 ```
 
-Or drive the loop from the CLI — no key needed to try it. With
-`FISH_JUDGE=fake` in `$FISH_HOME/.env`, the deterministic stand-in judge
-(`src/adapters/judge/fake.ts`) answers the same typed questions from
-inspectable string rules; a TypeSafe key turns on the real judge. A flow to
-start from:
+Or drive the loop from the CLI. Link it once so the bare `fish` name exists
+(`npm --prefix fish-career link`), and put `FISH_JUDGE=fake` in
+`$FISH_HOME/.env` to score with the deterministic stand-in
+(`src/adapters/judge/fake.ts`) before spending anything; a TypeSafe key turns
+on the real judge. A flow to start from:
 
 ```bash
+fish profile set <path>                      # the judgment target; see docs/getting-started.md
 fish watchlist probe <slug>                  # read a title or two; slugs collide
 fish watchlist add "Company" <provider> <slug>
 fish fetch

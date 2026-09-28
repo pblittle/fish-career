@@ -20,8 +20,8 @@ npm run build --prefix fish-career
 ```
 
 With `FISH_JUDGE=fake` in `$FISH_HOME/.env` the deterministic stand-in judge
-answers the same typed questions, so the loop runs with no key and no network;
-a TypeSafe key turns on the real judge.
+answers the same typed questions, so scoring runs with no key; the fetches
+still go to the public ATS boards. A TypeSafe key turns on the real judge.
 
 Connect an MCP host (Claude Desktop, opencode, Cursor) to the stdio server:
 
