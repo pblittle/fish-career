@@ -4,6 +4,7 @@
 
 import type { CalibrationRecord } from '../domain/calibration.js';
 import type { TraceRecord } from '../ports/trace-sink.js';
+import { listArrivals, verdictSummary } from './arrivals.js';
 import { rescoreCalibration, startCalibration, submitCalibration } from './calibrate-ranking.js';
 import type { CareerDependencies } from './dependencies.js';
 import { evaluateRanking } from './evaluate-ranking.js';
@@ -11,11 +12,15 @@ import { explainPosting, previewPosting } from './explain-posting.js';
 import { fetchPostings } from './fetch-postings.js';
 import { getProfile, listPostings, readPosting, updateProfile } from './postings.js';
 import { rankPostings } from './rank-postings.js';
+import { recordVerdict } from './record-verdict.js';
 import { type RubricSummary, rubricSummary } from './rubric-summary.js';
 import { addCompany, listWatchlist, probeCompany, removeCompany } from './watchlist.js';
 
 export interface CareerApplication {
   fetchPostings: ReturnType<typeof fetchPostings>;
+  listArrivals: ReturnType<typeof listArrivals>;
+  recordVerdict: ReturnType<typeof recordVerdict>;
+  verdictSummary: ReturnType<typeof verdictSummary>;
   rankPostings: ReturnType<typeof rankPostings>;
   evaluateRanking: ReturnType<typeof evaluateRanking>;
   startCalibration: ReturnType<typeof startCalibration>;
@@ -41,6 +46,9 @@ export interface CareerApplication {
 
 export const createApplication = (deps: CareerDependencies): CareerApplication => ({
   fetchPostings: fetchPostings(deps),
+  listArrivals: listArrivals(deps),
+  recordVerdict: recordVerdict(deps),
+  verdictSummary: verdictSummary(deps),
   rankPostings: rankPostings(deps),
   evaluateRanking: evaluateRanking(deps),
   startCalibration: startCalibration(deps),

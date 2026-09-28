@@ -7,6 +7,7 @@ import type { LedgerEntry, LedgerProvenance, LedgerRead } from '../../domain/led
 import type { Posting, PostingId, PostingRecord } from '../../domain/posting.js';
 import type { Preference } from '../../domain/preferences.js';
 import { createSeededRandom, type RandomSource } from '../../domain/random.js';
+import type { Verdict, VerdictRead } from '../../domain/verdicts.js';
 import type { Clock } from '../../ports/clock.js';
 import type { Ledger } from '../../ports/ledger.js';
 import type { PostingRepository } from '../../ports/posting-repository.js';
@@ -17,6 +18,7 @@ import type {
   ProfileStore,
   SeenEntry,
   SeenStore,
+  VerdictStore,
   WatchlistEntry,
   WatchlistStore,
 } from '../../ports/stores.js';
@@ -83,6 +85,19 @@ export const memorySeenStore = (initial: Record<string, SeenEntry> = {}): SeenSt
     },
     async write(next) {
       seen = { ...next };
+    },
+  };
+};
+
+export const memoryVerdictStore = (initial: Record<PostingId, Verdict> = {}): VerdictStore => {
+  const verdicts: Record<PostingId, Verdict> = { ...initial };
+  return {
+    async read(): Promise<VerdictRead> {
+      return { ok: true, verdicts: { ...verdicts } };
+    },
+    async save(verdict) {
+      // Latest-wins: one record per posting, no history.
+      verdicts[verdict.postingId] = verdict;
     },
   };
 };

@@ -12,6 +12,7 @@ import {
   memorySeenStore,
   memoryTraceReader,
   memoryTraceSink,
+  memoryVerdictStore,
   memoryWatchlistStore,
 } from 'fish-career/dist/adapters/fake/in-memory.js';
 import { memoryProvider } from 'fish-career/dist/adapters/fake/providers.js';
@@ -73,6 +74,7 @@ export const fakeApplication = (): CareerApplication => {
     judge: fakeJudge,
     postings: memoryPostingRepository(),
     seen: memorySeenStore(),
+    verdicts: memoryVerdictStore(),
     ledger: memoryLedger(),
     traces,
     traceReader: memoryTraceReader(traces.records),

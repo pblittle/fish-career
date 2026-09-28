@@ -20,6 +20,7 @@ holds no state at all.
 | `state/seen.json` | Every posting observed, so polls deliver arrivals only |
 | `state/scored.json` | Ledger of scores with profile hash and rubric version |
 | `state/traces.jsonl` | One record per judge call: latency, tokens, raw answers |
+| `state/verdicts.json` | Your grades on cached arrivals, with the profile hash and rubric version current when you made each call |
 | `state/calibrations/` | Human rankings and their agreement with the judge |
 
 The public repository ships fixtures only. Point `FISH_HOME` at a private
@@ -85,5 +86,6 @@ launched it.
 ## Forgetting
 
 Delete the corresponding files to forget: `state/traces.jsonl` for call
-history, `state/scored.json` for scores, `state/calibrations/` for calibration
-history, `postings/` for the cache, and the whole `FISH_HOME` to reset.
+history, `state/scored.json` for scores, `state/verdicts.json` for verdicts,
+`state/calibrations/` for calibration history, `postings/` for the cache, and
+the whole `FISH_HOME` to reset.

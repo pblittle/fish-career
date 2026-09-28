@@ -9,6 +9,7 @@ import { renderCalibration } from '../../domain/calibration.js';
 import { postingIdFromFile } from '../../domain/posting.js';
 import { renderEval } from '../../domain/preferences.js';
 import { collapseVariants, renderTable } from '../../domain/ranking.js';
+import { GRADES } from '../../domain/verdicts.js';
 import {
   calibrationResultOutput,
   calibrationStartOutput,
@@ -18,6 +19,7 @@ import {
   ok,
   profileUpdateOutput,
   triagePostingsOutput,
+  verdictRecordOutput,
   watchlistAddOutput,
   watchlistProbeOutput,
   watchlistRemoveOutput,
@@ -143,21 +145,79 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
         const lines = outcome.arrivals.map(
           (a) => `${a.company}: ${a.title} (${a.comp}) -> ${a.postingId}`,
         );
+        const drops = outcome.perCompany.reduce(
+          (sum, c) => ({
+            notRemote: sum.notRemote + c.drops.notRemote,
+            thinText: sum.thinText + c.drops.thinText,
+            outOfWindow: sum.outOfWindow + c.drops.outOfWindow,
+          }),
+          { notRemote: 0, thinText: 0, outOfWindow: 0 },
+        );
         return ok(
           [
             `${outcome.arrivals.length} new posting${outcome.arrivals.length === 1 ? '' : 's'}.`,
             ...lines,
+            `Dropped before writing: ${drops.notRemote} not remote, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
             ...(outcome.failures.length > 0
               ? ['', `Boards that failed: ${outcome.failures.join('; ')}`]
               : []),
             ...(outcome.firstRun
               ? ['', 'First poll: only postings newer than 14 days were written.']
               : []),
-            outcome.arrivals.length > 0 ? '\nTriage them with triage_postings.' : '',
+            outcome.arrivals.length > 0
+              ? '\nTriage them with triage_postings, then grade the ones you would act on with verdict_record.'
+              : '',
           ]
             .filter(Boolean)
             .join('\n'),
           outcome as unknown as Record<string, unknown>,
+        );
+      } catch (err) {
+        return failure(err);
+      }
+    },
+  );
+
+  server.registerTool(
+    'verdict_record',
+    {
+      title: "Record the operator's grade for an arrival",
+      description:
+        "Records one human verdict on a cached arrival: 3 act on it now, 2 worth a look, 1 a miss, 0 should not surface. Latest-wins: grading the same posting again replaces the earlier verdict and no history is kept. The verdict stores the profile hash, rubric version, and time it was made for reproducibility, but a later profile or rubric change never invalidates it; the human's judgment at a time is the ground truth.",
+      inputSchema: z.object({
+        postingId: z
+          .string()
+          .describe('Stable posting ID from the cache; a .txt suffix is accepted'),
+        label: z
+          .number()
+          .int()
+          .min(0)
+          .max(3)
+          .describe('3 act, 2 look, 1 miss, 0 should not surface'),
+      }),
+      outputSchema: verdictRecordOutput,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    async ({ postingId, label }) => {
+      try {
+        const result = await app.recordVerdict({ postingId, label });
+        return ok(
+          `Recorded ${result.verdict.label} (${GRADES[result.verdict.label]}) for ${result.verdict.postingId}${result.replaced ? ' (replaced the earlier grade)' : ''}. ${result.graded} graded, ${result.pending} pending.`,
+          {
+            postingId: result.verdict.postingId,
+            label: result.verdict.label,
+            profileHash: result.verdict.profileHash,
+            rubric: result.verdict.rubric,
+            at: result.verdict.at,
+            replaced: result.replaced,
+            graded: result.graded,
+            pending: result.pending,
+          },
         );
       } catch (err) {
         return failure(err);

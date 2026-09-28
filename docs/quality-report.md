@@ -37,9 +37,9 @@ Reproduce it with `fish quality`; re-record it with
   "managing managers", would move it.
 - **The duplicate pair ranks 9 and 10.** Both listings are measured; the
   table's collapse rule presents them as one row with the other office named.
-- **Contoso's thin posting is deliberately missing.** Fetch baselines a body
-  under `MIN_SCORABLE_TEXT`, so it never reaches the judge; the report shows
-  it as unscored rather than silently dropping it.
+- **Contoso's thin posting is deliberately missing.** Fetch drops a body
+  under `MIN_SCORABLE_TEXT` as thin text, so it never reaches the judge; the
+  report shows it as unscored rather than silently dropping it.
 
 ## The recorded run
 

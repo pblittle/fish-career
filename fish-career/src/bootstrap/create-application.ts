@@ -14,6 +14,7 @@ import { fileProfileStore } from '../adapters/filesystem/profile-store.js';
 import { fileSeenStore } from '../adapters/filesystem/seen-store.js';
 import { jsonlTraceReader } from '../adapters/filesystem/trace-reader.js';
 import { jsonlTraceSink } from '../adapters/filesystem/trace-sink.js';
+import { fileVerdictStore } from '../adapters/filesystem/verdicts.js';
 import { fileWatchlistStore } from '../adapters/filesystem/watchlist-store.js';
 import { fakeJudge } from '../adapters/judge/fake.js';
 import { JevJudge } from '../adapters/judge/jev.js';
@@ -71,6 +72,7 @@ export const createApplicationFromHome = (
     judge: opts.judge !== undefined ? opts.judge : selectJudge(),
     postings: filePostingRepository(paths.postings),
     seen: fileSeenStore(paths),
+    verdicts: fileVerdictStore(paths.verdicts),
     ledger: fileLedger(paths.ledger),
     traces: sinks.length === 1 ? (sinks[0] as TraceSink) : multiTraceSink(sinks),
     traceReader: jsonlTraceReader(paths.traces),

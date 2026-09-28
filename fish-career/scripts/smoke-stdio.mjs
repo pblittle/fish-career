@@ -66,6 +66,7 @@ const EXPECTED_TOOLS = [
   'watchlist_add',
   'watchlist_remove',
   'fetch_postings',
+  'verdict_record',
   'triage_postings',
   'evaluate_ranking',
   'calibration_start',

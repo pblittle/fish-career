@@ -60,7 +60,27 @@ TYPESAFE_API_KEY=...
 Key from <https://console.typesafe.ai/keys>. Over MCP, the tools are
 `fetch_postings` and `triage_postings`.
 
-## 4. Calibrate against yourself
+## 4. Grade arrivals
+
+The strongest measurement is your own verdict on what fetch actually wrote.
+`fish arrivals` lists what is still ungraded; grade each one on the eval's
+scale: 3 act on it now, 2 worth a look, 1 a miss, 0 should not surface.
+
+```bash
+fish arrivals
+fish arrivals grade <postingId> 2
+fish arrivals summary
+```
+
+`summary` reports coverage and precision@arrival (the share of graded
+arrivals you called worth a look or better) with a Wilson 95% interval, and
+says "no read" below the floor rather than pretending. Re-grading replaces
+the earlier verdict; provenance (profile hash, rubric, time) is recorded for
+reproducibility but a profile change never invalidates a human judgment. The
+grades live in `$FISH_HOME/state/verdicts.json` and stay out of the `quality`
+golden metrics. Over MCP, the tool is `verdict_record`.
+
+## 5. Calibrate against yourself
 
 The ranking is only as good as its agreement with you. `calibration_start`
 draws a slice of cached postings and hands them over numbered. Rank them by

@@ -13,6 +13,7 @@ import type {
   PreferencesStore,
   ProfileStore,
   SeenStore,
+  VerdictStore,
   WatchlistStore,
 } from '../ports/stores.js';
 import type { TraceReader } from '../ports/trace-reader.js';
@@ -25,6 +26,7 @@ export interface CareerDependencies {
   judge: Judge | null;
   postings: PostingRepository;
   seen: SeenStore;
+  verdicts: VerdictStore;
   ledger: Ledger;
   traces: TraceSink;
   traceReader: TraceReader;

@@ -33,8 +33,8 @@ export const postingHash = (text: string): string => {
 };
 
 // A posting with less text than this cannot be scored meaningfully; the
-// fetch engine asks the provider for its detail endpoint instead, and
-// baselines the posting if that comes back thin too.
+// fetch engine asks the provider for its detail endpoint instead, and drops
+// the posting as thin text if that comes back thin too.
 export const MIN_SCORABLE_TEXT = 80;
 
 export interface PostingRecord {
