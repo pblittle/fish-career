@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/pblittle/fish-career/compare/v0.7.0...v0.8.0) (2026-09-28)
+
+
+### Features
+
+* **verdicts:** grade arrivals and measure finding quality ([#38](https://github.com/pblittle/fish-career/issues/38)) ([c0ff673](https://github.com/pblittle/fish-career/commit/c0ff6735227353fc9554dcb7c3311c021d724c38))
+
 ## [0.7.0](https://github.com/pblittle/fish-career/compare/v0.6.0...v0.7.0) (2026-09-27)
 
 
