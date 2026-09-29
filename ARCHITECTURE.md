@@ -177,8 +177,7 @@ the model's mood.
 - **Four providers, one posting shape.** Greenhouse, Ashby, SmartRecruiters,
   and Lever flatten to a single header plus body. The provider differences stay
   in `src/adapters/ats/providers.ts` where they belong.
-- **The engine depends on the MCP SDK and `zod`.** The root CLI scripts are
-  shims over the built `fish` CLI and add nothing of their own.
+- **The engine depends on the MCP SDK and `zod`.** Nothing else at runtime.
 - **`MIN_SCORABLE_TEXT`.** A body too thin to judge is resolved through the
   provider's detail endpoint or dropped as thin text, never scored on
   nothing.

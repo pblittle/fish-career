@@ -1,4 +1,4 @@
-# 0004: the typed MCP contract
+# The typed MCP contract
 
 Status: accepted · 2026-09-25
 
@@ -34,9 +34,9 @@ annotations, and one success/error path:
 | `profile_update` | Replace the profile | no | yes | yes | no |
 
 `verdict_record` is destructive because latest-wins replaces the posting's
-earlier verdict and keeps no history; it is idempotent because a repeated
-call converges on one record per posting. The verdict's scale and store are
-spec 0007's.
+earlier verdict and keeps no history; it is idempotent because a repeated call
+converges on one record per posting. The verdict's scale and store are in
+[`specs/quality.md`](./quality.md).
 
 ### Results
 
@@ -52,21 +52,26 @@ spec 0007's.
   `NO_PENDING_CALIBRATION`, `NO_CALIBRATION_HISTORY`, `INVALID_COMPANY`,
   `LEDGER_UNREADABLE`, `INVALID_GRADE`, `VERDICTS_UNREADABLE`.
 
+### Stable identifiers and error codes
+
+The codes above are a contract: clients branch on them, a code is never
+reused for a different failure, and the surface may add codes but not change
+the meaning of the ones listed. The message and hint are for humans and may
+change. Posting IDs are stable cache filename stems; a `.txt` suffix on input
+is accepted and stripped.
+
 ### Resources
 
 `fish://profile/current`, `fish://watchlist`, `fish://postings`,
 `fish://postings/{postingId}` (template), `fish://rubric/current`,
-`fish://calibrations/latest`, `fish://runs/latest`.
-
-`runs/latest` returns the most recent judge-call traces; run IDs arrive with
-the evaluation metadata work.
+`fish://calibrations/latest`, `fish://runs/latest`, and `fish://runs/{runId}`
+(template).
 
 ### Prompts
 
 `career-search-onboarding`, `review-new-arrivals`, `explain-ranking`,
 `calibrate-rubric`, `audit-profile`. Arguments carry mutable intent; the
-prompts prescribe no seniority, geography, or compensation floor. They
-replace the checked-in starter prompt.
+prompts prescribe no seniority, geography, or compensation floor.
 
 ### Composition
 
@@ -75,15 +80,9 @@ prompts and connects to nothing; `startStdioServer` does the transport.
 Registration has no import-time side effects, so tests connect a real client
 over the SDK's in-memory transport.
 
-## Migration
-
-Posting IDs are stable cache filename stems. A `.txt` suffix on input is
-accepted and stripped.
-
 ## Non-goals
 
 - No subscriptions, elicitation, or task-augmented calls.
-- No run IDs yet; `fish://runs/latest` is the interim shape.
 - No MCP App UI.
 
 ## Acceptance

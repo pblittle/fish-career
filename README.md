@@ -12,6 +12,21 @@ fish.career turns that stream into a small ranked table with the reasons
 attached, and proves measurably that the ordering tracks your judgment rather
 than a model's taste.
 
+## Proof
+
+The ranking is measured, not asserted. [`fish-career/eval/`](./fish-career/eval)
+holds 17 labeled postings covering the hard cases, a recorded judge run, and
+golden metrics: pairwise accuracy 92.3%, Kendall tau 73.7%, Spearman 86.3%,
+precision@5 100%, nDCG@5 98.4%, with every blocked posting below every clean
+one. `fish quality` reproduces the report offline; a rubric change that moves a
+number fails CI until the baseline is re-recorded on purpose. The findings —
+including where the ranking still disagrees with the operator — are in
+[`specs/quality.md`](./specs/quality.md).
+
+[`examples/langgraph/`](./examples/langgraph) runs the same application API
+(fetch, triage, a human-review interrupt, an optional re-measure) under
+LangGraph. The ranking engine never imports it.
+
 ## Quickstart
 
 Requires Node 20.12+. The package is not on npm yet, so install from source:
@@ -23,21 +38,35 @@ npm ci --prefix fish-career
 npm run build --prefix fish-career
 ```
 
-Or drive the loop from the CLI. Link it once so the bare `fish` name exists
-(`npm --prefix fish-career link`), and put `FISH_JUDGE=fake` in
-`$FISH_HOME/.env` to score with the deterministic stand-in
-(`src/adapters/judge/fake.ts`) before spending anything; a TypeSafe key turns
-on the real judge. A flow to start from:
+Link the CLI once so the bare `fish` name exists
+(`npm --prefix fish-career link`), then drive the loop:
 
 ```bash
-fish profile set <path>                      # the judgment target; see docs/getting-started.md
+fish profile set <path>                      # the judgment target; see the walkthrough
 fish watchlist probe <slug>                  # read a title or two; slugs collide
 fish watchlist add "Company" <provider> <slug>
 fish fetch
 fish triage
 ```
 
-Point a host at the server by adding it to your MCP config. Claude Desktop:
+Scoring needs a TypeSafe API key in `$FISH_HOME/.env`:
+
+```text
+TYPESAFE_API_KEY=...
+```
+
+Keys come from <https://console.typesafe.ai/keys>. No key yet? Put
+`FISH_JUDGE=fake` in the same file and the deterministic stand-in
+([`src/adapters/judge/fake.ts`](./fish-career/src/adapters/judge/fake.ts))
+answers the same typed questions, so the whole loop runs before you spend
+anything.
+
+## Connect a host
+
+Claude Desktop reads `claude_desktop_config.json`: macOS
+`~/Library/Application Support/Claude/claude_desktop_config.json`, Windows
+`%APPDATA%\Claude\claude_desktop_config.json`, Linux
+`~/.config/Claude/claude_desktop_config.json`.
 
 ```json
 {
@@ -52,10 +81,126 @@ Point a host at the server by adding it to your MCP config. Claude Desktop:
 ```
 
 `/absolute/path/to/repo` is the clone; `fish-career/` is the package directory
-inside it. Host notes: [Claude Desktop](./docs/hosts/claude-desktop.md) ·
-[opencode](./docs/hosts/opencode.md) · [Cursor](./docs/hosts/cursor.md). The
-walkthrough that follows — profile, watchlist, fetch and triage, grade
-arrivals, calibrate — is in [`docs/getting-started.md`](./docs/getting-started.md).
+inside it; `FISH_HOME` holds profile, watchlist, postings, and state.
+
+Cursor reads `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project)
+with the same `mcpServers` shape as above. opencode reads `opencode.json`
+(project) or `~/.config/opencode/opencode.json` (global):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "fish-career": {
+      "type": "local",
+      "command": ["node", "/absolute/path/to/repo/fish-career/dist/index.js"],
+      "enabled": true,
+      "environment": { "FISH_HOME": "/absolute/path/to/fish-state" }
+    }
+  }
+}
+```
+
+Restart the host, then ask it to read the `fish://profile/current` resource.
+Before a profile exists the server answers that there is none at
+`$FISH_HOME/profile.md`; that is the server working. Once the package is
+published, the same entries work from npm with `npx -y fish-career`.
+
+## The walkthrough
+
+Every step has an MCP tool; the tool names appear in each section. Ask your
+host for the tool by name if you would rather stay in chat.
+
+### 1. Give it a profile
+
+The profile is the judgment target: every score is made against it, and it is
+sent verbatim to the judge on scoring calls. Ask your host to run
+`profile_update`, or write `$FISH_HOME/profile.md` directly. A skeleton:
+
+```markdown
+# Candidate profile
+
+Target roles: what you want to do, and what you are done doing.
+Level: the seat you are looking for, and the one above it you would take.
+Location and remote: your constraint, stated as a rule.
+Compensation floor: $NNN,NNN.
+Core skills: the things you have used in depth.
+Domains I want: the fields worth your next five years.
+Hard constraints: anything a posting must not violate.
+```
+
+The profile's accuracy bounds everything downstream. A vague line produces a
+low-confidence judgment, and the table marks those cells with `?`.
+
+### 2. Watch companies
+
+Ask the host to run `watchlist_probe` with a candidate slug, read a title or
+two from the board it finds, then run `watchlist_add` to write the entry. The
+probe writes nothing, which is the point: slugs collide, and verifying
+identity before writing is the split.
+
+```bash
+fish watchlist probe <slug>
+fish watchlist add "Company" <provider> <slug>
+fish watchlist list
+```
+
+### 3. Fetch and triage
+
+```bash
+fish fetch     # poll every watched board, keep remote postings, write arrivals
+fish triage    # score the arrivals, print the ranked table
+```
+
+`fetch` polls the watched boards, keeps remote postings, writes the arrivals
+you have never seen, and returns the diff. It also reports why postings were
+dropped: not remote, too thin to score, out of window. The out-of-window
+bucket only fires on the first poll, which defaults to the last 14 days, or
+when you pass `--days`; after that a remote posting is dropped on first
+contact or never. `triage` scores the arrivals against the profile with the
+judge and prints per-dimension scores, confidences, and blocker flags. Over
+MCP, the tools are `fetch_postings` and `triage_postings`.
+
+### 4. Grade arrivals
+
+The strongest measurement is your own verdict on what fetch actually wrote.
+`fish arrivals` lists what is still ungraded; grade each one on the eval's
+scale: 3 act on it now, 2 worth a look, 1 a miss, 0 should not surface.
+
+```bash
+fish arrivals
+fish arrivals grade <postingId> 2
+fish arrivals summary
+```
+
+`summary` reports coverage and precision@arrival (the share of graded
+arrivals you called worth a look or better) with a Wilson 95% interval, and
+says "no read" below the floor rather than pretending. Re-grading replaces the
+earlier verdict; provenance (profile hash, rubric, time) is recorded for
+reproducibility but a profile change never invalidates a human judgment. The
+grades live in `$FISH_HOME/state/verdicts.json` and stay out of the `quality`
+golden metrics. Over MCP, the tool is `verdict_record`.
+
+### 5. Calibrate against yourself
+
+The ranking is only as good as its agreement with you. `calibration_start`
+draws a slice of cached postings and hands them over numbered. Rank them by
+your own judgment, best first, **before** reading any score, then submit that
+order:
+
+```bash
+fish calibrate start --count 8
+fish calibrate submit <postingId> <postingId> ...
+```
+
+You get Spearman agreement and the biggest disagreements, with the dimension
+cells that drove each one. Adjust weights or profile lines, then
+`fish calibrate rescore` re-measures the same slice under the new rubric, and
+`fish calibrate reuse` redraws the pending slice from its recorded seed.
+
+`fish evaluate` is the cheaper measurement: it holds the ranking to pairwise
+preferences your profile already states (`$FISH_HOME/preferences.json`), each
+quoting its source line. Run it after any profile or weight change.
 
 ## Why this exists
 
@@ -66,10 +211,10 @@ whether it agreed with you.
 
 fish.career takes the three claims seriously.
 
-- **Explain it.** Every score is a weighted composite of five named
-  dimensions plus a separate hard-blocker check. Any cell can be read back
-  with the profile line and rubric version that produced it, and a
-  low-confidence judgment shows as `?` instead of a confident-looking number.
+- **Explain it.** Every score is a weighted composite of five named dimensions
+  plus a separate hard-blocker check. Any cell can be read back with the
+  profile line and rubric version that produced it, and a low-confidence
+  judgment shows as `?` instead of a confident-looking number.
 - **Reproduce it.** Weights and criteria live in versioned code
   (`RUBRIC_VERSION`), not a prompt. Same postings, same profile, same rubric
   version, same ranking. Calibration draws are seeded and replayable.
@@ -110,21 +255,20 @@ Future API ──────┘         │
   re-score on the next run.
 - **A blocker demotes.** A posting naming a hard requirement you cannot meet
   is not the top row whatever its composite, and it says so in the table.
-- **Variants collapse, arrivals only.** One region-labelled vacancy posted
-  per office is one row naming the other offices. Every remote posting a poll
+- **Variants collapse, arrivals only.** One region-labelled vacancy posted per
+  office is one row naming the other offices. Every remote posting a poll
   observes is marked seen, written or not, so later polls deliver the diff.
-- **Frameworks are optional.** [`examples/langgraph`](./examples/langgraph)
-  sequences the same application API (fetch, triage, a human-review
-  interrupt, an optional re-measure) with LangGraph. The ranking engine never
-  imports it, and the example's tests run offline against the fake adapters.
 
-The architecture and its reasons: [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+The architecture and its reasons: [`ARCHITECTURE.md`](./ARCHITECTURE.md). The
+contracts: [`specs/pipeline.md`](./specs/pipeline.md) for the engine,
+[`specs/quality.md`](./specs/quality.md) for the measurements,
+[`specs/mcp-contract.md`](./specs/mcp-contract.md) for the protocol surface.
 
 ## The MCP surface
 
-Eleven tools, each with an input schema, an output schema, safety
-annotations, and structured results. Passive state lives in resources, and
-the workflows ship as prompts.
+Eleven tools, each with an input schema, an output schema, safety annotations,
+and structured results. Passive state lives in resources, and the workflows
+ship as prompts.
 
 | Tool | Purpose | Safety |
 |---|---|---|
@@ -152,7 +296,8 @@ Every tool result carries `structuredContent` that validates against its
 declared output schema, plus a text rendering for chat hosts. Expected
 failures return `isError: true` with a stable code (`NO_PROFILE`,
 `NOTHING_TO_SCORE`, `POSTING_NOT_FOUND`, ...) and a hint. The full contract
-and the complete code list: [`specs/0004-mcp-contract.md`](./specs/0004-mcp-contract.md).
+and the complete code list:
+[`specs/mcp-contract.md`](./specs/mcp-contract.md).
 
 ## The command line
 
@@ -191,8 +336,8 @@ Spearman 86.3%, precision@5 100%, nDCG@5 98.4%, every blocked posting below
 every clean one, and a top five that survives a 20% bump to any single
 dimension weight. The disagreements are as useful as the hits: the report
 names the junior seat the level ladder over-rewards and the management role
-the composite still surfaces. Read it in full:
-[`docs/quality-report.md`](./docs/quality-report.md).
+the composite still surfaces. The dataset, the metric definitions, and the
+findings: [`specs/quality.md`](./specs/quality.md).
 
 The metrics are a golden fixture. A rubric change that moves them fails CI
 until `eval/expected-metrics.json` is updated deliberately, and
@@ -201,28 +346,74 @@ live judge run.
 
 `arrivals` is the loop on the real cache. Grade what fetch wrote on the same
 0-3 scale (`fish arrivals grade <postingId> 2`), and `fish arrivals summary`
-reports coverage and precision@arrival — the share of graded arrivals you
-called worth a look or better — with a Wilson 95% interval. Below a
-code-constant floor the report says "no read" instead of guessing. A verdict
-records the profile hash and rubric version current when you made the call,
-but a later change to either never invalidates your judgment; re-grading is
-latest-wins and no history is kept. Verdicts stay out of the golden eval:
-`quality` measures the rubric, `arrivals` measures the pipeline against you.
+reports coverage and precision@arrival with a Wilson 95% interval. Below a
+code-constant floor the report says "no read" instead of guessing. Verdicts
+stay out of the golden eval: `quality` measures the rubric, `arrivals`
+measures the pipeline against you.
 
 ## Privacy and data flow
 
-Everything the server reads and writes hangs off `FISH_HOME`; the npm package
-holds none of it. The only outbound calls are GETs to the four public ATS APIs
-and the judge call, which sends your profile and the posting text to TypeSafe.
-There is no telemetry, no analytics, and no account. Optionally, setting
-`FISH_TRACE=langsmith` with a key mirrors each judge call to LangSmith
-(posting IDs, hashes, model, tokens, and typed answers; never the posting or
-profile text) while the local JSONL trace stays the source of truth.
-Details and the threat model: [`docs/privacy.md`](./docs/privacy.md).
+fish.career runs on your machine as a stdio MCP server, holds no account, and
+sends nothing anywhere except the calls below. Everything it reads and writes
+hangs off `FISH_HOME` (default `~/.config/fish`); the npm package holds none
+of it. The public repository ships fixtures only: point `FISH_HOME` at a
+private checkout to keep personal state out of any public tree.
 
-Personal state can live in a private checkout. The public repository ships
-fixtures and examples only; point `FISH_HOME` at a private tree and keep
-profile, watchlist, postings, and calibrations out of any public one.
+| Path | Contents |
+|---|---|
+| `profile.md` | Your candidate profile, sent verbatim to the judge when scoring |
+| `watchlist.json` | Companies you watch, with provider and board slug |
+| `preferences.json` | Pairwise preferences the ranking must satisfy, each with its source line |
+| `.env` | `TYPESAFE_API_KEY` and the optional trace settings, read at startup |
+| `postings/` | Cached posting text from public ATS APIs |
+| `state/seen.json` | Every remote posting observed, with `observedAt`, its first-observation time, so polls deliver arrivals only |
+| `state/scored.json` | Ledger of scores with profile hash and rubric version |
+| `state/traces.jsonl` | One record per judge call: latency, tokens, raw answers |
+| `state/verdicts.json` | Your grades on cached arrivals, with the profile hash and rubric version current when you made each call |
+| `state/calibrations/` | Human rankings and their agreement with the judge |
+
+### What leaves the machine
+
+1. **ATS board reads.** GET requests to the four public, no-auth ATS APIs
+   (Greenhouse, Ashby, SmartRecruiters, Lever) for the boards you watch. The
+   board slug is the only identifier sent; no profile, no key, no account.
+2. **Judge calls.** One POST per scored posting to `api.typesafe.ai`,
+   carrying your profile text, the posting text, and the typed rubric
+   questions, with your API key in the `Authorization` header. This is the
+   only place your judgment data leaves the machine.
+3. **Optional trace mirror.** With `FISH_TRACE=langsmith` and
+   `LANGSMITH_API_KEY` set, each judge call is also POSTed to
+   `api.smith.langchain.com/runs`. The mirror carries posting IDs, posting
+   and profile hashes, the model, attempts, token counts, the application
+   version, and the typed answers, but never the posting text or the profile
+   text. The local JSONL trace is always written and remains the source of
+   truth; a failing mirror never fails a scoring run.
+
+There is no telemetry, no analytics, no crash reporting, and no update check.
+The server opens no listening socket; it speaks stdio to the host that
+launched it.
+
+**Threat model.** In scope, defended: secrets stay in `FISH_HOME/.env` and
+out of the package and the tarball; posting text is untrusted data that is
+never executed and cannot change the pipeline's behavior — it reaches the
+judge, where typed answers, the separate blocker check, `?` for low
+confidence, and the calibration loop are the structural defense against a
+posting that tries to prompt-inject; posting identifiers are sanitized before
+any filesystem access; there is no inbound surface. Out of scope, by design:
+local process trust (anything that can launch the server or read `FISH_HOME`
+can read your profile and postings and spend your API key, so protect the
+directory with normal file permissions and do not expose its stdio to an
+untrusted host); encryption at rest (state is plain files; use full-disk
+encryption if that matters); multi-user isolation and hosted operation (the
+private product's concerns, gated by
+[`docs/adr/0001-product-boundary.md`](./docs/adr/0001-product-boundary.md));
+and the judge provider's handling of your data (your profile and posting text
+go to TypeSafe under their terms, so do not put secrets in the profile).
+
+**Forgetting.** Delete the corresponding files: `state/traces.jsonl` for call
+history, `state/scored.json` for scores, `state/verdicts.json` for verdicts,
+`state/calibrations/` for calibration history, `postings/` for the cache, and
+the whole `FISH_HOME` to reset.
 
 ## Known limits
 
@@ -247,18 +438,8 @@ npm test --prefix fish-career           # vitest; deterministic, no network
 ```
 
 A behavior change lands with a spec in [`specs/`](./specs); an architectural
-decision lands as an ADR in [`docs/adr/`](./docs/adr). Signing, commit
-conventions, and the gate: [`CONTRIBUTING.md`](./CONTRIBUTING.md).
-
-## Where to look next
-
-- [`docs/getting-started.md`](./docs/getting-started.md) — the full walkthrough
-- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — the decisions and why
-- [`docs/quality-report.md`](./docs/quality-report.md) — the ranking-quality measurement in full
-- [`docs/privacy.md`](./docs/privacy.md) — what is stored and what leaves the machine
-- [`examples/langgraph`](./examples/langgraph) — the same application API under LangGraph
-- [`specs/`](./specs) — behavior contracts, starting at [`specs/0001-posting-pipeline.md`](./specs/0001-posting-pipeline.md)
-- [`docs/adr/`](./docs/adr) — architecture decisions
+decision lands as an ADR in [`docs/adr/`](./docs/adr). The gate, commit
+conventions, and the state and secrets boundary: [`AGENTS.md`](./AGENTS.md).
 
 ## License
 
