@@ -1,4 +1,5 @@
 /.env
+/fish-career/.env
 /.firecrawl/
 /postings/
 /state/
@@ -7,7 +8,6 @@
 /resume-clean.md
 /profile.md
 /.claude/*
-!/.claude/skills/
 fish-career/dist/
 /PROMPT.md
 /preferences.json
