@@ -11,7 +11,8 @@
 // Anything else fails, which means a new dependency becomes a deliberate
 // change to the allowlist in package.json rather than an import that slips in.
 //
-// This also enforces spec 0003's I/O boundary, as amended on 2026-09-27.
+// This also enforces the I/O boundary from specs/pipeline.md, as amended on
+// 2026-09-27.
 // The rule is about the shipped runtime, so it scopes to non-test files; a
 // non-test file is a .ts, .mts, or .cts file that does not end in .test.ts,
 // .test.mts, or .test.cts. Test harnesses (excluded from the build by
@@ -57,7 +58,7 @@ const PACKAGE_ROOT = resolve(HERE, '..');
 const SPECIFIER = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g;
 // The I/O and process builtins the shipped core never reaches for; node:fs
 // covers its subpaths (node:fs/promises). Keep this list in step with the
-// rule text in spec 0003 and AGENTS.md.
+// rule text in specs/pipeline.md and AGENTS.md.
 const BANNED_BUILTIN =
   /^node:(?:fs|child_process|net|http2|https|http|tls|dns|dgram|worker_threads|module)(?:\/|$)/;
 // A fetch call site. Identifiers that merely contain the word (fetchPostings)
@@ -114,11 +115,11 @@ export const checkBoundaries = ({ packageRoot = PACKAGE_ROOT, sourceDir } = {}) 
         if (!isTest && BANNED_BUILTIN.test(spec)) {
           if (core) {
             violations.push(
-              `${where} imports ${spec}, which src/domain and src/application forbid (spec 0003)`,
+              `${where} imports ${spec}, which src/domain and src/application forbid (specs/pipeline.md)`,
             );
           } else if (mcp) {
             violations.push(
-              `${where} imports ${spec}, which src/interfaces/mcp forbids (spec 0003)`,
+              `${where} imports ${spec}, which src/interfaces/mcp forbids (specs/pipeline.md)`,
             );
           }
         }
@@ -142,13 +143,13 @@ export const checkBoundaries = ({ packageRoot = PACKAGE_ROOT, sourceDir } = {}) 
     if (!isTest && FETCH_CALL.test(text)) {
       if (core) {
         violations.push(
-          `${where} calls fetch, which src/domain and src/application forbid (spec 0003)`,
+          `${where} calls fetch, which src/domain and src/application forbid (specs/pipeline.md)`,
         );
       } else if (surfaces) {
-        violations.push(`${where} calls fetch, which src/interfaces forbids (spec 0003)`);
+        violations.push(`${where} calls fetch, which src/interfaces forbids (specs/pipeline.md)`);
       } else if (!adapters) {
         violations.push(
-          `${where} calls fetch, which under src/ is allowed only in src/adapters (spec 0003)`,
+          `${where} calls fetch, which under src/ is allowed only in src/adapters (specs/pipeline.md)`,
         );
       }
     }
@@ -165,13 +166,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.error(
       '\nIf an import is deliberate, declare it in fish-career/package.json. ' +
         'The engine is not supposed to grow a framework dependency, so expect ' +
-        'that change to need a reason in the commit. The I/O rule is spec 0003: ' +
+        'that change to need a reason in the commit. The I/O rule is specs/pipeline.md: ' +
         'the core runs over in-memory adapters, the MCP server touches no ' +
         'filesystem, and the CLI is the process edge.',
     );
     process.exit(1);
   }
   console.log(
-    `boundary ok: ${files} engine files import only declared dependencies and keep the spec 0003 boundary`,
+    `boundary ok: ${files} engine files import only declared dependencies and keep the specs/pipeline.md I/O boundary`,
   );
 }

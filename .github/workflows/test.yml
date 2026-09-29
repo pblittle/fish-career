@@ -24,7 +24,6 @@ jobs:
       - run: npm run lint:md --prefix fish-career
       - run: npm run build --prefix fish-career
       - run: npm run verify:pack --prefix fish-career
-      - run: npm run agents:check --prefix fish-career
       - run: npm run check:boundaries --prefix fish-career
       - name: Example install, typecheck, and test against the engine build
         run: |

@@ -82,7 +82,7 @@ describe('checkBoundaries', () => {
   });
 });
 
-describe('the spec 0003 I/O boundary', () => {
+describe('the specs/pipeline.md I/O boundary', () => {
   it('rejects node:fs under src/domain and src/application', () => {
     const root = fixture({});
     addFile(root, 'domain/posting.ts', "import { readFileSync } from 'node:fs';\n");
