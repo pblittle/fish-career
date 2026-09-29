@@ -1,4 +1,5 @@
 /.env
+/fish-career/.env
 /.firecrawl/
 /postings/
 /state/

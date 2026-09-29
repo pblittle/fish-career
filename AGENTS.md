@@ -22,11 +22,13 @@ that is correct today over the general thing that might be needed later.
    write a "framework," stop: does the repo have more than one user yet?
 3. **Review your own diff before calling it done.** Re-read the change as
    if you didn't write it: does it make the ranking more explainable,
-   reproducible, and testable — or just the demo more impressive? This is
-   a habit, not a named role. You don't need a persona file to do it.
-4. **Tests over ceremony.** `fish-career/eval/` is the real bar — a change
-   that doesn't move `expected-metrics.json` in the right direction, or
-   that isn't covered by a test, isn't done.
+   reproducible, and testable — or just the demo more impressive? This is a
+   habit, not a named role. A second reviewer, when there is one, comes to
+   the change cold; the author is not the reviewer.
+4. **Tests over ceremony.** `fish-career/eval/` is the real bar:
+   `expected-metrics.json` is a golden fixture, so a change that moves the
+   metrics updates it deliberately with the recorded run; a change without a
+   test isn't done.
 5. **Commits and releases.** Conventional commits, enforced by commitlint
    (the eleven types in `commitlint.config.js`); every commit is SSH-signed,
    explicit paths only (`git add <path>`), no AI attribution. Version bumps
@@ -58,10 +60,10 @@ work; do not loosen the gate.
 
 - Domain logic (ranking, scoring, judgment) stays framework-agnostic —
   no LangGraph, MCP, or CLI types leak into `src/domain`.
-- Adapters (`src/adapters/`) are the only place that talk to the outside
-  world (LLMs, file system, MCP transport).
-- The dependency direction and the enforced I/O acceptance rule are stated
-  in `specs/pipeline.md`; `check-boundaries` enforces them.
+- The core (`src/domain`, `src/application`) reaches the outside world only
+  through ports; adapters implement those ports; `src/interfaces/mcp` owns
+  the stdio transport; `src/interfaces/cli` is the process edge. The exact
+  I/O acceptance rule is in `specs/pipeline.md`, enforced by `check-boundaries`.
 - If you're unsure whether something belongs in domain vs. adapter, check
   `ARCHITECTURE.md` first; if it's still unclear, that's a sign the doc
   needs a one-line addition, not a new skill file.
@@ -97,8 +99,10 @@ work; do not loosen the gate.
 A claim about the code resolves to a file and a line; a claim about behavior
 to a command and its output. Label what you did not verify: OBSERVED (you ran
 it), CODE-READ, or ESTIMATE; never let an estimate travel as a measurement.
-The strongest finding is always the same shape: a stated policy and the code
-disagree, or a document claims what the code does not do. Look first for it.
+Never invent a number or a fact in a doc, example, or demo; every figure
+traces to a posting, a profile, a trace, or a recorded run. The strongest
+finding is always the same shape: a stated policy and the code disagree, or
+a document claims what the code does not do. Look first for it.
 
 ## What NOT to do
 

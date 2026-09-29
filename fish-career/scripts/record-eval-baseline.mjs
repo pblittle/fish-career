@@ -29,7 +29,7 @@ for (const candidate of [join(packageRoot, '..', '.env'), join(packageRoot, '.en
   }
 }
 if (!process.env.TYPESAFE_API_KEY) {
-  console.error('TYPESAFE_API_KEY is not set; export it or put it in the repo .env.');
+  console.error('TYPESAFE_API_KEY is not set; export it or put it in the repository root .env.');
   process.exit(1);
 }
 
