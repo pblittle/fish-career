@@ -18,9 +18,8 @@ The ranking is measured, not asserted. [`fish-career/eval/`](./fish-career/eval)
 holds 17 labeled postings covering the hard cases, a recorded judge run, and
 golden metrics: pairwise accuracy 92.3%, Kendall tau 73.7%, Spearman 86.3%,
 precision@5 100%, nDCG@5 98.4%, with every blocked posting below every clean
-one. `fish quality` reproduces the report offline; a rubric change that moves a
-number fails CI until the baseline is re-recorded on purpose. The findings —
-including where the ranking still disagrees with the operator — are in
+one. `fish quality` reproduces the report offline. The findings — including
+where the ranking still disagrees with the operator — are in
 [`specs/quality.md`](./specs/quality.md).
 
 [`examples/langgraph/`](./examples/langgraph) runs the same application API
@@ -104,7 +103,9 @@ with the same `mcpServers` shape as above. opencode reads `opencode.json`
 Restart the host, then ask it to read the `fish://profile/current` resource.
 Before a profile exists the server answers that there is none at
 `$FISH_HOME/profile.md`; that is the server working. Once the package is
-published, the same entries work from npm with `npx -y fish-career`.
+published, the npm entry is the same shape with `"command": "npx"` and
+`"args": ["-y", "fish-career"]` for Claude Desktop and Cursor, and a single
+`"command": ["npx", "-y", "fish-career"]` for opencode.
 
 ## The walkthrough
 
@@ -329,27 +330,23 @@ or link it (`npm --prefix fish-career link`).
 standing measurement: 17 labeled postings, graded 0-3 with a note on each,
 covering the hard cases (on-site and hybrid blockers, out-of-geography
 remote, overqualification, missing compensation, ambiguous location,
-duplicate regional listings, an adversarial posting, a too-thin posting).
+duplicate regional listings, an adversarial posting, a too-thin posting). The
+recorded-baseline metrics are in [Proof](#proof) above.
 
-Against the recorded baseline: pairwise accuracy 92.3%, Kendall tau 73.7%,
-Spearman 86.3%, precision@5 100%, nDCG@5 98.4%, every blocked posting below
-every clean one, and a top five that survives a 20% bump to any single
-dimension weight. The disagreements are as useful as the hits: the report
-names the junior seat the level ladder over-rewards and the management role
-the composite still surfaces. The dataset, the metric definitions, and the
-findings: [`specs/quality.md`](./specs/quality.md).
+The measurement adds what a single number cannot carry: the recorded
+baseline's top five survives a 20% bump to any single dimension weight. The
+disagreements are as useful as the hits: the report names the junior seat the
+level ladder over-rewards and the management role the composite still
+surfaces. The dataset, the metric definitions, and the findings:
+[`specs/quality.md`](./specs/quality.md).
 
 The metrics are a golden fixture. A rubric change that moves them fails CI
 until `eval/expected-metrics.json` is updated deliberately, and
 `npm --prefix fish-career run record:eval` re-records the baseline from a
 live judge run.
 
-`arrivals` is the loop on the real cache. Grade what fetch wrote on the same
-0-3 scale (`fish arrivals grade <postingId> 2`), and `fish arrivals summary`
-reports coverage and precision@arrival with a Wilson 95% interval. Below a
-code-constant floor the report says "no read" instead of guessing. Verdicts
-stay out of the golden eval: `quality` measures the rubric, `arrivals`
-measures the pipeline against you.
+`arrivals` is the same discipline on the real cache: `quality` measures the
+rubric, `arrivals` measures the pipeline against you.
 
 ## Privacy and data flow
 
@@ -393,13 +390,15 @@ There is no telemetry, no analytics, no crash reporting, and no update check.
 The server opens no listening socket; it speaks stdio to the host that
 launched it.
 
-**Threat model.** In scope, defended: secrets stay in `FISH_HOME/.env` and
-out of the package and the tarball; posting text is untrusted data that is
-never executed and cannot change the pipeline's behavior — it reaches the
-judge, where typed answers, the separate blocker check, `?` for low
-confidence, and the calibration loop are the structural defense against a
-posting that tries to prompt-inject; posting identifiers are sanitized before
-any filesystem access; there is no inbound surface. Out of scope, by design:
+**Threat model.** In scope, defended: secrets stay in `FISH_HOME/.env`; the
+package publishes `dist/` and `eval/` only, and the pack verification fails if
+personal state or `.env` appears in the tarball; posting text is untrusted
+data that is never executed and cannot change the pipeline's behavior — it
+reaches the judge, where typed answers, the separate blocker check, `?` for
+low confidence, and the calibration loop are the structural defense against a
+posting that tries to prompt-inject; posting IDs are the cache file stems the
+fetch engine writes from company and posting keys, and a posting is read by
+its cache ID; there is no inbound surface. Out of scope, by design:
 local process trust (anything that can launch the server or read `FISH_HOME`
 can read your profile and postings and spend your API key, so protect the
 directory with normal file permissions and do not expose its stdio to an
