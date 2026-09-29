@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -77,6 +77,19 @@ describe('filePostingRepository', () => {
     const id = await repo.save('Acme', posting);
     expect((await repo.get(id))?.title).toBe('Staff Engineer');
     expect(await repo.get('nope')).toBeNull();
+  });
+
+  it('refuses an ID that could name a file outside the postings directory', async () => {
+    const root = dir();
+    const cache = join(root, 'postings');
+    mkdirSync(cache);
+    writeFileSync(join(root, 'canary.txt'), 'CANARY-CONTENT');
+    const repo = filePostingRepository(cache);
+    expect(await repo.get('../../canary')).toBeNull();
+    expect(await repo.get('../canary')).toBeNull();
+    expect(readFileSync(join(root, 'canary.txt'), 'utf8')).toContain('CANARY-CONTENT');
+    const id = await repo.save('Acme', posting);
+    expect((await repo.get(id))?.title).toBe('Staff Engineer');
   });
 
   it('reads a legacy .md posting by ID', async () => {

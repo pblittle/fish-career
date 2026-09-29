@@ -18,6 +18,8 @@ export interface Posting {
 
 export type PostingId = string;
 
+export const isPostingId = (id: string): boolean => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id);
+
 export const postingIdFromFile = (file: string): PostingId => file.replace(/\.(txt|md)$/i, '');
 
 export const postingFileFromId = (id: PostingId): string => `${id}.txt`;

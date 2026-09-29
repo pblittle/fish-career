@@ -256,6 +256,9 @@ describe('the complete workflow over in-memory ports', () => {
     await expect(h.app.readPosting({ postingId: 'nope' })).rejects.toMatchObject({
       code: 'POSTING_NOT_FOUND',
     });
+    await expect(h.app.readPosting({ postingId: '../../canary' })).rejects.toMatchObject({
+      code: 'POSTING_NOT_FOUND',
+    });
   });
 
   it('explains one posting with the raw answers and a trace', async () => {

@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  isPostingId,
   type Posting,
   type PostingId,
   type PostingRecord,
@@ -46,6 +47,7 @@ export const filePostingRepository = (dir: string): PostingRepository => ({
       .map((file) => parse(file, readFileSync(join(dir, file), 'utf8')));
   },
   async get(id: PostingId): Promise<PostingRecord | null> {
+    if (!isPostingId(id)) return null;
     for (const ext of ['txt', 'md']) {
       try {
         return parse(`${id}.${ext}`, readFileSync(join(dir, `${id}.${ext}`), 'utf8'));
