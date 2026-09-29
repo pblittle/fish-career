@@ -125,7 +125,12 @@ describe('the MCP contract', () => {
       expect(tool.annotations, tool.name).toBeDefined();
     }
     const probe = tools.find((t) => t.name === 'watchlist_probe');
-    expect(probe?.annotations?.readOnlyHint).toBe(true);
+    expect(probe?.annotations).toMatchObject({
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    });
     const add = tools.find((t) => t.name === 'watchlist_add');
     expect(add?.annotations?.readOnlyHint).toBe(false);
     const remove = tools.find((t) => t.name === 'watchlist_remove');

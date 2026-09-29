@@ -398,7 +398,9 @@ reaches the judge, where typed answers, the separate blocker check, `?` for
 low confidence, and the calibration loop are the structural defense against a
 posting that tries to prompt-inject; posting IDs are the cache file stems the
 fetch engine writes from company and posting keys, and a posting is read by
-its cache ID; there is no inbound surface. Out of scope, by design:
+its cache ID, which is validated against the cache-ID alphabet before any
+filesystem access so an ID cannot escape `postings/`; there is no inbound
+surface. Out of scope, by design:
 local process trust (anything that can launch the server or read `FISH_HOME`
 can read your profile and postings and spend your API key, so protect the
 directory with normal file permissions and do not expose its stdio to an

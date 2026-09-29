@@ -40,6 +40,8 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
       outputSchema: watchlistProbeOutput,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
         openWorldHint: true,
       },
     },

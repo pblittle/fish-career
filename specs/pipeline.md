@@ -101,7 +101,9 @@ filename. Ledger entries, traces, calibrations, preferences, the MCP tools,
 and the CLI all speak IDs. The filesystem adapter maps ID to file. Ledgers and
 preferences written before this change keyed on filenames and are normalized
 on read, so existing state survives. On input, a `.txt` suffix is accepted and
-stripped.
+stripped. On read, an ID is checked against the cache-ID alphabet
+(`^[a-z0-9]+(?:-[a-z0-9]+)*$`) before any filesystem access; anything else is
+a miss and cannot name a file outside the postings directory.
 
 ### Boundaries validated at runtime
 

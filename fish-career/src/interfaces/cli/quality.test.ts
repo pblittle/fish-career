@@ -22,6 +22,32 @@ const expected = JSON.parse(
   readFileSync(join(evalDir, 'expected-metrics.json'), 'utf8'),
 ) as Expected;
 
+const repoRoot = join(evalDir, '..', '..');
+
+const pct = (value: number): string => `${(value * 100).toFixed(1).replace(/\.0$/, '')}%`;
+
+const escapeRe = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const published: { label: string; value: number }[] = [
+  { label: 'pairwise accuracy', value: expected.pairwiseAccuracy },
+  { label: 'kendall tau', value: expected.kendallTau },
+  { label: 'spearman', value: expected.spearman },
+  { label: 'precision@5', value: expected.precisionAt5 },
+  { label: 'nDCG@5', value: expected.ndcgAt5 },
+];
+
+describe('the published quality metrics', () => {
+  it('appear next to their labels in README.md and specs/quality.md', () => {
+    for (const doc of ['README.md', join('specs', 'quality.md')]) {
+      const text = readFileSync(join(repoRoot, doc), 'utf8');
+      for (const { label, value } of published) {
+        const pattern = new RegExp(`${escapeRe(label)}[^0-9]{0,8}${escapeRe(pct(value))}`, 'i');
+        expect(text, `${doc}: ${label}`).toMatch(pattern);
+      }
+    }
+  });
+});
+
 describe('the recorded quality baseline', () => {
   it('matches the golden metrics', async () => {
     const { report } = await runQuality({ dir: evalDir, k: expected.k });
