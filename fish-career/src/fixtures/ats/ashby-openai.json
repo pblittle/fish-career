@@ -1,0 +1,45 @@
+{
+  "source": {
+    "url": "https://api.ashbyhq.com/posting-api/job-board/openai?includeCompensation=true",
+    "fetchedAt": "2026-10-03",
+    "note": "Three real OpenAI postings, trimmed to the fields the Ashby adapter reads; descriptions cut to 160 characters."
+  },
+  "body": {
+    "jobs": [
+      {
+        "id": "0b428c6d-7c06-4feb-82b6-5bbe5cda2a18",
+        "title": "Account Director, Startups",
+        "location": "São Paulo",
+        "workplaceType": "Hybrid",
+        "isRemote": true,
+        "jobUrl": "https://jobs.ashbyhq.com/openai/0b428c6d-7c06-4feb-82b6-5bbe5cda2a18",
+        "publishedAt": "2026-08-31T21:22:23.258+00:00",
+        "descriptionPlain": "About the Team\n\nOpenAI’s mission is to build safe artificial general intelligence (AGI) which benefits all of humanity. This long-term undertaking brings the wo"
+      },
+      {
+        "id": "c414f15f-60c4-40b5-a896-d2ad6c7f4415",
+        "title": "Senior Technical Program Manager - Security",
+        "location": "US - Remote",
+        "workplaceType": "Remote",
+        "isRemote": true,
+        "jobUrl": "https://jobs.ashbyhq.com/openai/c414f15f-60c4-40b5-a896-d2ad6c7f4415",
+        "publishedAt": "2026-06-25T17:30:54.205+00:00",
+        "descriptionPlain": "About the Team\n\nOpenAI builds powerful AI systems like ChatGPT, the OpenAI API, and enterprise products that serve millions of users across the globe. As we sca",
+        "compensation": {
+          "compensationTierSummary": "$165.4K – $285K • Offers Equity • Multiple Ranges"
+        }
+      },
+      {
+        "id": "8fb1615c-34bf-47c4-a1d1-b7b2f836bbd3",
+        "title": "Technical Program Manager, Compute Infrastructure",
+        "location": "San Francisco",
+        "jobUrl": "https://jobs.ashbyhq.com/openai/8fb1615c-34bf-47c4-a1d1-b7b2f836bbd3",
+        "publishedAt": "2026-03-12T16:38:15.322+00:00",
+        "descriptionPlain": "ABOUT THE TEAM\n\nThe compute infrastructure team runs the GPU fleet and large-scale compute clusters that serve the models backing ChatGPT and the API, while als",
+        "compensation": {
+          "compensationTierSummary": "$257K – $335K • Offers Equity"
+        }
+      }
+    ]
+  }
+}

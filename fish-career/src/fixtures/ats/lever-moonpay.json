@@ -1,0 +1,37 @@
+{
+  "source": {
+    "url": "https://api.lever.co/v0/postings/moonpay?mode=json",
+    "fetchedAt": "2026-10-03",
+    "note": "The two real MoonPay postings whose location mentions Remote while workplaceType is not remote; trimmed to the fields the Lever adapter reads, description cut to its first 160 characters of text."
+  },
+  "body": [
+    {
+      "id": "28a287e0-1e9f-4002-9ae7-7d0e61e87669",
+      "text": "Product Security Manager",
+      "categories": {
+        "location": "Canada - Remote"
+      },
+      "workplaceType": "hybrid",
+      "hostedUrl": "https://jobs.lever.co/moonpay/28a287e0-1e9f-4002-9ae7-7d0e61e87669",
+      "createdAt": 1774619102578,
+      "description": "<div>About MoonPay MoonPay is for builders with something to prove. This isn't a \"work on cool crypto stuff\" company. It's a high-standards, high-velocity, high-acco</div>",
+      "salaryRange": {
+        "min": 209664,
+        "max": 220699,
+        "currency": "USD",
+        "interval": "per-year-salary"
+      }
+    },
+    {
+      "id": "9a97a2b6-557f-43ff-aa79-30e0d2520068",
+      "text": "Regulatory Compliance Specialist",
+      "categories": {
+        "location": "United States (East Coast Time Zone) - Remote"
+      },
+      "workplaceType": "hybrid",
+      "hostedUrl": "https://jobs.lever.co/moonpay/9a97a2b6-557f-43ff-aa79-30e0d2520068",
+      "createdAt": 1789463522420,
+      "description": "<div>About MoonPay MoonPay is for builders with something to prove. This isn't a \"work on cool crypto stuff\" company. It's a high-standards, high-velocity, high-acco</div>"
+    }
+  ]
+}
