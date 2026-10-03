@@ -33,9 +33,11 @@ runtime boundary below are the answer.
   or not; later polls deliver arrivals only. A recency window applies on the
   first poll (or an explicit `--days`).
 - Remote is the provider's stated workplace type where it has one (Ashby and
-  Lever `workplaceType`, SmartRecruiters `location.remote`). Without one, a
-  Greenhouse or Lever posting falls back to its location text and an Ashby
-  posting to its `isRemote` flag. `PUBLISHED` is first publication
+  Lever `workplaceType`, SmartRecruiters `location.remote` and
+  `location.hybrid`). Without one, a Greenhouse or Lever posting falls back to
+  its location text and an Ashby posting to its `isRemote` flag. Every adapter
+  returns every posting with its workplace; fetch keeps the remote ones, so a
+  hybrid or on-site posting is counted as a not-remote drop on every board. `PUBLISHED` is first publication
   (Greenhouse `first_published`), not the last edit, so the recency window
   measures when a posting went up.
 - A body too thin to score is resolved through the provider's detail
