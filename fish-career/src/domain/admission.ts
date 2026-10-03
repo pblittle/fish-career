@@ -11,8 +11,8 @@
 // The two drop reasons are split so fetch can count them apart, and the
 // out-of-window bucket is degenerate after the first poll: the default
 // window is null then, so it only fires on the first run or when the caller
-// passes an explicit window (--days). An arrival is dropped on first contact
-// or not at all.
+// passes an explicit window (--days). The caller decides which seen postings
+// to pass: fetch leaves out those an explicit window reconsiders.
 
 import { MIN_SCORABLE_TEXT, type Posting } from './posting.js';
 

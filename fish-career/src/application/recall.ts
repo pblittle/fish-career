@@ -14,8 +14,10 @@ import {
   sameBoard,
 } from '../domain/posting-url.js';
 import { offTargetPhrase } from '../domain/skip-titles.js';
-import type { DropReason, WatchlistEntry } from '../ports/stores.js';
+import type { DropReason, SeenEntry, WatchlistEntry } from '../ports/stores.js';
 import type { CareerDependencies } from './dependencies.js';
+
+const MS_PER_DAY = 86_400_000;
 
 // From the earliest loss to the furthest progress.
 export const RECALL_STAGES = [
@@ -51,6 +53,8 @@ export interface RecallCase {
   // Why a seen posting was not written, when the seen index recorded it.
   reason?: DropReason;
   observedAt?: string;
+  // The fetch --days window that would reconsider a dropped posting.
+  days?: number;
   postingId?: PostingId;
   // The judge's composite, or null until triage scores it.
   score?: number | null;
@@ -72,6 +76,18 @@ export const recallPostings =
     ]);
     const companyOf = (board: Board): string =>
       watchlist.find((e) => sameBoard(e, board))?.name ?? `${board.provider}/${board.slug}`;
+
+    // The smallest --days window that reaches a dropped posting's date, with
+    // an hour to spare so the command still reaches it when it is run. None
+    // for a board no longer watched, which fetch does not read, or for a
+    // posting too thin to score, which a window does not reconsider.
+    const windowFor = (board: Board | null, entry: SeenEntry): { days?: number } => {
+      const published = Date.parse(entry.date ?? '');
+      const watched = board !== null && watchlist.some((e) => sameBoard(e, board));
+      if (!watched || entry.dropped === 'thin-text' || Number.isNaN(published)) return {};
+      const age = (deps.clock.now().getTime() - published) / MS_PER_DAY;
+      return { days: Math.max(1, Math.ceil(age + 1 / 24)) };
+    };
 
     // One live read per watched board per run, through the provider port,
     // the same GET a poll makes.
@@ -131,6 +147,7 @@ export const recallPostings =
           title: entry.title,
           reason: entry.dropped,
           observedAt: entry.observedAt,
+          ...windowFor(board, entry),
         };
       }
 

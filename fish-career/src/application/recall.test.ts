@@ -138,6 +138,7 @@ describe('recallPostings, the known-item case log', () => {
         title: 'Vida role 3',
         reason: 'out-of-window',
         observedAt: NOW,
+        days: 31,
       },
       {
         url: `https://jobs.lever.co/vida/${uuid(4)}`,
@@ -284,5 +285,39 @@ describe('recallPostings, the known-item case log', () => {
       company: 'Vida',
       title: 'Vida role 2',
     });
+  });
+
+  it('gives the --days window that reaches a dropped posting, with an hour to spare', async () => {
+    const h = harness();
+    await h.deps.seen.write({
+      [`lever:vida:${uuid(3)}`]: {
+        title: 'Vida role 3',
+        date: daysAgo(30),
+        observed: true,
+        dropped: 'out-of-window',
+      },
+      // Dropped before the reason was recorded, so a window reconsiders it.
+      [`lever:vida:${uuid(7)}`]: { title: 'Vida role 7', date: daysAgo(30.98), observed: true },
+      [`lever:other:${uuid(8)}`]: {
+        title: 'Other role 8',
+        date: daysAgo(30),
+        observed: true,
+        dropped: 'out-of-window',
+      },
+    });
+    const cases = await recallPostings(h.deps)({
+      urls: [
+        `https://jobs.lever.co/vida/${uuid(3)}`,
+        `https://jobs.lever.co/vida/${uuid(7)}`,
+        `https://jobs.lever.co/other/${uuid(8)}`,
+      ],
+    });
+    expect(cases.map((c) => [c.title, c.days])).toEqual([
+      ['Vida role 3', 31],
+      // 30.98 days old: --days 31 would stop reaching it within the hour.
+      ['Vida role 7', 32],
+      // Fetch reads only watched boards, so no window reaches it.
+      ['Other role 8', undefined],
+    ]);
   });
 });

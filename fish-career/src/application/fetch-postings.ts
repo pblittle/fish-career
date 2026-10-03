@@ -20,8 +20,8 @@ export interface Arrival {
 // thinText and outOfWindow come out of the admission table. The outOfWindow
 // bucket is degenerate after the first poll: the default window is null then,
 // so it only fires on the first run or when the caller passes an explicit
-// window. An admitted posting is dropped on first contact or never, because
-// every posting admission sees is marked seen either way.
+// window, which also reconsiders the postings earlier polls dropped for their
+// date.
 export interface DropCounts {
   notRemote: number;
   offTarget: number;
@@ -88,9 +88,24 @@ export const fetchPostings =
     const days = input.days !== undefined ? input.days : firstRun ? 14 : null;
     const now = deps.clock.now();
     const cutoff = days === null ? null : now.getTime() - days * MS_PER_DAY;
+    // An explicit window (--days N, or --all for none) reconsiders every
+    // posting a poll observed and never wrote, except one too thin to score:
+    // those dropped out of window, and those from before fish recorded why.
+    // Without one, a seen posting stays seen.
+    const settled =
+      input.days === undefined
+        ? seen
+        : Object.fromEntries(
+            Object.entries(seen).filter(([, e]) => e.file || e.dropped === 'thin-text'),
+          );
     // First-observation time, stamped on every posting this poll marks seen
-    // for the first time; entries already in the index keep theirs.
+    // for the first time. An entry already in the index keeps its own, and
+    // one from before fish recorded the time stays without it.
     const observedAt = now.toISOString();
+    const firstSeen = (key: string): { observedAt?: string } => {
+      const at = seen[key] ? seen[key].observedAt : observedAt;
+      return at ? { observedAt: at } : {};
+    };
 
     const outcome: FetchOutcome = { arrivals: [], failures: [], perCompany: [], firstRun };
     const newSeen: Record<string, SeenEntry> = {};
@@ -123,7 +138,7 @@ export const fetchPostings =
         continue;
       }
       const remote = postings.filter((p) => p.remote);
-      const prior = { ...seen, ...newSeen };
+      const prior = { ...settled, ...newSeen };
       // A title on the skip list is set aside before admission, so it costs
       // no detail fetch and is never marked seen: delete the phrase and the
       // next poll admits it. A posting already seen is left to admission,
@@ -161,7 +176,7 @@ export const fetchPostings =
               title: p.title,
               date: p.date,
               observed: true,
-              observedAt,
+              ...firstSeen(p.key),
               dropped: 'out-of-window',
             };
             continue;
@@ -172,14 +187,14 @@ export const fetchPostings =
               title: p.title,
               date: p.date,
               observed: true,
-              observedAt,
+              ...firstSeen(p.key),
               dropped: 'thin-text',
             };
             continue;
           case 'write': {
             const postingId = await deps.postings.save(c.name, { ...p, text: a.text });
             const file = postingFileFromId(postingId);
-            newSeen[p.key] = { title: p.title, file, date: p.date, observedAt };
+            newSeen[p.key] = { title: p.title, file, date: p.date, ...firstSeen(p.key) };
             outcome.arrivals.push({
               company: c.name,
               title: p.title,
