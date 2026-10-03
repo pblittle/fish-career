@@ -23,6 +23,12 @@ export interface PreferencesStore {
   read(): Promise<Preference[]>;
 }
 
+// The operator's skip-titles phrases, in file order. The operator writes the
+// file by hand and fish only reads it; no file means no phrases.
+export interface SkipTitlesStore {
+  read(): Promise<string[]>;
+}
+
 export interface PendingCalibration {
   postingIds: PostingId[];
   seed: number;
@@ -37,10 +43,11 @@ export interface CalibrationStore {
 }
 
 // Every remote posting a poll observes is marked seen, written or not, so
-// later polls deliver arrivals only. observedAt is the first-observation
-// time, set when a posting is first marked seen and preserved thereafter.
-// A posting observed but not written carries why in dropped; entries from
-// before the field have observed set and no reason.
+// later polls deliver arrivals only; a title on the skip list is not.
+// observedAt is the first-observation time, set when a posting is first
+// marked seen and preserved thereafter. A posting observed but not written
+// carries why in dropped; entries from before the field have observed set
+// and no reason.
 export type DropReason = 'thin-text' | 'out-of-window';
 
 export interface SeenEntry {

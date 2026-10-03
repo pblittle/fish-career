@@ -5,6 +5,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { CareerApplication } from '../../application/career-application.js';
+import { totalDrops } from '../../application/fetch-postings.js';
 import { renderCalibration } from '../../domain/calibration.js';
 import { ApplicationError } from '../../domain/errors.js';
 import { postingIdFromFile } from '../../domain/posting.js';
@@ -93,16 +94,9 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
         io.out(
           `\n${outcome.arrivals.length} new posting${outcome.arrivals.length === 1 ? '' : 's'} written to the cache.`,
         );
-        const drops = outcome.perCompany.reduce(
-          (sum, c) => ({
-            notRemote: sum.notRemote + c.drops.notRemote,
-            thinText: sum.thinText + c.drops.thinText,
-            outOfWindow: sum.outOfWindow + c.drops.outOfWindow,
-          }),
-          { notRemote: 0, thinText: 0, outOfWindow: 0 },
-        );
+        const drops = totalDrops(outcome.perCompany);
         io.out(
-          `Dropped before writing: ${drops.notRemote} not remote, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
+          `Dropped before writing: ${drops.notRemote} not remote, ${drops.offTarget} off target, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
         );
         if (outcome.firstRun) {
           io.out(

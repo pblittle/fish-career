@@ -13,6 +13,7 @@ import type {
   PreferencesStore,
   ProfileStore,
   SeenStore,
+  SkipTitlesStore,
   VerdictStore,
   WatchlistStore,
 } from '../ports/stores.js';
@@ -33,6 +34,8 @@ export interface CareerDependencies {
   profile: ProfileStore;
   watchlist: WatchlistStore;
   preferences: PreferencesStore;
+  // Titles fetch never writes. Without a store, no title is skipped.
+  skipTitles?: SkipTitlesStore;
   calibrations: CalibrationStore;
   clock: Clock;
   random: RandomSource;

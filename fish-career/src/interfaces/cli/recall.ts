@@ -13,6 +13,7 @@ const LABEL: Readonly<Record<RecallStage, string>> = {
   unreadable: 'unreadable',
   'not-listed': 'not listed',
   'not-remote': 'not remote',
+  'off-target': 'off target',
   'not-fetched': 'not fetched',
   dropped: 'dropped',
   written: 'written',
@@ -40,6 +41,8 @@ const detail = (c: RecallCase): string => {
       return `${posting}, ${why(c)}`;
     case 'not-fetched':
       return `${posting} is listed and remote; run fish fetch`;
+    case 'off-target':
+      return `${posting} matches "${c.phrase}" in skip-titles.txt`;
     case 'not-remote':
       return c.workplace
         ? `${posting} is listed as ${c.workplace}`

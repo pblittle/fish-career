@@ -18,6 +18,7 @@ import type {
   ProfileStore,
   SeenEntry,
   SeenStore,
+  SkipTitlesStore,
   VerdictStore,
   WatchlistEntry,
   WatchlistStore,
@@ -54,6 +55,21 @@ export const memoryPreferencesStore = (initial: Preference[] = []): PreferencesS
     return [...initial];
   },
 });
+
+// Mutable, so a test can delete a phrase between polls.
+export const memorySkipTitlesStore = (
+  initial: string[] = [],
+): SkipTitlesStore & {
+  phrases: string[];
+} => {
+  const store = {
+    phrases: [...initial],
+    async read() {
+      return [...store.phrases];
+    },
+  };
+  return store;
+};
 
 export const memoryCalibrationStore = (): CalibrationStore & {
   records: CalibrationRecord[];

@@ -13,6 +13,7 @@ export interface HomePaths {
   profile: string;
   watchlist: string;
   preferences: string;
+  skipTitles: string;
   postings: string;
   env: string;
   state: string;
@@ -34,6 +35,7 @@ export const homePaths = (home: string): HomePaths => {
     profile: join(home, 'profile.md'),
     watchlist: join(home, 'watchlist.json'),
     preferences: join(home, 'preferences.json'),
+    skipTitles: join(home, 'skip-titles.txt'),
     postings: join(home, 'postings'),
     env: join(home, '.env'),
     state,

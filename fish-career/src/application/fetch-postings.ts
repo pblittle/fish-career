@@ -1,6 +1,7 @@
 import { admitPostings } from '../domain/admission.js';
 import { ApplicationError } from '../domain/errors.js';
 import { type Posting, type PostingId, postingFileFromId } from '../domain/posting.js';
+import { offTargetPhrase } from '../domain/skip-titles.js';
 import type { SeenEntry } from '../ports/stores.js';
 import type { CareerDependencies } from './dependencies.js';
 
@@ -12,15 +13,18 @@ export interface Arrival {
   file: string;
 }
 
-// Why a posting never reached the cache. nonRemote is counted before
-// admission (the poll keeps remote postings only); thinText and outOfWindow
-// come out of the admission table. The outOfWindow bucket is degenerate
-// after the first poll: the default window is null then, so it only fires on
-// the first run or when the caller passes an explicit window. A posting is
-// dropped on first contact or never, because every observed posting is
-// marked seen either way.
+// Why a posting never reached the cache. notRemote and offTarget are counted
+// before admission: the poll keeps remote postings only, then sets aside the
+// unseen ones whose title matches a skip-titles phrase. Neither is marked
+// seen, so both are counted again on every poll they are listed.
+// thinText and outOfWindow come out of the admission table. The outOfWindow
+// bucket is degenerate after the first poll: the default window is null then,
+// so it only fires on the first run or when the caller passes an explicit
+// window. An admitted posting is dropped on first contact or never, because
+// every posting admission sees is marked seen either way.
 export interface DropCounts {
   notRemote: number;
+  offTarget: number;
   thinText: number;
   outOfWindow: number;
 }
@@ -42,6 +46,18 @@ export interface FetchInput {
   companies?: string[];
   days?: number | null;
 }
+
+// The drops summed over every board a poll read.
+export const totalDrops = (perCompany: FetchOutcome['perCompany']): DropCounts =>
+  perCompany.reduce(
+    (sum, c) => ({
+      notRemote: sum.notRemote + c.drops.notRemote,
+      offTarget: sum.offTarget + c.drops.offTarget,
+      thinText: sum.thinText + c.drops.thinText,
+      outOfWindow: sum.outOfWindow + c.drops.outOfWindow,
+    }),
+    { notRemote: 0, offTarget: 0, thinText: 0, outOfWindow: 0 },
+  );
 
 const MS_PER_DAY = 86_400_000;
 
@@ -67,6 +83,7 @@ export const fetchPostings =
     }
 
     const seen = await deps.seen.read();
+    const phrases = (await deps.skipTitles?.read()) ?? [];
     const firstRun = Object.keys(seen).length === 0;
     const days = input.days !== undefined ? input.days : firstRun ? 14 : null;
     const now = deps.clock.now();
@@ -87,7 +104,7 @@ export const fetchPostings =
           total: 0,
           remote: 0,
           written: 0,
-          drops: { notRemote: 0, thinText: 0, outOfWindow: 0 },
+          drops: { notRemote: 0, offTarget: 0, thinText: 0, outOfWindow: 0 },
         });
         continue;
       }
@@ -101,13 +118,18 @@ export const fetchPostings =
           total: 0,
           remote: 0,
           written: 0,
-          drops: { notRemote: 0, thinText: 0, outOfWindow: 0 },
+          drops: { notRemote: 0, offTarget: 0, thinText: 0, outOfWindow: 0 },
         });
         continue;
       }
       const remote = postings.filter((p) => p.remote);
       const prior = { ...seen, ...newSeen };
-      const admitted = admitPostings(remote, prior, cutoff);
+      // A title on the skip list is set aside before admission, so it costs
+      // no detail fetch and is never marked seen: delete the phrase and the
+      // next poll admits it. A posting already seen is left to admission,
+      // which skips it without counting a drop.
+      const onTarget = remote.filter((p) => prior[p.key] || !offTargetPhrase(p.title, phrases));
+      const admitted = admitPostings(onTarget, prior, cutoff);
 
       // Thin texts get one detail fetch each, then re-admission with the
       // resolved text in hand; the decision table lives in admitPostings.
@@ -118,12 +140,13 @@ export const fetchPostings =
         }
       }
       const decided = Object.keys(resolved).length
-        ? admitPostings(remote, prior, cutoff, { resolved })
+        ? admitPostings(onTarget, prior, cutoff, { resolved })
         : admitted;
 
       let written = 0;
       const drops: DropCounts = {
         notRemote: postings.length - remote.length,
+        offTarget: remote.length - onTarget.length,
         thinText: 0,
         outOfWindow: 0,
       };

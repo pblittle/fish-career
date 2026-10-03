@@ -92,7 +92,7 @@ describe('runCli', () => {
             total: 3,
             remote: 2,
             written: 1,
-            drops: { notRemote: 1, thinText: 2, outOfWindow: 3 },
+            drops: { notRemote: 1, offTarget: 4, thinText: 2, outOfWindow: 3 },
           },
         ],
         firstRun: true,
@@ -105,7 +105,7 @@ describe('runCli', () => {
     expect(sink.out.join('\n')).toContain('Acme: 3 postings, 2 remote, 1 new');
     expect(sink.out.join('\n')).toContain('First run');
     expect(sink.out.join('\n')).toContain(
-      'Dropped before writing: 1 not remote, 2 too thin to score, 3 out of window.',
+      'Dropped before writing: 1 not remote, 4 off target, 2 too thin to score, 3 out of window.',
     );
   });
 
