@@ -195,7 +195,7 @@ first contact or never. `triage` scores the arrivals against the profile with
 the judge and prints per-dimension scores, confidences, and blocker flags.
 Over MCP, the tools are `fetch_postings` and `triage_postings`.
 
-Titles you never want scored go in `$FISH_HOME/skip-titles.txt`, one phrase
+Titles you never want fetched go in `$FISH_HOME/skip-titles.txt`, one phrase
 per line:
 
 ```text
@@ -210,7 +210,8 @@ reaches far: `marketing` also skips "Staff Web Engineer, Marketing", so use
 the longer phrase when a word is shared, and `fish recall` names the phrase
 that kept a posting out. Fetch counts a skipped posting as off target and
 never marks it seen, so deleting the phrase lets the next poll write it.
-Without the file, nothing is skipped.
+The list applies when fetch writes: a posting already in the cache stays
+there, and triage still scores it. Without the file, nothing is skipped.
 
 ### 4. Grade arrivals
 

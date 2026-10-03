@@ -40,15 +40,16 @@ runtime boundary below are the answer.
   hybrid or on-site posting is counted as a not-remote drop on every board. `PUBLISHED` is first publication
   (Greenhouse `first_published`), not the last edit, so the recency window
   measures when a posting went up.
-- Titles the operator never wants scored are phrases in
+- Titles the operator never wants fetched are phrases in
   `$FISH_HOME/skip-titles.txt`, one per line, with `#` comments. A phrase
   matches when its words appear in the title side by side and in order, whole
   words in any case (`offTargetPhrase` in `src/domain/skip-titles.ts`). After
   the remote check and before admission, fetch sets aside an unseen posting
   whose title matches: it costs no detail fetch, counts as an off-target drop,
   and is never marked seen, so deleting the phrase lets the next poll admit
-  it. A missing file skips nothing; a file that cannot be read fails the
-  fetch.
+  it. The list applies when fetch writes; a posting already in the cache
+  stays, and triage scores it. A missing file skips nothing; a file that
+  cannot be read fails the fetch.
 - A body too thin to score is resolved through the provider's detail
   endpoint, or dropped as thin text if it stays thin; the split drop reasons
   are in [`specs/quality.md`](./quality.md).

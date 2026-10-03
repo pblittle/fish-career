@@ -44,7 +44,7 @@ describe('offTargetPhrase', () => {
 describe('parseSkipTitles', () => {
   it('reads one phrase per line and drops comments and blank lines', () => {
     const text = [
-      '# Titles I never want scored',
+      '# Titles I never want fetched',
       '',
       '  designer  ',
       'account executive # and the abbreviation, below',
