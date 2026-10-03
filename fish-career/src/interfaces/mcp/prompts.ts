@@ -30,7 +30,7 @@ export const registerPrompts = (server: McpServer): void => {
           '',
           '1. Read the profile at fish://profile/current. If it is empty or thin, interview me briefly and write one with profile_update. It needs target roles, level, location and remote constraint, compensation floor, core skills, domains I want, and hard constraints. No contact details.',
           '2. Read the rubric at fish://rubric/current and tell me in one paragraph what the five dimensions and the blocker check will judge.',
-          '3. Ask which companies I want watched. For each, call watchlist_probe, show me the sample titles so we verify the board identity, then call watchlist_add.',
+          '3. Ask which companies I want watched. If I give a posting or board URL, call watchlist_add with it, and if it is refused, tell me why. For a company name, call watchlist_probe, show me the sample titles so we verify the board identity, then call watchlist_add.',
           '4. Call fetch_postings and summarize the arrivals.',
           '5. Call triage_postings and read me the top five with the reasons, flagging low-confidence cells and any blocker.',
           '6. Call calibration_start and hand me the slice to rank blind, best first, before showing me any scores. Then call calibration_submit with my order and explain the agreement.',

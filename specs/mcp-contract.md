@@ -22,7 +22,7 @@ annotations, and one success/error path:
 | Tool | Purpose | readOnly | destructive | idempotent | openWorld |
 |---|---|---|---|---|---|
 | `watchlist_probe` | Probe the four ATS boards for a slug | yes | no | yes | yes |
-| `watchlist_add` | Write a verified company | no | no | yes | no |
+| `watchlist_add` | Write a company's board, from a URL or a provider and slug | no | no | yes | no |
 | `watchlist_remove` | Remove a company | no | yes | yes | no |
 | `fetch_postings` | Poll boards, write arrivals | no | no | yes | yes |
 | `verdict_record` | Record the operator's grade for an arrival | no | yes | yes | no |
@@ -32,6 +32,12 @@ annotations, and one success/error path:
 | `calibration_submit` | Record the human order, measure | no | no | no | yes |
 | `calibration_rescore` | Re-measure under the current rubric | no | no | no | yes |
 | `profile_update` | Replace the profile | no | yes | yes | no |
+
+`watchlist_add` takes exactly one of two forms: a posting or board `url`,
+read offline ([`specs/pipeline.md`](./pipeline.md), Posting URLs), or a
+`provider` and `slug`. Both or neither, or a URL on another system or a job
+search site, fails with `INVALID_COMPANY` and a message that says why. A
+`name` or board already watched is a no-op that returns the existing entry.
 
 `verdict_record` is destructive because latest-wins replaces the posting's
 earlier verdict and keeps no history; it is idempotent because a repeated call

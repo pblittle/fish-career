@@ -133,6 +133,15 @@ describe('the MCP contract', () => {
     });
     const add = tools.find((t) => t.name === 'watchlist_add');
     expect(add?.annotations?.readOnlyHint).toBe(false);
+    // Two input forms, a URL or a provider and slug, so nothing is required
+    // by the schema; the handler enforces exactly one form.
+    expect(Object.keys(add?.inputSchema.properties ?? {}).sort()).toEqual([
+      'name',
+      'provider',
+      'slug',
+      'url',
+    ]);
+    expect(add?.inputSchema.required ?? []).toEqual([]);
     const remove = tools.find((t) => t.name === 'watchlist_remove');
     expect(remove?.annotations?.destructiveHint).toBe(true);
     const verdict = tools.find((t) => t.name === 'verdict_record');
@@ -253,6 +262,51 @@ describe('the MCP contract', () => {
       arguments: { name: 'Acme' },
     });
     expect(structured(removed)).toMatchObject({ name: 'Acme', removed: true });
+  });
+
+  it('watchlist_add takes a posting URL in place of provider and slug', async () => {
+    const url = 'https://jobs.ashbyhq.com/beta/0b428c6d-7c06-4feb-82b6-5bbe5cda2a18';
+    const added = await client.callTool({ name: 'watchlist_add', arguments: { url } });
+    expect(added.isError).toBeFalsy();
+    expect(structured(added)).toEqual({
+      name: 'beta',
+      provider: 'ashby',
+      slug: 'beta',
+      added: true,
+    });
+
+    const again = await client.callTool({
+      name: 'watchlist_add',
+      arguments: { name: 'Beta Corp', provider: 'ashby', slug: 'Beta' },
+    });
+    expect(structured(again)).toEqual({
+      name: 'beta',
+      provider: 'ashby',
+      slug: 'beta',
+      added: false,
+    });
+  });
+
+  it('watchlist_add refuses a URL it cannot follow, or both forms at once, with a code', async () => {
+    const workday = await client.callTool({
+      name: 'watchlist_add',
+      arguments: { url: 'https://teladoc.wd503.myworkdayjobs.com/en-US/teladochealth_is_hiring' },
+    });
+    expect(workday.isError).toBe(true);
+    expect(structured(workday).error).toMatchObject({
+      code: 'INVALID_COMPANY',
+      message: expect.stringContaining('Workday'),
+    });
+
+    for (const args of [
+      { url: 'https://jobs.ashbyhq.com/beta', provider: 'ashby', slug: 'beta' },
+      { name: 'Beta' },
+      { provider: 'ashby' },
+    ]) {
+      const refused = await client.callTool({ name: 'watchlist_add', arguments: args });
+      expect(refused.isError, JSON.stringify(args)).toBe(true);
+      expect(structured(refused).error).toMatchObject({ code: 'INVALID_COMPANY' });
+    }
   });
 
   it('evaluate_ranking returns the satisfied count and violations', async () => {

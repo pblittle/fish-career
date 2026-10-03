@@ -44,6 +44,7 @@ Link the CLI once so the bare `fish` name exists
 fish profile set <path>                      # the judgment target; see the walkthrough
 fish watchlist probe <slug>                  # read a title or two; slugs collide
 fish watchlist add "Company" <provider> <slug>
+fish watchlist add <posting-url>             # or any posting or board URL on it
 fish fetch
 fish triage
 ```
@@ -107,6 +108,33 @@ published, the npm entry is the same shape with `"command": "npx"` and
 `"args": ["-y", "fish-career"]` for Claude Desktop and Cursor, and a single
 `"command": ["npx", "-y", "fish-career"]` for opencode.
 
+**Optional: a web search companion.** fish reads only the boards you watch.
+To find boards worth watching, give the host a search server next to fish and
+let it hand posting URLs to `watchlist_add`. Firecrawl's MCP server is one;
+it needs its own key from <https://www.firecrawl.dev>:
+
+```json
+{
+  "mcpServers": {
+    "fish-career": {
+      "command": "node",
+      "args": ["/absolute/path/to/repo/fish-career/dist/index.js"],
+      "env": { "FISH_HOME": "/absolute/path/to/fish-state" }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": { "FIRECRAWL_API_KEY": "fc-..." }
+    }
+  }
+}
+```
+
+fish's own outbound calls do not change: the URL is read offline, and fish
+never calls Firecrawl. The host's search queries and the pages it scrapes go
+to Firecrawl under Firecrawl's terms, so keep personal details out of what
+you ask the host to search.
+
 ## The walkthrough
 
 Every step has an MCP tool; the tool names appear in each section. Ask your
@@ -138,11 +166,16 @@ low-confidence judgment, and the table marks those cells with `?`.
 Ask the host to run `watchlist_probe` with a candidate slug, read a title or
 two from the board it finds, then run `watchlist_add` to write the entry. The
 probe writes nothing, which is the point: slugs collide, and verifying
-identity before writing is the split.
+identity before writing is the split. A posting URL skips the guess: any
+posting or board URL on Ashby, Greenhouse, Lever, or SmartRecruiters names
+the board, so `watchlist_add` takes one in place of a provider and slug. A
+URL on another system (Workday, iCIMS, and others) or a job search site
+(HiringCafe, LinkedIn, Indeed) is refused with the reason.
 
 ```bash
 fish watchlist probe <slug>
 fish watchlist add "Company" <provider> <slug>
+fish watchlist add <posting-or-board-url> ["Company"]
 fish watchlist list
 ```
 
@@ -274,7 +307,7 @@ ship as prompts.
 | Tool | Purpose | Safety |
 |---|---|---|
 | `watchlist_probe` | Probe the four public ATS boards for a company slug | read-only |
-| `watchlist_add` | Write a verified company | additive, idempotent |
+| `watchlist_add` | Write a company's board, from a posting URL or a probed slug | additive, idempotent |
 | `watchlist_remove` | Remove a company | destructive |
 | `fetch_postings` | Poll watched boards, write unseen remote postings | open-world |
 | `verdict_record` | Record your grade for a cached arrival | latest-wins replace, idempotent |
@@ -315,7 +348,7 @@ fish calibrate start [--count N] [--seed N] # draw a blind slice
 fish calibrate submit <postingId...>        # record your order, measure agreement
 fish calibrate reuse                        # redraw the slice from its seed
 fish calibrate rescore                      # re-measure under the current rubric
-fish watchlist list | probe <slug> | add <name> <provider> <slug> | remove <name>
+fish watchlist list | probe <slug> | add <url> [name] | add <name> <provider> <slug> | remove <name>
 fish profile get | set <path>
 fish postings list | read <postingId> | explain <postingId> [--dry-run]
 ```

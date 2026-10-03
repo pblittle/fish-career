@@ -41,7 +41,7 @@ Usage:
   fish calibrate submit <postingId...>
   fish calibrate reuse
   fish calibrate rescore
-  fish watchlist list | probe <slug> | add <name> <provider> <slug> | remove <name>
+  fish watchlist list | probe <slug> | add <url> [name] | add <name> <provider> <slug> | remove <name>
   fish profile get | set <path>
   fish postings list | read <postingId> | explain <postingId> [--dry-run]
   fish --version
@@ -307,14 +307,22 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           return 0;
         }
         if (sub === 'add') {
-          const [name, provider, slug] = positional(args);
-          if (!name || !provider || !slug) {
-            return fail(io, 'Usage: fish watchlist add <name> <provider> <slug>');
+          // Three words are a name, provider, and slug; one or two that start
+          // with something URL-shaped are a posting or board URL and a name.
+          const words = positional(args);
+          const [first = '', second, third = ''] = words;
+          const byUrl = words.length <= 2 && /[./]/.test(first);
+          if (!byUrl && (words.length !== 3 || !third)) {
+            return fail(
+              io,
+              'Usage: fish watchlist add <url> [name] | add <name> <provider> <slug>',
+            );
           }
-          const { added } = await app.addCompany({ name, provider, slug });
-          io.out(
-            added ? `Added ${name} (${provider}/${slug}).` : `${name} is already on the watchlist.`,
-          );
+          const { added, entry } = byUrl
+            ? await app.addCompanyFromUrl({ url: first, name: second })
+            : await app.addCompany({ name: first, provider: second ?? '', slug: third });
+          const board = `${entry.name} (${entry.provider}/${entry.slug})`;
+          io.out(added ? `Added ${board}.` : `${board} is already on the watchlist.`);
           return 0;
         }
         if (sub === 'remove') {

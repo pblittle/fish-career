@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { parsePostingUrl, postingKey } from '../../domain/posting-url.js';
 import { formatComp, htmlToText, PROVIDERS } from './providers.js';
 
 // Real postings recorded from the public boards on 2026-10-03, trimmed to the
@@ -173,5 +174,44 @@ describe('Greenhouse list()', () => {
     serve({ jobs: [legacy] });
     const [posting] = await PROVIDERS.greenhouse.list('honor');
     expect(posting.date).toBe('2026-09-25T15:14:21-04:00');
+  });
+});
+
+describe('SmartRecruiters list()', () => {
+  it('keeps the postings the board marks remote, keyed by posting id', async () => {
+    const fixture = recorded('smartrecruiters-servicenow');
+    const fetchStub = serve(fixture.body);
+    const postings = await PROVIDERS.smartrecruiters.list('ServiceNow');
+    expect(fetchStub).toHaveBeenCalledWith(fixture.source.url, expect.anything());
+    expect(postings).toHaveLength(1);
+    expect(postings[0]).toMatchObject({
+      key: 'sr:ServiceNow:744000153266480',
+      title: 'Sr Mobile Software Engineer (Native Android and Backend)',
+      remote: true,
+      url: 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480',
+      detailUrl: 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480',
+    });
+  });
+});
+
+describe('posting URLs and adapter keys', () => {
+  // The URL parser lives in the domain and the key formats live here, so this
+  // is what keeps them from drifting: every URL an adapter writes must parse
+  // back to the key that adapter wrote.
+  it.each([
+    ['ashby', 'openai', 'ashby-openai'],
+    ['greenhouse', 'honor', 'greenhouse-honor'],
+    ['lever', 'vida', 'lever-vida'],
+    ['lever', 'moonpay', 'lever-moonpay'],
+    ['smartrecruiters', 'ServiceNow', 'smartrecruiters-servicenow'],
+  ])('%s/%s: each posting URL parses back to its key', async (provider, slug, name) => {
+    serve(recorded(name).body);
+    const postings = await PROVIDERS[provider].list(slug);
+    expect(postings.length).toBeGreaterThan(0);
+    for (const posting of postings) {
+      const target = parsePostingUrl(posting.url);
+      expect(target.kind, posting.url).toBe('posting');
+      if (target.kind === 'posting') expect(postingKey(target)).toBe(posting.key);
+    }
   });
 });
