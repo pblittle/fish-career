@@ -2,10 +2,10 @@
   "source": {
     "url": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings?limit=100&offset=0",
     "fetchedAt": "2026-10-03",
-    "note": "Two real ServiceNow postings, one remote and one not, trimmed to the fields the SmartRecruiters adapter reads. totalFound is cut from 706 to the two kept, so the adapter reads one page."
+    "note": "Three real ServiceNow postings, one remote, one hybrid, and one on-site, trimmed to the fields the SmartRecruiters adapter reads. totalFound is cut from 706 to the three kept, so the adapter reads one page."
   },
   "body": {
-    "totalFound": 2,
+    "totalFound": 3,
     "content": [
       {
         "id": "744000153266480",
@@ -13,9 +13,21 @@
         "releasedDate": "2026-10-02T20:33:26.076Z",
         "location": {
           "fullLocation": "San Diego, CALIFORNIA, United States",
-          "remote": true
+          "remote": true,
+          "hybrid": false
         },
         "ref": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480"
+      },
+      {
+        "id": "744000153267939",
+        "name": "Director, CRM Sales Manufacturing",
+        "releasedDate": "2026-10-02T20:26:31.775Z",
+        "location": {
+          "fullLocation": "Minneapolis, Minnesota, United States",
+          "remote": false,
+          "hybrid": true
+        },
+        "ref": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153267939"
       },
       {
         "id": "744000153333219",
@@ -23,7 +35,8 @@
         "releasedDate": "2026-10-03T16:02:30.623Z",
         "location": {
           "fullLocation": "Santa Clara, CALIFORNIA, United States",
-          "remote": false
+          "remote": false,
+          "hybrid": false
         },
         "ref": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153333219"
       }

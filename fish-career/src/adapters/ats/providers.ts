@@ -138,23 +138,26 @@ const smartrecruiters: AtsProvider = {
       items.push(...arr(page.content));
       offset += SMARTRECRUITERS_PAGE;
     }
-    return items
-      .filter((i) => rec(i.location).remote === true)
-      .map((i) => {
-        const id = String(i.id);
-        return {
-          key: `sr:${slug}:${id}`,
-          title: str(i.name),
-          location: str(rec(i.location).fullLocation),
-          workplace: 'Remote',
-          remote: true,
-          comp: '',
-          url: str(i.ref),
-          date: str(i.releasedDate),
-          text: '',
-          detailUrl: `https://api.smartrecruiters.com/v1/companies/${slug}/postings/${id}`,
-        };
-      });
+    // The location's remote and hybrid flags state the policy; neither set
+    // is on-site. Every posting comes back, and fetch keeps the remote ones,
+    // the same as the other three boards.
+    return items.map((i) => {
+      const id = String(i.id);
+      const location = rec(i.location);
+      const remote = location.remote === true;
+      return {
+        key: `sr:${slug}:${id}`,
+        title: str(i.name),
+        location: str(location.fullLocation),
+        workplace: remote ? 'Remote' : location.hybrid === true ? 'Hybrid' : 'On-site',
+        remote,
+        comp: '',
+        url: str(i.ref),
+        date: str(i.releasedDate),
+        text: '',
+        detailUrl: `https://api.smartrecruiters.com/v1/companies/${slug}/postings/${id}`,
+      };
+    });
   },
   async detail(p: Posting): Promise<string> {
     if (!p.detailUrl) return '';

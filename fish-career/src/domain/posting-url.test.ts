@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   AGGREGATORS,
+  boardOfKey,
   matchesKey,
   OTHER_SYSTEMS,
   parsePostingUrl,
@@ -113,6 +114,25 @@ describe('matchesKey', () => {
     ]) {
       expect(matchesKey(parsePostingUrl(url), 'ashby:deepgram:c91de352'), url).toBe(false);
     }
+  });
+});
+
+describe('boardOfKey', () => {
+  it('reads the board back out of an adapter key', () => {
+    expect(boardOfKey('gh:honor:8297124002')).toEqual({ provider: 'greenhouse', slug: 'honor' });
+    expect(boardOfKey('sr:ServiceNow:744000153266480')).toEqual({
+      provider: 'smartrecruiters',
+      slug: 'ServiceNow',
+    });
+    expect(boardOfKey('ashby:hippocratic ai:873d8ad7-9f41-48af-82a9-93ea6ed9139d')).toEqual({
+      provider: 'ashby',
+      slug: 'hippocratic ai',
+    });
+  });
+
+  it('is null for a key no adapter writes', () => {
+    expect(boardOfKey('fixture:acme:1')).toBeNull();
+    expect(boardOfKey('lever:vida')).toBeNull();
   });
 });
 
