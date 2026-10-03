@@ -28,18 +28,23 @@ runtime boundary below are the answer.
 ### fetch: watchlist to postings cache
 
 - Four public ATS APIs, one flat posting shape: `TITLE`, `COMPANY`,
-  `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body.
+  `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body. `URL` is
+  the page a person opens, never the API's JSON: a SmartRecruiters list entry
+  carries only its API link, so its `URL` is built from the company and the
+  posting id.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not, unless its title is on the skip list; later polls deliver arrivals
   only. A recency window applies on the first poll (or an explicit `--days`).
 - Remote is the provider's stated workplace type where it has one (Ashby and
   Lever `workplaceType`, SmartRecruiters `location.remote` and
   `location.hybrid`). Without one, a Greenhouse or Lever posting falls back to
-  its location text and an Ashby posting to its `isRemote` flag. Every adapter
-  returns every posting with its workplace; fetch keeps the remote ones, so a
-  hybrid or on-site posting is counted as a not-remote drop on every board. `PUBLISHED` is first publication
-  (Greenhouse `first_published`), not the last edit, so the recency window
-  measures when a posting went up.
+  its location text, where "Remote" or "Distributed" (Cloudflare's term for
+  anywhere in the country of employment) counts as remote, and an Ashby
+  posting to its `isRemote` flag. Every adapter returns every posting with its
+  workplace; fetch keeps the remote ones, so a hybrid or on-site posting is
+  counted as a not-remote drop on every board. `PUBLISHED` is first
+  publication (Greenhouse `first_published`), not the last edit, so the
+  recency window measures when a posting went up.
 - Titles the operator never wants fetched are phrases in
   `$FISH_HOME/skip-titles.txt`, one per line, with `#` comments. A phrase
   matches when its words appear in the title side by side and in order, whole
