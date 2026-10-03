@@ -168,6 +168,78 @@ describe('fetchPostings drop accounting', () => {
   });
 });
 
+describe('fetchPostings with an explicit window', () => {
+  // The first poll's 14-day window drops acme:3, which went up 30 days before
+  // NOW, and acme:2 stays too thin to score after its detail fetch.
+  const firstPollThen = async (iso: string) => {
+    const h = harness();
+    await fetchPostings(h.deps)({ companies: ['Acme'] });
+    h.clock.set(iso);
+    return h;
+  };
+
+  it('writes a posting an earlier poll dropped for its date once the window reaches it', async () => {
+    const h = await firstPollThen('2026-09-29T08:00:00.000Z');
+    const wider = await fetchPostings(h.deps)({ companies: ['Acme'], days: 60 });
+    expect(wider.arrivals.map((a) => a.postingId)).toEqual(['acme-3']);
+    expect(wider.perCompany[0]?.drops).toEqual({
+      notRemote: 1,
+      offTarget: 0,
+      thinText: 0,
+      outOfWindow: 0,
+    });
+    // It keeps the time the first poll observed it.
+    expect((await h.seen.read())['fixture:acme:3']).toEqual({
+      title: 'Role fixture:acme:3',
+      file: 'acme-3.txt',
+      date: h.acme[2].date,
+      observedAt: '2026-09-27T12:00:00.000Z',
+    });
+  });
+
+  it('counts it again when the window still falls short, first-seen time kept', async () => {
+    const h = await firstPollThen('2026-09-29T08:00:00.000Z');
+    const narrow = await fetchPostings(h.deps)({ companies: ['Acme'], days: 20 });
+    expect(narrow.arrivals).toEqual([]);
+    expect(narrow.perCompany[0]?.drops.outOfWindow).toBe(1);
+    expect((await h.seen.read())['fixture:acme:3']).toMatchObject({
+      dropped: 'out-of-window',
+      observedAt: '2026-09-27T12:00:00.000Z',
+    });
+  });
+
+  it('leaves it dropped on a poll without a window', async () => {
+    const h = await firstPollThen('2026-09-29T08:00:00.000Z');
+    const again = await fetchPostings(h.deps)({ companies: ['Acme'] });
+    expect(again.arrivals).toEqual([]);
+    expect(again.perCompany[0]?.drops.outOfWindow).toBe(0);
+  });
+
+  it('leaves a posting too thin to score alone', async () => {
+    const h = await firstPollThen('2026-09-29T08:00:00.000Z');
+    const detail = vi.spyOn(h.provider, 'detail');
+    const all = await fetchPostings(h.deps)({ companies: ['Acme'], days: null });
+    expect(detail).not.toHaveBeenCalled();
+    expect(all.perCompany[0]?.drops.thinText).toBe(0);
+    expect(all.arrivals.map((a) => a.postingId)).toEqual(['acme-3']);
+  });
+
+  it('reconsiders a posting dropped before fish recorded why, inventing no first-seen time', async () => {
+    const h = harness();
+    // The shape of a seen.json entry for a dropped posting before 2026-09-28.
+    await h.seen.write({
+      'fixture:beta:1': { title: 'Role fixture:beta:1', date: h.beta[0].date, observed: true },
+    });
+    const all = await fetchPostings(h.deps)({ companies: ['Beta'], days: null });
+    expect(all.arrivals.map((a) => a.postingId)).toEqual(['beta-1']);
+    expect((await h.seen.read())['fixture:beta:1']).toEqual({
+      title: 'Role fixture:beta:1',
+      file: 'beta-1.txt',
+      date: h.beta[0].date,
+    });
+  });
+});
+
 describe('fetchPostings skip titles', () => {
   const designer = (n: number, over: Partial<Posting> = {}): Posting =>
     posting(`fixture:acme:${n}`, { title: 'Product Designer II', ...over });

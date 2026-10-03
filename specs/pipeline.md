@@ -35,6 +35,10 @@ runtime boundary below are the answer.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not, unless its title is on the skip list; later polls deliver arrivals
   only. A recency window applies on the first poll (or an explicit `--days`).
+  An explicit window (`--days N`, or `--all` for none) also reconsiders every
+  posting a poll observed and never wrote, except one too thin to score: those
+  dropped out of window, and those from before fish recorded why. Each keeps
+  its first-observation time.
 - Remote is the provider's stated workplace type where it has one (Ashby and
   Lever `workplaceType`, SmartRecruiters `location.remote` and
   `location.hybrid`). Without one, a Greenhouse or Lever posting falls back to
