@@ -1,0 +1,66 @@
+{
+  "source": {
+    "url": "https://boards-api.greenhouse.io/v1/boards/cloudflare/jobs?content=true",
+    "fetchedAt": "2026-10-03",
+    "note": "Five real Cloudflare postings, one for each workplace label the test needs: Distributed, Distributed; Hybrid, Remote, Hybrid, and In-Office. Trimmed to the fields the Greenhouse adapter reads, content cut to its first 160 characters of text."
+  },
+  "body": {
+    "jobs": [
+      {
+        "id": 7053411,
+        "title": "Staff/Principal Software Engineer - Security Platform",
+        "location": {
+          "name": "Distributed"
+        },
+        "absolute_url": "https://boards.greenhouse.io/cloudflare/jobs/7053411?gh_jid=7053411",
+        "updated_at": "2026-10-02T14:24:13-04:00",
+        "first_published": "2025-07-11T18:15:05-04:00",
+        "content": "&lt;p&gt;About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of &lt;/p&gt;"
+      },
+      {
+        "id": 8227192,
+        "title": "Principal Campaign Manager",
+        "location": {
+          "name": "Distributed; Hybrid"
+        },
+        "absolute_url": "https://boards.greenhouse.io/cloudflare/jobs/8227192?gh_jid=8227192",
+        "updated_at": "2026-10-02T14:24:13-04:00",
+        "first_published": "2026-09-28T17:20:33-04:00",
+        "content": "&lt;p&gt;About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of &lt;/p&gt;"
+      },
+      {
+        "id": 8024849,
+        "title": "Senior Principal, Sales Compensation Design & Strategy",
+        "location": {
+          "name": "Remote"
+        },
+        "absolute_url": "https://boards.greenhouse.io/cloudflare/jobs/8024849?gh_jid=8024849",
+        "updated_at": "2026-10-02T14:24:13-04:00",
+        "first_published": "2026-07-15T20:21:45-04:00",
+        "content": "&lt;p&gt;About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of &lt;/p&gt;"
+      },
+      {
+        "id": 7695702,
+        "title": "Account Executive, FedCiv",
+        "location": {
+          "name": "Hybrid"
+        },
+        "absolute_url": "https://boards.greenhouse.io/cloudflare/jobs/7695702?gh_jid=7695702",
+        "updated_at": "2026-10-02T14:24:13-04:00",
+        "first_published": "2026-03-09T16:05:19-04:00",
+        "content": "&lt;p&gt;About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of &lt;/p&gt;"
+      },
+      {
+        "id": 7653558,
+        "title": "Engineering Manager - Workers Runtime, Edge Team",
+        "location": {
+          "name": "In-Office"
+        },
+        "absolute_url": "https://boards.greenhouse.io/cloudflare/jobs/7653558?gh_jid=7653558",
+        "updated_at": "2026-10-02T14:24:13-04:00",
+        "first_published": "2026-03-05T05:21:40-05:00",
+        "content": "&lt;p&gt;About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of &lt;/p&gt;"
+      }
+    ]
+  }
+}

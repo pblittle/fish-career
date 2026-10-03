@@ -175,6 +175,25 @@ describe('Greenhouse list()', () => {
     const [posting] = await PROVIDERS.greenhouse.list('honor');
     expect(posting.date).toBe('2026-09-25T15:14:21-04:00');
   });
+
+  it('counts a Distributed posting as remote', async () => {
+    // Cloudflare's careers page defines Distributed as "Work from anywhere in
+    // your country of employment. No Hub location required." The location
+    // names the policy the way "Remote" does on other boards, and a posting
+    // that lists Distributed and Hybrid offers either.
+    const fixture = recorded('greenhouse-cloudflare');
+    const fetchStub = serve(fixture.body);
+    const postings = await PROVIDERS.greenhouse.list('cloudflare');
+    expect(fetchStub).toHaveBeenCalledWith(fixture.source.url, expect.anything());
+    expect(postings.map((p) => [p.location, p.workplace, p.remote])).toEqual([
+      ['Distributed', 'Remote', true],
+      ['Distributed; Hybrid', 'Remote', true],
+      ['Remote', 'Remote', true],
+      ['Hybrid', '', false],
+      ['In-Office', '', false],
+    ]);
+    expect(postings[0].key).toBe('gh:cloudflare:7053411');
+  });
 });
 
 describe('SmartRecruiters list()', () => {
@@ -194,7 +213,16 @@ describe('SmartRecruiters list()', () => {
     expect(postings[0]).toMatchObject({
       key: 'sr:ServiceNow:744000153266480',
       location: 'San Diego, CALIFORNIA, United States',
-      url: 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480',
+    });
+  });
+
+  it('links a posting to the page a person opens, and reads its text from the API', async () => {
+    // The list's ref is the API's JSON for the posting, so it serves only as
+    // the detail URL.
+    serve(recorded('smartrecruiters-servicenow').body);
+    const [posting] = await PROVIDERS.smartrecruiters.list('ServiceNow');
+    expect(posting).toMatchObject({
+      url: 'https://jobs.smartrecruiters.com/ServiceNow/744000153266480',
       detailUrl: 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480',
     });
   });
@@ -207,6 +235,7 @@ describe('posting URLs and adapter keys', () => {
   it.each([
     ['ashby', 'openai', 'ashby-openai'],
     ['greenhouse', 'honor', 'greenhouse-honor'],
+    ['greenhouse', 'cloudflare', 'greenhouse-cloudflare'],
     ['lever', 'vida', 'lever-vida'],
     ['lever', 'moonpay', 'lever-moonpay'],
     ['smartrecruiters', 'ServiceNow', 'smartrecruiters-servicenow'],
