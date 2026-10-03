@@ -1,0 +1,22 @@
+{
+  "source": {
+    "url": "https://boards-api.greenhouse.io/v1/boards/honor/jobs?content=true",
+    "fetchedAt": "2026-10-03",
+    "note": "A real Honor posting first published months before its last edit; trimmed to the fields the Greenhouse adapter reads, content cut to its first 160 characters of text."
+  },
+  "body": {
+    "jobs": [
+      {
+        "id": 8297124002,
+        "title": "Platform Engineering Manager - Infra + DevOps",
+        "location": {
+          "name": "Remote Position"
+        },
+        "absolute_url": "https://boards.greenhouse.io/honor/jobs/8297124002?gh_jid=8297124002",
+        "updated_at": "2026-09-25T15:14:21-04:00",
+        "first_published": "2025-12-03T16:04:42-05:00",
+        "content": "&lt;p&gt;Honor Technology’s mission is to change the way society cares for older adults. As a leader in aging care innovation, Honor provides the technology, tools, and &lt;/p&gt;"
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "source": {
+    "url": "https://api.lever.co/v0/postings/vida?mode=json",
+    "fetchedAt": "2026-10-03",
+    "note": "A real Vida posting whose workplaceType is remote while its location reads United States; trimmed to the fields the Lever adapter reads, description cut to its first 160 characters of text."
+  },
+  "body": [
+    {
+      "id": "4b9d5f4d-f29f-49a2-be0f-7bd9f99f3415",
+      "text": "Bilingual Member Services Agent I",
+      "categories": {
+        "location": "United States"
+      },
+      "workplaceType": "remote",
+      "hostedUrl": "https://jobs.lever.co/vida/4b9d5f4d-f29f-49a2-be0f-7bd9f99f3415",
+      "createdAt": 1790106858788,
+      "description": "<div>We are seeking a dedicated and highly customer-focused Bilingual Member Services Agent I to join our healthcare organization. This role is responsible for handl</div>",
+      "salaryRange": {
+        "min": 23,
+        "max": 23,
+        "currency": "USD",
+        "interval": "per-hour-wage"
+      }
+    }
+  ]
+}
