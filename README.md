@@ -341,6 +341,7 @@ call. `fish` with no arguments starts the MCP server.
 ```bash
 fish fetch [--company X] [--days N] [--all] # poll, write arrivals, report drops
 fish arrivals [grade <postingId> <0|1|2|3> | summary] # grade arrivals, report precision
+fish recall <url...>                        # how far postings found elsewhere got
 fish triage [--rescore] [postingId...]      # score and rank
 fish evaluate                               # hold the ranking to your preferences
 fish quality [--k N] [--json]               # ranking quality against the labeled dataset
@@ -380,6 +381,19 @@ live judge run.
 
 `arrivals` is the same discipline on the real cache: `quality` measures the
 rubric, `arrivals` measures the pipeline against you.
+
+`recall` covers what arrivals cannot see: the postings fish never wrote. Give
+it the URLs of postings you found elsewhere, and it reports how far each got
+in fish:
+
+- written and scored;
+- dropped as too thin or too old;
+- listed but not remote, or not fetched yet;
+- no longer listed;
+- on a board you don't watch;
+- on a system or site fish can't read.
+
+It's a case log of the URLs you bring, not a recall rate.
 
 ## Privacy and data flow
 

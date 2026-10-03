@@ -134,12 +134,24 @@ export const fetchPostings =
             continue;
           case 'out-of-window':
             drops.outOfWindow += 1;
-            newSeen[p.key] = { title: p.title, date: p.date, observed: true, observedAt };
+            newSeen[p.key] = {
+              title: p.title,
+              date: p.date,
+              observed: true,
+              observedAt,
+              dropped: 'out-of-window',
+            };
             continue;
           case 'thin-text':
           case 'needs-detail':
             drops.thinText += 1;
-            newSeen[p.key] = { title: p.title, date: p.date, observed: true, observedAt };
+            newSeen[p.key] = {
+              title: p.title,
+              date: p.date,
+              observed: true,
+              observedAt,
+              dropped: 'thin-text',
+            };
             continue;
           case 'write': {
             const postingId = await deps.postings.save(c.name, { ...p, text: a.text });

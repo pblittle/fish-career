@@ -1,7 +1,7 @@
 # Ranking quality: metrics, grades, and findings
 
 Status: accepted · 2026-09-25 · verdicts and findings amended 2026-09-27,
-2026-09-28
+2026-09-28 · known-item recall added 2026-10-03
 
 ## Problem
 
@@ -86,6 +86,35 @@ Every metric returns null rather than a guess when its inputs are too thin.
 - Verdicts never feed `eval/expected-metrics.json` or `fish quality`; the
   golden metrics stay separate.
 
+### Known-item recall
+
+`precision@arrival` grades what fish wrote; it cannot see what fish never
+fetched. Recall starts at the other end, from postings the operator found
+somewhere else. For each URL, `recallPostings` reports the furthest stage the
+posting reached:
+
+| Stage | Meaning |
+|---|---|
+| written | In the cache under a posting ID, with the judge's score once triage has run |
+| dropped | A poll saw it and did not write it: too thin to score, or outside the recency window |
+| not fetched | Its watched board lists it as remote, but no poll has seen it yet |
+| not remote | Its watched board lists it, but the provider's own fields say hybrid or on-site |
+| not listed | Its watched board does not list it now: closed, or never on that board |
+| unreadable | Its watched board could not be read just now |
+| not watched | The URL names a board that is not on the watchlist |
+| board URL | The URL names a board, not a posting |
+| other system, job site, unknown | A system fish has no adapter for, a job search site, or nothing fish recognizes ([`specs/pipeline.md`](./pipeline.md), Posting URLs) |
+
+- It is a case log, not a rate. The URLs are whatever the operator happened
+  to find, so a count of stages describes those URLs and nothing else, and no
+  recall percentage is computed.
+- The seen index answers the furthest stages first, whether or not the board
+  is still watched. Only a posting fish never saw costs a live read: one GET
+  of each watched board that could carry it, through the provider port, at
+  most once per board per run. A board that is not watched is never read.
+- A Greenhouse job on an employer's own site (`?gh_jid=`) is looked for on
+  every watched Greenhouse board.
+
 ### Surfaces
 
 - `fish quality [--k N] [--json]` prints the report from the bundled dataset
@@ -101,6 +130,8 @@ Every metric returns null rather than a guess when its inputs are too thin.
 - CLI: `fish arrivals` lists the ungraded with stable IDs;
   `fish arrivals grade <postingId> <0|1|2|3>` records a verdict;
   `fish arrivals summary` prints coverage and precision@arrival.
+- CLI: `fish recall <url...>` prints one line per URL, labeled by its
+  furthest stage, then the stages counted. Recall is not an MCP tool yet.
 - `fish fetch` reports drops by reason: not remote (counted before
   admission), too thin to score, out of window. The out-of-window bucket is
   degenerate after the first poll: the default window is first-run only, so
@@ -108,6 +139,9 @@ Every metric returns null rather than a guess when its inputs are too thin.
 - The seen index records `observedAt`, the first-observation time, set when a
   posting is first marked seen and preserved thereafter. Freshness-lag
   reporting is not in this slice; the field is the prerequisite.
+- A posting a poll observed but did not write carries why in the seen index:
+  `dropped` is `thin-text` or `out-of-window`. Entries written before the
+  field existed have no reason, and recall says so.
 
 ### Recorded baseline
 
@@ -156,10 +190,10 @@ at any time.
 - No online experimentation or production telemetry.
 - No automatic rubric optimization; sensitivity points at fragile weights,
   and changing them remains a reviewed diff.
-- The A2UI card, LangGraph, the scheduler, the known-item probe, the
-  directory frame, freshness-lag reporting, verdict history, and any
-  automatic tuning are out of scope; `observedAt` is the prerequisite field
-  for freshness lag.
+- The A2UI card, LangGraph, the scheduler, the directory frame,
+  freshness-lag reporting, verdict history, and any automatic tuning are out
+  of scope; `observedAt` is the prerequisite field for freshness lag.
+- No recall rate and no recall MCP tool: the known-item log counts cases.
 
 ## Acceptance
 
@@ -167,12 +201,15 @@ at any time.
   golden-metric comparison, the label/baseline accounting, the blocker
   ordering, the pair constraints, the adversarial posting staying out of the
   top five, grade validation, latest-wins, tolerant and corrupt store reads,
-  per-reason drop counts, `observedAt` set once and preserved, the precision
-  denominator, floor behavior, Wilson bounds, coverage, and the MCP tool's
-  success, re-grade, and `POSTING_NOT_FOUND` paths.
+  per-reason drop counts, `observedAt` set once and preserved, the drop
+  reason in the seen index, the precision denominator, floor behavior, Wilson
+  bounds, coverage, the MCP tool's success, re-grade, and
+  `POSTING_NOT_FOUND` paths, and every recall stage over in-memory ports with
+  at most one live read per board per run.
 - `fish quality` prints the report offline; the recorded baseline's top five
   are all labeled 2 or 3, and every blocked posting ranks below every clean
   one.
 - `fish arrivals`, `fish arrivals grade`, and `fish arrivals summary` render
-  the lines above; `fish fetch` prints the drop counts.
+  the lines above; `fish fetch` prints the drop counts; `fish recall` prints
+  one line per URL and the stages counted.
 - `npm --prefix fish-career run health` green.

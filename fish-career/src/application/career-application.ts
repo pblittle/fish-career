@@ -12,6 +12,7 @@ import { explainPosting, previewPosting } from './explain-posting.js';
 import { fetchPostings } from './fetch-postings.js';
 import { getProfile, listPostings, readPosting, updateProfile } from './postings.js';
 import { rankPostings } from './rank-postings.js';
+import { recallPostings } from './recall.js';
 import { recordVerdict } from './record-verdict.js';
 import { type RubricSummary, rubricSummary } from './rubric-summary.js';
 import {
@@ -27,6 +28,7 @@ export interface CareerApplication {
   listArrivals: ReturnType<typeof listArrivals>;
   recordVerdict: ReturnType<typeof recordVerdict>;
   verdictSummary: ReturnType<typeof verdictSummary>;
+  recallPostings: ReturnType<typeof recallPostings>;
   rankPostings: ReturnType<typeof rankPostings>;
   evaluateRanking: ReturnType<typeof evaluateRanking>;
   startCalibration: ReturnType<typeof startCalibration>;
@@ -56,6 +58,7 @@ export const createApplication = (deps: CareerDependencies): CareerApplication =
   listArrivals: listArrivals(deps),
   recordVerdict: recordVerdict(deps),
   verdictSummary: verdictSummary(deps),
+  recallPostings: recallPostings(deps),
   rankPostings: rankPostings(deps),
   evaluateRanking: evaluateRanking(deps),
   startCalibration: startCalibration(deps),

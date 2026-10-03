@@ -94,7 +94,8 @@ src/bootstrap     createApplicationFromHome, createServerFromHome
 - `evaluateRanking()`
 - `startCalibration({ count?, seed? })`, `submitCalibration({ ranking })`,
   `rescoreCalibration()`
-- `listArrivals()`, `recordVerdict({ postingId, label })`, `verdictSummary()`
+- `listArrivals()`, `recordVerdict({ postingId, label })`, `verdictSummary()`,
+  `recallPostings({ urls })`
 - `explainPosting({ postingId })`, `previewPosting({ postingId })`
 - `probeCompany`, `addCompany`, `addCompanyFromUrl`, `removeCompany`,
   `listWatchlist`
@@ -167,7 +168,8 @@ MCP contract maps the codes to protocol errors
 - The `fish` CLI is the blessed interface: `fetch`, `triage`, `evaluate`,
   `calibrate start|submit|reuse|rescore`, `watchlist list|probe|add|remove`,
   `profile get|set`, `postings list|read|explain`, plus `arrivals` for
-  grading ([`specs/quality.md`](./quality.md)).
+  grading and `recall` for postings found elsewhere
+  ([`specs/quality.md`](./quality.md)).
 - `postings explain` returns the raw typed answers and cost for one posting;
   `--dry-run` prints the request without sending it. `calibrate reuse` redraws
   the pending slice from its recorded seed.

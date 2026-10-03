@@ -141,4 +141,14 @@ describe('fetchPostings drop accounting', () => {
     });
     expect((await h.seen.read())['fixture:beta:1']?.observedAt).toBe('2026-09-27T12:00:00.000Z');
   });
+
+  it('records in the seen index why a posting it observed was not written', async () => {
+    const h = harness();
+    await fetchPostings(h.deps)({ companies: ['Acme'] });
+    const seen = await h.seen.read();
+    expect(seen['fixture:acme:2']).toMatchObject({ observed: true, dropped: 'thin-text' });
+    expect(seen['fixture:acme:3']).toMatchObject({ observed: true, dropped: 'out-of-window' });
+    expect(seen['fixture:acme:1']).toMatchObject({ file: 'acme-1.txt' });
+    expect(seen['fixture:acme:1']?.dropped).toBeUndefined();
+  });
 });
