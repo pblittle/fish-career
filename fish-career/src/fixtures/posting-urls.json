@@ -1,0 +1,453 @@
+{
+  "source": {
+    "recordedAt": "2026-10-03",
+    "note": "Real posting and board URLs from the 2026-10-03 research runs and HiringCafe coverage check, at least one per shape. careers.smartrecruiters.com and the bare Ashby board were checked live the same day. The parse is structural, so a posting that closes later keeps its case."
+  },
+  "cases": [
+    {
+      "shape": "Ashby posting",
+      "url": "https://jobs.ashbyhq.com/cohere/6a6120d5-5e02-4811-99d9-6baf0b910e37",
+      "expect": {
+        "kind": "posting",
+        "provider": "ashby",
+        "slug": "cohere",
+        "jobId": "6a6120d5-5e02-4811-99d9-6baf0b910e37"
+      }
+    },
+    {
+      "shape": "Ashby posting whose slug is not the company name",
+      "url": "https://jobs.ashbyhq.com/chainalysis-careers/0aa5aed6-d14f-40a3-befe-641d2392a559",
+      "expect": {
+        "kind": "posting",
+        "provider": "ashby",
+        "slug": "chainalysis-careers",
+        "jobId": "0aa5aed6-d14f-40a3-befe-641d2392a559"
+      }
+    },
+    {
+      "shape": "Ashby posting, slug in mixed case",
+      "url": "https://jobs.ashbyhq.com/Deepgram/c91de352-9f25-479e-8877-fbea9576a52c",
+      "expect": {
+        "kind": "posting",
+        "provider": "ashby",
+        "slug": "Deepgram",
+        "jobId": "c91de352-9f25-479e-8877-fbea9576a52c"
+      }
+    },
+    {
+      "shape": "Ashby posting, slug with an encoded space",
+      "url": "https://jobs.ashbyhq.com/hippocratic%20ai/873d8ad7-9f41-48af-82a9-93ea6ed9139d",
+      "expect": {
+        "kind": "posting",
+        "provider": "ashby",
+        "slug": "hippocratic ai",
+        "jobId": "873d8ad7-9f41-48af-82a9-93ea6ed9139d"
+      }
+    },
+    {
+      "shape": "Ashby posting with a tracking query",
+      "url": "https://jobs.ashbyhq.com/dandelionhealth/766544e3-2053-4870-9320-809a75d804eb?utm_source=pY8rwERzL7",
+      "expect": {
+        "kind": "posting",
+        "provider": "ashby",
+        "slug": "dandelionhealth",
+        "jobId": "766544e3-2053-4870-9320-809a75d804eb"
+      }
+    },
+    {
+      "shape": "Ashby posting, hyphenated slug",
+      "url": "https://jobs.ashbyhq.com/twelve-labs/bec9bcdb-9ca2-486f-b05b-2b830d9c4801",
+      "expect": {
+        "kind": "posting",
+        "provider": "ashby",
+        "slug": "twelve-labs",
+        "jobId": "bec9bcdb-9ca2-486f-b05b-2b830d9c4801"
+      }
+    },
+    {
+      "shape": "Ashby board",
+      "url": "https://jobs.ashbyhq.com/temporal",
+      "expect": { "kind": "board", "provider": "ashby", "slug": "temporal" }
+    },
+    {
+      "shape": "Ashby board API",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/openai?includeCompensation=true",
+      "expect": { "kind": "board", "provider": "ashby", "slug": "openai" }
+    },
+    {
+      "shape": "Greenhouse posting on job-boards.",
+      "url": "https://job-boards.greenhouse.io/tebra/jobs/4713311005",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "tebra",
+        "jobId": "4713311005"
+      }
+    },
+    {
+      "shape": "Greenhouse posting whose slug is not the company name",
+      "url": "https://job-boards.greenhouse.io/localitymediallcdbafirstdue/jobs/4370009009",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "localitymediallcdbafirstdue",
+        "jobId": "4370009009"
+      }
+    },
+    {
+      "shape": "Greenhouse posting on boards. with gh_jid",
+      "url": "https://boards.greenhouse.io/honor/jobs/8297124002?gh_jid=8297124002",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "honor",
+        "jobId": "8297124002"
+      }
+    },
+    {
+      "shape": "Greenhouse posting on boards. with gh_jid",
+      "url": "https://boards.greenhouse.io/cloudflare/jobs/7053411?gh_jid=7053411",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "cloudflare",
+        "jobId": "7053411"
+      }
+    },
+    {
+      "shape": "Greenhouse embedded application",
+      "url": "https://boards.greenhouse.io/embed/job_app?for=gemini&token=8074982",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "gemini",
+        "jobId": "8074982"
+      }
+    },
+    {
+      "shape": "Greenhouse embedded application, ampersand HTML-escaped as scraped",
+      "url": "https://boards.greenhouse.io/embed/job_app?for=gemini&amp;token=8186546",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "gemini",
+        "jobId": "8186546"
+      }
+    },
+    {
+      "shape": "Greenhouse board",
+      "url": "https://job-boards.greenhouse.io/localitymediallcdbafirstdue",
+      "expect": { "kind": "board", "provider": "greenhouse", "slug": "localitymediallcdbafirstdue" }
+    },
+    {
+      "shape": "Greenhouse posting API",
+      "url": "https://boards-api.greenhouse.io/v1/boards/localitymediallcdbafirstdue/jobs/4370009009?pay_transparency=true",
+      "expect": {
+        "kind": "posting",
+        "provider": "greenhouse",
+        "slug": "localitymediallcdbafirstdue",
+        "jobId": "4370009009"
+      }
+    },
+    {
+      "shape": "Greenhouse board API",
+      "url": "https://boards-api.greenhouse.io/v1/boards/honor/jobs?content=true",
+      "expect": { "kind": "board", "provider": "greenhouse", "slug": "honor" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site",
+      "url": "https://www.coinbase.com/careers/positions/8124224?gh_jid=8124224",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "8124224" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site",
+      "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8779014002",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "8779014002" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site, bare query key before gh_jid",
+      "url": "https://www.bill.com/job?6113507004&gh_jid=6113507004",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "6113507004" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site, ampersand HTML-escaped as scraped",
+      "url": "https://www.bill.com/job?6113507004&amp;gh_jid=6113507004",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "6113507004" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site",
+      "url": "https://careers.nebius.com/?gh_jid=4824181101",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "4824181101" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site",
+      "url": "https://instacart.careers/job/?gh_jid=8249751",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "8249751" }
+    },
+    {
+      "shape": "Greenhouse job on the employer's own site",
+      "url": "https://www.fireblocks.com/careers/position?gh_jid=4703408006",
+      "expect": { "kind": "job", "provider": "greenhouse", "jobId": "4703408006" }
+    },
+    {
+      "shape": "Employer's own site without gh_jid",
+      "url": "https://www.coinbase.com/careers/positions/8138031",
+      "expect": { "kind": "unknown" }
+    },
+    {
+      "shape": "Lever posting",
+      "url": "https://jobs.lever.co/vida/8fd2c844-ad71-4732-8574-2c3a3cc98bdc",
+      "expect": {
+        "kind": "posting",
+        "provider": "lever",
+        "slug": "vida",
+        "jobId": "8fd2c844-ad71-4732-8574-2c3a3cc98bdc"
+      }
+    },
+    {
+      "shape": "Lever posting",
+      "url": "https://jobs.lever.co/anchorage/b5dfd585-f708-41c9-b9bf-94adde925067",
+      "expect": {
+        "kind": "posting",
+        "provider": "lever",
+        "slug": "anchorage",
+        "jobId": "b5dfd585-f708-41c9-b9bf-94adde925067"
+      }
+    },
+    {
+      "shape": "Lever posting with a tracking query",
+      "url": "https://jobs.lever.co/xsolla/4eb71eae-b475-45e2-899d-b6de4980721d?lever-source=Indeed",
+      "expect": {
+        "kind": "posting",
+        "provider": "lever",
+        "slug": "xsolla",
+        "jobId": "4eb71eae-b475-45e2-899d-b6de4980721d"
+      }
+    },
+    {
+      "shape": "Lever board",
+      "url": "https://jobs.lever.co/felixpago",
+      "expect": { "kind": "board", "provider": "lever", "slug": "felixpago" }
+    },
+    {
+      "shape": "Lever posting API",
+      "url": "https://api.lever.co/v0/postings/vida/8fd2c844-ad71-4732-8574-2c3a3cc98bdc",
+      "expect": {
+        "kind": "posting",
+        "provider": "lever",
+        "slug": "vida",
+        "jobId": "8fd2c844-ad71-4732-8574-2c3a3cc98bdc"
+      }
+    },
+    {
+      "shape": "Lever board API",
+      "url": "https://api.lever.co/v0/postings/moonpay?mode=json",
+      "expect": { "kind": "board", "provider": "lever", "slug": "moonpay" }
+    },
+    {
+      "shape": "SmartRecruiters posting, title slug with a trailing hyphen",
+      "url": "https://jobs.smartrecruiters.com/Experian/744000140984547-senior-director-ai-platform-engineering-remote-",
+      "expect": {
+        "kind": "posting",
+        "provider": "smartrecruiters",
+        "slug": "Experian",
+        "jobId": "744000140984547"
+      }
+    },
+    {
+      "shape": "SmartRecruiters apply link",
+      "url": "https://jobs.smartrecruiters.com/Experian/744000148867839-distinguished-platform-solutions-architect-remote?oga=true",
+      "expect": {
+        "kind": "posting",
+        "provider": "smartrecruiters",
+        "slug": "Experian",
+        "jobId": "744000148867839"
+      }
+    },
+    {
+      "shape": "SmartRecruiters posting",
+      "url": "https://jobs.smartrecruiters.com/ServiceNow/744000153266480-sr-mobile-software-engineer-native-android-and-backend-",
+      "expect": {
+        "kind": "posting",
+        "provider": "smartrecruiters",
+        "slug": "ServiceNow",
+        "jobId": "744000153266480"
+      }
+    },
+    {
+      "shape": "SmartRecruiters referral link, which names the board but not the posting",
+      "url": "https://jobs.smartrecruiters.com/external-referrals/company/ServiceNow/publication/2b74cdf3-b27c-4518-8dda-c2827b26727c?dcr_ci=ServiceNow",
+      "expect": { "kind": "board", "provider": "smartrecruiters", "slug": "ServiceNow" }
+    },
+    {
+      "shape": "SmartRecruiters posting API",
+      "url": "https://api.smartrecruiters.com/v1/companies/Experian/postings/744000140984547",
+      "expect": {
+        "kind": "posting",
+        "provider": "smartrecruiters",
+        "slug": "Experian",
+        "jobId": "744000140984547"
+      }
+    },
+    {
+      "shape": "SmartRecruiters board API",
+      "url": "https://api.smartrecruiters.com/v1/companies/Experian/postings?q=AI%20Platform",
+      "expect": { "kind": "board", "provider": "smartrecruiters", "slug": "Experian" }
+    },
+    {
+      "shape": "SmartRecruiters careers site",
+      "url": "https://careers.smartrecruiters.com/ServiceNow",
+      "expect": { "kind": "board", "provider": "smartrecruiters", "slug": "ServiceNow" }
+    },
+    {
+      "shape": "Workday posting",
+      "url": "https://creditacceptance.wd5.myworkdayjobs.com/en-US/Credit_Acceptance/job/USA---Remote/Director-of-Software-Engineering--Platform-Services_R13969",
+      "expect": { "kind": "unsupported", "system": "Workday" }
+    },
+    {
+      "shape": "Workday board",
+      "url": "https://teladoc.wd503.myworkdayjobs.com/en-US/teladochealth_is_hiring",
+      "expect": { "kind": "unsupported", "system": "Workday" }
+    },
+    {
+      "shape": "Workday posting in another locale",
+      "url": "https://henryschein.wd1.myworkdayjobs.com/nl-NL/External_Careers/job/United-States---Remote/Sr-Manager--Pricing-Transformation_R135496",
+      "expect": { "kind": "unsupported", "system": "Workday" }
+    },
+    {
+      "shape": "Workday posting API",
+      "url": "https://pax8inc.wd12.myworkdayjobs.com/wday/cxs/pax8inc/Pax8Careers/job/Remote---US/Director-of-Platform-Security-Engineering_R-102414",
+      "expect": { "kind": "unsupported", "system": "Workday" }
+    },
+    {
+      "shape": "iCIMS posting",
+      "url": "https://careersnoa-avalara.icims.com/jobs/17134/job",
+      "expect": { "kind": "unsupported", "system": "iCIMS" }
+    },
+    {
+      "shape": "Zoho Recruit posting",
+      "url": "https://auxoai.zohorecruit.com/jobs/careers/785637000007136005/Principal-Forward-Deployed-Architect-GCP?source=CareerSite",
+      "expect": { "kind": "unsupported", "system": "Zoho Recruit" }
+    },
+    {
+      "shape": "Breezy HR posting",
+      "url": "https://zero-hash.breezy.hr/p/7e1e2c161def-security-architect",
+      "expect": { "kind": "unsupported", "system": "Breezy HR" }
+    },
+    {
+      "shape": "Teamtailor board",
+      "url": "https://crossmint.na.teamtailor.com/jobs",
+      "expect": { "kind": "unsupported", "system": "Teamtailor" }
+    },
+    {
+      "shape": "JazzHR posting",
+      "url": "https://gracehill.applytojob.com/apply/Gf2ugi8ePA/Director-Account-Management?source=INDE",
+      "expect": { "kind": "unsupported", "system": "JazzHR" }
+    },
+    {
+      "shape": "BambooHR board",
+      "url": "https://blackpointcyber.bamboohr.com/careers/list",
+      "expect": { "kind": "unsupported", "system": "BambooHR" }
+    },
+    {
+      "shape": "Recruitee board API",
+      "url": "https://felixpago.recruitee.com/api/offers/",
+      "expect": { "kind": "unsupported", "system": "Recruitee" }
+    },
+    {
+      "shape": "Rippling board",
+      "url": "https://ats.rippling.com/felix-pago/jobs",
+      "expect": { "kind": "unsupported", "system": "Rippling" }
+    },
+    {
+      "shape": "HRM Direct posting",
+      "url": "https://jobs.hrmdirect.com/employment/view.php?req=3831972&jbsrc=1014&location=bd27546d-043b-9476-c8ec-ee9614fb2954",
+      "expect": { "kind": "unsupported", "system": "HRM Direct" }
+    },
+    {
+      "shape": "UKG posting",
+      "url": "https://recruiting2.ultipro.com/IVE1000IVEC/JobBoard/ec3e4530-b925-46c7-8da5-602b6abf81e7/OpportunityDetail?opportunityId=468b0570-19b4-4c6d-bed2-14c6c1879335",
+      "expect": { "kind": "unsupported", "system": "UKG" }
+    },
+    {
+      "shape": "Dayforce posting",
+      "url": "https://jobs.dayforcehcm.com/en-US/prounlimited/CANDIDATEPORTAL/jobs/7459",
+      "expect": { "kind": "unsupported", "system": "Dayforce" }
+    },
+    {
+      "shape": "Deel posting",
+      "url": "https://jobs.deel.com/dfns/job-details/8c6eb6f2-01c4-424b-a9f1-44a2ea32d023/overview",
+      "expect": { "kind": "unsupported", "system": "Deel" }
+    },
+    {
+      "shape": "CareerPuck posting",
+      "url": "https://app.careerpuck.com/job-board/ledgebrook/job/EC.F6C",
+      "expect": { "kind": "unsupported", "system": "CareerPuck" }
+    },
+    {
+      "shape": "YC Work at a Startup posting",
+      "url": "https://www.ycombinator.com/companies/zep-ai/jobs/mVon3qA-head-of-forward-deployed-engineering",
+      "expect": { "kind": "unsupported", "system": "YC Work at a Startup" }
+    },
+    {
+      "shape": "HiringCafe job page",
+      "url": "https://hiringcafe.com/job/director-of-platform-engineering-first-due-united-states-ag9ecbk39h05mgve",
+      "expect": { "kind": "aggregator", "site": "HiringCafe" }
+    },
+    {
+      "shape": "HiringCafe search",
+      "url": "https://hiring.cafe/?searchState=%7B%22searchQuery%22%3A%22director%20platform%20engineering%22%2C%22workplaceTypes%22%3A%5B%22Remote%22%5D%7D",
+      "expect": { "kind": "aggregator", "site": "HiringCafe" }
+    },
+    {
+      "shape": "Indeed job page",
+      "url": "https://www.indeed.com/viewjob?jk=9d6c8e3a01cfc4b9",
+      "expect": { "kind": "aggregator", "site": "Indeed" }
+    },
+    {
+      "shape": "LinkedIn job page",
+      "url": "https://www.linkedin.com/jobs/view/director-of-ai-enablement-at-greenway-health-4435123348",
+      "expect": { "kind": "aggregator", "site": "LinkedIn" }
+    },
+    {
+      "shape": "Remotive job page",
+      "url": "https://remotive.com/remote/jobs/engineering/director-platform-engineering-6019774",
+      "expect": { "kind": "aggregator", "site": "Remotive" }
+    },
+    {
+      "shape": "Monster job page",
+      "url": "https://www.monster.com/job-openings/director-ai-platform-transformation--90d326f6-229c-4048-a02b-3c8199af03ad",
+      "expect": { "kind": "aggregator", "site": "Monster" }
+    },
+    {
+      "shape": "Dice job page",
+      "url": "https://www.dice.com/job-detail/8c07efad-44ff-4431-86c9-0b0a99cdb889",
+      "expect": { "kind": "aggregator", "site": "Dice" }
+    },
+    {
+      "shape": "Simplify company page",
+      "url": "https://simplify.jobs/c/HiringCafe",
+      "expect": { "kind": "aggregator", "site": "Simplify" }
+    },
+    {
+      "shape": "Employer's own careers site",
+      "url": "https://jobs.mayoclinic.org/job/rochester/director-cloud-infrastructure/33647/101157994400",
+      "expect": { "kind": "unknown" }
+    },
+    {
+      "shape": "Employer's own careers site",
+      "url": "https://careers.circle.com/us/en/job/JR100015-EG/Manager-Software-Engineering",
+      "expect": { "kind": "unknown" }
+    },
+    {
+      "shape": "Employer's own careers site",
+      "url": "https://www.atlassian.com/company/careers/details/25780",
+      "expect": { "kind": "unknown" }
+    },
+    {
+      "shape": "Employer's own careers site",
+      "url": "https://www.dfns.co/careers/head-of-delivery-new-york",
+      "expect": { "kind": "unknown" }
+    }
+  ]
+}

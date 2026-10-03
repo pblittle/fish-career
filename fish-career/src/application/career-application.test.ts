@@ -248,6 +248,30 @@ describe('the complete workflow over in-memory ports', () => {
     expect((await h.app.listWatchlist()).map((e) => e.name)).not.toContain('Gamma');
   });
 
+  it('names a company by its slug when no name is given', async () => {
+    const h = harness();
+    const added = await h.app.addCompany({ provider: 'fixture', slug: 'gamma' });
+    expect(added).toEqual({
+      added: true,
+      entry: { name: 'gamma', provider: 'fixture', slug: 'gamma' },
+    });
+  });
+
+  it('does not watch one board twice under two names', async () => {
+    const h = harness({
+      providers: { ashby: memoryProvider('ashby', {}) },
+      watchlist: memoryWatchlistStore([
+        { name: 'Deepgram Inc', provider: 'ashby', slug: 'deepgram' },
+      ]),
+    });
+    const again = await h.app.addCompany({ name: 'Deepgram', provider: 'ashby', slug: 'Deepgram' });
+    expect(again).toEqual({
+      added: false,
+      entry: { name: 'Deepgram Inc', provider: 'ashby', slug: 'deepgram' },
+    });
+    expect(await h.app.listWatchlist()).toHaveLength(1);
+  });
+
   it('reads a posting by stable ID and reports a miss with a code', async () => {
     const h = harness();
     await h.app.fetchPostings();
@@ -295,5 +319,77 @@ describe('the complete workflow over in-memory ports', () => {
     const noJudge = harness({ judge: null });
     await noJudge.app.fetchPostings();
     await expect(noJudge.app.rankPostings()).rejects.toMatchObject({ code: 'NO_JUDGE' });
+  });
+});
+
+describe('adding a company from a URL', () => {
+  const withBoards = () =>
+    harness({
+      providers: {
+        ashby: memoryProvider('ashby', {}),
+        greenhouse: memoryProvider('greenhouse', {}),
+        lever: memoryProvider('lever', {}),
+      },
+      watchlist: memoryWatchlistStore([]),
+    });
+
+  it('reads the provider and slug from a posting URL, naming it by the slug', async () => {
+    const h = withBoards();
+    const added = await h.app.addCompanyFromUrl({
+      url: 'https://jobs.ashbyhq.com/hippocratic%20ai/873d8ad7-9f41-48af-82a9-93ea6ed9139d',
+    });
+    expect(added).toEqual({
+      added: true,
+      entry: { name: 'hippocratic ai', provider: 'ashby', slug: 'hippocratic ai' },
+    });
+  });
+
+  it('takes a board URL and a name, keeping the slug as the URL spells it', async () => {
+    const h = withBoards();
+    const added = await h.app.addCompanyFromUrl({
+      url: 'https://job-boards.greenhouse.io/localitymediallcdbafirstdue',
+      name: 'First Due',
+    });
+    expect(added.entry).toEqual({
+      name: 'First Due',
+      provider: 'greenhouse',
+      slug: 'localitymediallcdbafirstdue',
+    });
+    const again = await h.app.addCompanyFromUrl({
+      url: 'https://job-boards.greenhouse.io/localitymediallcdbafirstdue/jobs/4370009009',
+    });
+    expect(again).toEqual({ added: false, entry: added.entry });
+  });
+
+  it.each([
+    [
+      'a system fish has no adapter for',
+      'https://creditacceptance.wd5.myworkdayjobs.com/en-US/Credit_Acceptance/job/USA---Remote/Director-of-Software-Engineering--Platform-Services_R13969',
+      'Workday',
+    ],
+    [
+      'a job search site',
+      'https://hiringcafe.com/job/director-of-platform-engineering-first-due-united-states-ag9ecbk39h05mgve',
+      "employer's own careers page",
+    ],
+    [
+      'a Greenhouse job on the employer site',
+      'https://www.coinbase.com/careers/positions/8124224?gh_jid=8124224',
+      'Greenhouse job 8124224',
+    ],
+    ['an unknown site', 'https://www.atlassian.com/company/careers/details/25780', 'Ashby'],
+  ])('refuses %s with INVALID_COMPANY and says why', async (_, url, why) => {
+    const h = withBoards();
+    const refused = h.app.addCompanyFromUrl({ url });
+    await expect(refused).rejects.toMatchObject({ code: 'INVALID_COMPANY' });
+    await expect(refused).rejects.toThrow(why);
+    expect(await h.app.listWatchlist()).toEqual([]);
+  });
+
+  it('refuses a provider the deployment does not run', async () => {
+    const h = harness({ providers: { fixture: memoryProvider('fixture', {}) } });
+    await expect(
+      h.app.addCompanyFromUrl({ url: 'https://jobs.lever.co/vida' }),
+    ).rejects.toMatchObject({ code: 'INVALID_COMPANY' });
   });
 });

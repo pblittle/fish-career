@@ -1,4 +1,5 @@
 import { ApplicationError } from '../domain/errors.js';
+import { parsePostingUrl, sameBoard, type UrlTarget } from '../domain/posting-url.js';
 import type { WatchlistEntry } from '../ports/stores.js';
 import type { CareerDependencies } from './dependencies.js';
 
@@ -39,14 +40,20 @@ export const probeCompany =
 export const listWatchlist = (deps: CareerDependencies) => async (): Promise<WatchlistEntry[]> =>
   deps.watchlist.read();
 
+export interface AddResult {
+  added: boolean;
+  // The entry written, or the one already on the watchlist when nothing was.
+  entry: WatchlistEntry;
+}
+
 export const addCompany =
   (deps: CareerDependencies) =>
-  async (entry: WatchlistEntry): Promise<{ added: boolean; entry: WatchlistEntry }> => {
-    const name = entry.name.trim();
-    const slug = entry.slug.trim();
-    const provider = entry.provider.trim();
-    if (!name || !slug) {
-      throw new ApplicationError('INVALID_COMPANY', 'A company needs a name and a board slug.');
+  async (input: { name?: string; provider: string; slug: string }): Promise<AddResult> => {
+    const slug = input.slug.trim();
+    const provider = input.provider.trim();
+    const name = input.name?.trim() || slug;
+    if (!slug) {
+      throw new ApplicationError('INVALID_COMPANY', 'A company needs a board slug.');
     }
     if (!deps.providers[provider]) {
       throw new ApplicationError(
@@ -55,12 +62,40 @@ export const addCompany =
       );
     }
     const entries = await deps.watchlist.read();
-    if (entries.some((e) => e.name.toLowerCase() === name.toLowerCase())) {
-      return { added: false, entry: { name, provider, slug } };
+    const entry = { name, provider, slug };
+    // One name, one entry; one board, one entry, or a poll reads it twice.
+    const existing = entries.find(
+      (e) => e.name.toLowerCase() === name.toLowerCase() || sameBoard(e, entry),
+    );
+    if (existing) return { added: false, entry: existing };
+    await deps.watchlist.write([...entries, entry]);
+    return { added: true, entry };
+  };
+
+const BOARDS = 'Ashby, Greenhouse, Lever, and SmartRecruiters';
+
+// Why a URL that names no board on a provider fish reads cannot be watched.
+const notABoard = (target: UrlTarget): string => {
+  switch (target.kind) {
+    case 'unsupported':
+      return `That posting is on ${target.system}; fish reads ${BOARDS} boards.`;
+    case 'aggregator':
+      return `${target.site} lists other employers' postings. Find this one on the employer's own careers page and add that URL.`;
+    case 'job':
+      return `That is Greenhouse job ${target.jobId} on the employer's own site, which does not name the board. Probe the company for its Greenhouse slug, then add it by provider and slug.`;
+    default:
+      return `fish can't tell which job board that URL is on; it reads ${BOARDS} boards.`;
+  }
+};
+
+export const addCompanyFromUrl =
+  (deps: CareerDependencies) =>
+  async (input: { url: string; name?: string }): Promise<AddResult> => {
+    const target = parsePostingUrl(input.url);
+    if (target.kind !== 'posting' && target.kind !== 'board') {
+      throw new ApplicationError('INVALID_COMPANY', notABoard(target));
     }
-    const next = [...entries, { name, provider, slug }];
-    await deps.watchlist.write(next);
-    return { added: true, entry: { name, provider, slug } };
+    return addCompany(deps)({ name: input.name, provider: target.provider, slug: target.slug });
   };
 
 export const removeCompany =

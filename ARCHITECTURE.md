@@ -19,9 +19,9 @@ Future API ──────┘         │
 ```
 
 ```text
-src/domain        pure policy: posting, rubric, answers, ranking,
-                  preferences, calibration, ledger, admission, verdicts,
-                  random, errors
+src/domain        pure policy: posting, posting URLs, rubric, answers,
+                  ranking, preferences, calibration, ledger, admission,
+                  verdicts, random, errors
 src/ports         the interfaces the application may use
 src/application   use cases: fetchPostings, rankPostings, evaluateRanking,
                   calibrateRanking, verdicts and arrivals, watchlist,

@@ -14,7 +14,13 @@ import { getProfile, listPostings, readPosting, updateProfile } from './postings
 import { rankPostings } from './rank-postings.js';
 import { recordVerdict } from './record-verdict.js';
 import { type RubricSummary, rubricSummary } from './rubric-summary.js';
-import { addCompany, listWatchlist, probeCompany, removeCompany } from './watchlist.js';
+import {
+  addCompany,
+  addCompanyFromUrl,
+  listWatchlist,
+  probeCompany,
+  removeCompany,
+} from './watchlist.js';
 
 export interface CareerApplication {
   fetchPostings: ReturnType<typeof fetchPostings>;
@@ -33,6 +39,7 @@ export interface CareerApplication {
   latestRun: () => ReturnType<CareerDependencies['traceReader']['latestRun']>;
   probeCompany: ReturnType<typeof probeCompany>;
   addCompany: ReturnType<typeof addCompany>;
+  addCompanyFromUrl: ReturnType<typeof addCompanyFromUrl>;
   removeCompany: ReturnType<typeof removeCompany>;
   listWatchlist: ReturnType<typeof listWatchlist>;
   getProfile: ReturnType<typeof getProfile>;
@@ -61,6 +68,7 @@ export const createApplication = (deps: CareerDependencies): CareerApplication =
   latestRun: () => deps.traceReader.latestRun(),
   probeCompany: probeCompany(deps),
   addCompany: addCompany(deps),
+  addCompanyFromUrl: addCompanyFromUrl(deps),
   removeCompany: removeCompany(deps),
   listWatchlist: listWatchlist(deps),
   getProfile: getProfile(deps),

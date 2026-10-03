@@ -73,9 +73,9 @@ runtime boundary below are the answer.
 ### Layout: the application core, ports, and adapters
 
 ```text
-src/domain        pure policy: posting, rubric, answers, ranking,
-                  preferences, calibration, ledger, admission, verdicts,
-                  random, errors
+src/domain        pure policy: posting, posting URLs, rubric, answers,
+                  ranking, preferences, calibration, ledger, admission,
+                  verdicts, random, errors
 src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
                   trace-sink, stores, clock
 src/application   use cases over a dependencies object
@@ -94,7 +94,8 @@ src/bootstrap     createApplicationFromHome, createServerFromHome
   `rescoreCalibration()`
 - `listArrivals()`, `recordVerdict({ postingId, label })`, `verdictSummary()`
 - `explainPosting({ postingId })`, `previewPosting({ postingId })`
-- `probeCompany`, `addCompany`, `removeCompany`, `listWatchlist`
+- `probeCompany`, `addCompany`, `addCompanyFromUrl`, `removeCompany`,
+  `listWatchlist`
 - `getProfile`, `updateProfile`, `listPostings`, `readPosting`, `rubric()`
 
 MCP handlers and CLI commands call these and render; neither reads a
@@ -110,6 +111,32 @@ on read, so existing state survives. On input, a `.txt` suffix is accepted and
 stripped. On read, an ID is checked against the cache-ID alphabet
 (`^[a-z0-9]+(?:-[a-z0-9]+)*$`) before any filesystem access; anything else is
 a miss and cannot name a file outside the postings directory.
+
+### Posting URLs
+
+`parsePostingUrl` (`src/domain/posting-url.ts`) reads a pasted URL offline
+and says what it names:
+
+- A posting or a board on one of the four providers, in the forms their
+  boards, embeds, and APIs use. A posting carries the key its adapter writes.
+- A Greenhouse job on the employer's own site (`?gh_jid=`). Greenhouse job
+  IDs are global, so it matches that job on any watched Greenhouse board, but
+  the URL does not name the board.
+- A system fish has no adapter for (Workday, iCIMS, and the rest of
+  `OTHER_SYSTEMS`), a job search site (`AGGREGATORS`), or nothing it knows.
+
+A slug keeps the spelling its URL gives it. Slugs compare URL-decoded, and
+case-blind on every provider but Lever: on 2026-10-03 Lever answered
+"Document not found" for `Vida` and listed 14 postings for `vida`, while
+Ashby, Greenhouse, and SmartRecruiters answered either case alike.
+`src/fixtures/posting-urls.json` holds real URLs with the parse each must
+get, and the adapter tests parse every URL an adapter writes back to the key
+it wrote, so the parser and the key formats cannot drift apart.
+
+The watchlist takes a posting or board URL as well as a provider and slug,
+and a name defaults to the slug. One name is one entry and one board is one
+entry, so adding either again is a no-op that returns the entry already
+watched.
 
 ### Boundaries validated at runtime
 
