@@ -73,6 +73,7 @@ export const fetchPostingsOutput = z.union([
         written: z.number(),
         drops: z.object({
           notRemote: z.number(),
+          offTarget: z.number().describe('Titles matching a phrase in skip-titles.txt'),
           thinText: z.number(),
           outOfWindow: z.number(),
         }),

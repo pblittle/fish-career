@@ -12,6 +12,7 @@ import { filePostingRepository } from '../adapters/filesystem/posting-repository
 import { filePreferencesStore } from '../adapters/filesystem/preferences-store.js';
 import { fileProfileStore } from '../adapters/filesystem/profile-store.js';
 import { fileSeenStore } from '../adapters/filesystem/seen-store.js';
+import { fileSkipTitlesStore } from '../adapters/filesystem/skip-titles-store.js';
 import { jsonlTraceReader } from '../adapters/filesystem/trace-reader.js';
 import { jsonlTraceSink } from '../adapters/filesystem/trace-sink.js';
 import { fileVerdictStore } from '../adapters/filesystem/verdicts.js';
@@ -79,6 +80,7 @@ export const createApplicationFromHome = (
     profile: fileProfileStore(paths),
     watchlist: fileWatchlistStore(paths),
     preferences: filePreferencesStore(paths),
+    skipTitles: fileSkipTitlesStore(paths),
     calibrations: fileCalibrationStore(paths),
     clock: systemClock,
     random: systemRandom,

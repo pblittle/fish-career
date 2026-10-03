@@ -188,12 +188,29 @@ fish triage    # score the arrivals, print the ranked table
 
 `fetch` polls the watched boards, keeps remote postings, writes the arrivals
 you have never seen, and returns the diff. It also reports why postings were
-dropped: not remote, too thin to score, out of window. The out-of-window
-bucket only fires on the first poll, which defaults to the last 14 days, or
-when you pass `--days`; after that a remote posting is dropped on first
-contact or never. `triage` scores the arrivals against the profile with the
-judge and prints per-dimension scores, confidences, and blocker flags. Over
-MCP, the tools are `fetch_postings` and `triage_postings`.
+dropped: not remote, off target, too thin to score, out of window. The
+out-of-window bucket only fires on the first poll, which defaults to the last
+14 days, or when you pass `--days`; after that a remote posting is dropped on
+first contact or never. `triage` scores the arrivals against the profile with
+the judge and prints per-dimension scores, confidences, and blocker flags.
+Over MCP, the tools are `fetch_postings` and `triage_postings`.
+
+Titles you never want scored go in `$FISH_HOME/skip-titles.txt`, one phrase
+per line:
+
+```text
+# Roles I am not looking for
+designer
+account executive
+```
+
+A phrase matches whole words, side by side, in any case: `designer` skips
+"Product Designer II" and keeps "Director, Product Design". A one-word phrase
+reaches far: `marketing` also skips "Staff Web Engineer, Marketing", so use
+the longer phrase when a word is shared, and `fish recall` names the phrase
+that kept a posting out. Fetch counts a skipped posting as off target and
+never marks it seen, so deleting the phrase lets the next poll write it.
+Without the file, nothing is skipped.
 
 ### 4. Grade arrivals
 
@@ -291,7 +308,8 @@ Future API ──────┘         │
   is not the top row whatever its composite, and it says so in the table.
 - **Variants collapse, arrivals only.** One region-labelled vacancy posted per
   office is one row naming the other offices. Every remote posting a poll
-  observes is marked seen, written or not, so later polls deliver the diff.
+  observes is marked seen, written or not, unless its title is on your skip
+  list, so later polls deliver the diff.
 
 The architecture and its reasons: [`ARCHITECTURE.md`](./ARCHITECTURE.md). The
 contracts: [`specs/pipeline.md`](./specs/pipeline.md) for the engine,
@@ -388,7 +406,7 @@ in fish:
 
 - written and scored;
 - dropped as too thin or too old;
-- listed but not remote, or not fetched yet;
+- listed but not remote, kept out by your skip list, or not fetched yet;
 - no longer listed;
 - on a board you don't watch;
 - on a system or site fish can't read.
@@ -408,9 +426,10 @@ private checkout to keep personal state out of any public tree.
 | `profile.md` | Your candidate profile, sent verbatim to the judge when scoring |
 | `watchlist.json` | Companies you watch, with provider and board slug |
 | `preferences.json` | Pairwise preferences the ranking must satisfy, each with its source line |
+| `skip-titles.txt` | Optional: title phrases fetch never writes, one per line |
 | `.env` | `TYPESAFE_API_KEY` and the optional trace settings, read at startup |
 | `postings/` | Cached posting text from public ATS APIs |
-| `state/seen.json` | Every remote posting observed, with `observedAt`, its first-observation time, so polls deliver arrivals only |
+| `state/seen.json` | Every remote posting observed and not skipped by title, with `observedAt`, its first-observation time, so polls deliver arrivals only |
 | `state/scored.json` | Ledger of scores with profile hash and rubric version |
 | `state/traces.jsonl` | One record per judge call: latency, tokens, raw answers |
 | `state/verdicts.json` | Your grades on cached arrivals, with the profile hash and rubric version current when you made each call |

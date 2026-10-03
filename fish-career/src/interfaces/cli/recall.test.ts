@@ -33,6 +33,13 @@ describe('renderRecall', () => {
       },
       { url, stage: 'dropped', company: 'Vida', title: 'Editor' },
       { url, stage: 'not-fetched', company: 'Vida', title: 'Designer' },
+      {
+        url,
+        stage: 'off-target',
+        company: 'Vida',
+        title: 'Product Designer II',
+        phrase: 'designer',
+      },
       { url, stage: 'not-remote', company: 'Vida', title: 'Manager', workplace: 'Hybrid' },
       { url, stage: 'not-listed', company: 'Vida' },
       { url, stage: 'unreadable', company: 'Gone', error: 'no board gone on lever' },
@@ -49,6 +56,7 @@ describe('renderRecall', () => {
       'dropped       Vida: Writer, outside the recency window when first seen on 2026-10-03',
       'dropped       Vida: Editor, before fish recorded why',
       'not fetched   Vida: Designer is listed and remote; run fish fetch',
+      'off target    Vida: Product Designer II matches "designer" in skip-titles.txt',
       'not remote    Vida: Manager is listed as Hybrid',
       `not listed    Vida's board does not list it now: ${url}`,
       `unreadable    Gone's board could not be read (no board gone on lever): ${url}`,
@@ -59,7 +67,7 @@ describe('renderRecall', () => {
       `other system  on Workday, which fish does not read: ${url}`,
       `unknown       not a job board fish knows: ${url}`,
       '',
-      '14 URLs: 2 written, 2 dropped, 1 not fetched, 1 not remote, 1 not listed, 1 unreadable, 2 not watched, 1 board URL, 1 unknown, 1 job site, 1 other system.',
+      '15 URLs: 2 written, 2 dropped, 1 not fetched, 1 off target, 1 not remote, 1 not listed, 1 unreadable, 2 not watched, 1 board URL, 1 unknown, 1 job site, 1 other system.',
     ]);
   });
 

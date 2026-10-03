@@ -7,6 +7,7 @@ import {
   memoryPreferencesStore,
   memoryProfileStore,
   memorySeenStore,
+  memorySkipTitlesStore,
   memoryTraceReader,
   memoryTraceSink,
   memoryVerdictStore,
@@ -153,6 +154,41 @@ describe('recallPostings, the known-item case log', () => {
         title: 'Vida role 5',
       },
       { url: `https://jobs.lever.co/vida/${uuid(6)}`, stage: 'not-listed', company: 'Vida' },
+    ]);
+  });
+
+  it('names the skip-titles phrase that keeps a listed remote posting out', async () => {
+    const h = await afterFirstPoll();
+    h.vida.push(
+      vidaPosting(7, { title: 'Product Designer II' }),
+      vidaPosting(8, { title: 'Product Designer III', workplace: 'Hybrid', remote: false }),
+    );
+    h.deps.skipTitles = memorySkipTitlesStore(['designer']);
+    const cases = await recallPostings(h.deps)({
+      urls: [
+        `https://jobs.lever.co/vida/${uuid(7)}`,
+        `https://jobs.lever.co/vida/${uuid(8)}`,
+        `https://jobs.lever.co/vida/${uuid(1)}`,
+      ],
+    });
+    // Fetch's order: the remote check first, then the skip list. A posting
+    // already written stays written whatever the list says now.
+    expect(cases.map(({ url: _url, ...rest }) => rest)).toEqual([
+      { stage: 'off-target', company: 'Vida', title: 'Product Designer II', phrase: 'designer' },
+      {
+        stage: 'not-remote',
+        company: 'Vida',
+        title: 'Product Designer III',
+        workplace: 'Hybrid',
+        location: 'United States',
+      },
+      {
+        stage: 'written',
+        company: 'Vida',
+        title: 'Vida role 1',
+        postingId: `vida-${uuid(1)}`,
+        score: 0.71,
+      },
     ]);
   });
 

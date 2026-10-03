@@ -71,9 +71,9 @@ work; do not loosen the gate.
 ## State, secrets, and the judge boundary
 
 - Personal state lives in `FISH_HOME` (default `~/.config/fish`), never in the
-  repository. `profile.md`, `watchlist.json`, `preferences.json`, `.env`,
-  `postings/`, and `state/` are ignored on purpose. Do not commit them, and do
-  not move real state into fixtures.
+  repository. `profile.md`, `watchlist.json`, `preferences.json`,
+  `skip-titles.txt`, `.env`, `postings/`, and `state/` are ignored on purpose.
+  Do not commit them, and do not move real state into fixtures.
 - The only outbound calls are GETs to public ATS APIs, one POST per scored
   posting to the judge (`api.typesafe.ai`), and the optional LangSmith trace
   mirror when `FISH_TRACE=langsmith`. Never add a call that sends state
