@@ -213,8 +213,9 @@ reaches far: `marketing` also skips "Staff Web Engineer, Marketing", so use
 the longer phrase when a word is shared, and `fish recall` names the phrase
 that kept a posting out. Fetch counts a skipped posting as off target and
 never marks it seen, so deleting the phrase lets the next poll write it.
-The list applies when fetch writes: a posting already in the cache stays
-there, and triage still scores it. Without the file, nothing is skipped.
+A posting already in the cache stays there, and `triage` sets it aside too,
+unless you name it (`fish triage <postingId>`). Without the file, nothing is
+skipped.
 
 ### 4. Grade arrivals
 
@@ -430,7 +431,7 @@ private checkout to keep personal state out of any public tree.
 | `profile.md` | Your candidate profile, sent verbatim to the judge when scoring |
 | `watchlist.json` | Companies you watch, with provider and board slug |
 | `preferences.json` | Pairwise preferences the ranking must satisfy, each with its source line |
-| `skip-titles.txt` | Optional: title phrases fetch never writes, one per line |
+| `skip-titles.txt` | Optional: title phrases fetch never writes and triage sets aside, one per line |
 | `.env` | `TYPESAFE_API_KEY` and the optional trace settings, read at startup |
 | `postings/` | Cached posting text from public ATS APIs |
 | `state/seen.json` | Every remote posting observed and not skipped by title, with `observedAt`, its first-observation time, so polls deliver arrivals only |

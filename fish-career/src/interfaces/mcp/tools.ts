@@ -245,7 +245,7 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
     {
       title: 'Score postings against the profile with the judge',
       description:
-        'Scores postings and returns the ranked table: per-dimension values and confidences, a composite, and a blocker probability. By default scores only postings never scored before under the current profile and rubric; pass explicit posting IDs to score a chosen slice without touching the ledger, or rescore=true to redo the cache. A "?" marks a low-confidence dimension; a blocker at 0.5+ demotes the row below clean rows whatever the composite. Requires a judge (a TypeSafe key, or FISH_JUDGE=fake).',
+        'Scores postings and returns the ranked table: per-dimension values and confidences, a composite, and a blocker probability. By default scores only postings never scored before under the current profile and rubric, setting aside any whose title matches a phrase in skip-titles.txt; pass explicit posting IDs to score a chosen slice without touching the ledger, or rescore=true to redo the cache. A "?" marks a low-confidence dimension; a blocker at 0.5+ demotes the row below clean rows whatever the composite. Requires a judge (a TypeSafe key, or FISH_JUDGE=fake).',
       inputSchema: z.object({
         postingIds: z
           .array(z.string())
@@ -276,6 +276,12 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
         return ok(
           [
             renderTable(collapsed),
+            ...(outcome.offTarget > 0
+              ? [
+                  '',
+                  `Set aside ${outcome.offTarget} cached posting${outcome.offTarget === 1 ? '' : 's'} with a title on skip-titles.txt.`,
+                ]
+              : []),
             ...(outcome.errors.length > 0 ? ['', `Failed: ${outcome.errors.join('; ')}`] : []),
             ...(outcome.ledgerOk
               ? []
@@ -292,6 +298,7 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
             errors: outcome.errors,
             scored: outcome.scored,
             skipped: outcome.skipped,
+            offTarget: outcome.offTarget,
             ledgerOk: outcome.ledgerOk,
           },
         );

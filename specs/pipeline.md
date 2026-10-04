@@ -56,15 +56,19 @@ runtime boundary below are the answer.
   the remote check and before admission, fetch sets aside an unseen posting
   whose title matches: it costs no detail fetch, counts as an off-target drop,
   and is never marked seen, so deleting the phrase lets the next poll admit
-  it. The list applies when fetch writes; a posting already in the cache
-  stays, and triage scores it. A missing file skips nothing; a file that
-  cannot be read fails the fetch.
+  it. A posting already in the cache stays there, and triage sets it aside
+  too. A missing file skips nothing; a file that cannot be read fails the
+  fetch or triage that reads it.
 - A body too thin to score is resolved through the provider's detail
   endpoint, or dropped as thin text if it stays thin; the split drop reasons
   are in [`specs/quality.md`](./quality.md).
 
 ### triage: postings to ranked rows
 
+- By default triage scores the cached postings not yet scored under the
+  current profile and rubric (`--rescore`: all of them), setting aside any
+  whose title is on the skip list, counted as off target. A posting named by
+  ID is scored whatever its title.
 - One judge call per posting: five Score dimensions plus one Noul
   hard-blocker. Weights, criteria, and blocker instructions are data in
   `DIMENSIONS` in `src/domain/rubric.ts`, versioned by `RUBRIC_VERSION`, where

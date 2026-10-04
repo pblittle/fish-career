@@ -180,6 +180,12 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
         if (outcome.skipped > 0) {
           io.out(`\nSkipped ${outcome.skipped} already-scored postings from earlier runs.`);
         }
+        if (outcome.offTarget > 0) {
+          const n = outcome.offTarget;
+          io.out(
+            `\nSet aside ${n} cached posting${n === 1 ? '' : 's'} with a title on skip-titles.txt.`,
+          );
+        }
         if (!outcome.ledgerOk) {
           io.out('\nWARNING: the scored ledger could not be read; it was treated as empty.');
         }

@@ -7,6 +7,7 @@ import {
   memoryPreferencesStore,
   memoryProfileStore,
   memorySeenStore,
+  memorySkipTitlesStore,
   memoryTraceReader,
   memoryTraceSink,
   memoryVerdictStore,
@@ -319,6 +320,48 @@ describe('the complete workflow over in-memory ports', () => {
     const noJudge = harness({ judge: null });
     await noJudge.app.fetchPostings();
     await expect(noJudge.app.rankPostings()).rejects.toMatchObject({ code: 'NO_JUDGE' });
+  });
+});
+
+describe('triage and the skip list', () => {
+  // Fetched before its phrase went on the list, so it is in the cache.
+  const cachedThenListed = async (phrase: string) => {
+    const skip = memorySkipTitlesStore();
+    const h = harness({ skipTitles: skip });
+    await h.app.fetchPostings();
+    skip.phrases.push(phrase);
+    return h;
+  };
+
+  it('sets aside a cached posting whose title is on the list, and counts it', async () => {
+    const h = await cachedThenListed('junior');
+    const ranked = await h.app.rankPostings();
+    expect(ranked.scored.sort()).toEqual(['acme-1', 'beta-1', 'beta-2']);
+    expect(ranked.offTarget).toBe(1);
+    expect((await h.ledger.read()).entries['acme-2']).toBeUndefined();
+  });
+
+  it('sets it aside on a rescore too', async () => {
+    const h = await cachedThenListed('junior');
+    const rescored = await h.app.rankPostings({ rescore: true });
+    expect(rescored.scored.sort()).toEqual(['acme-1', 'beta-1', 'beta-2']);
+    expect(rescored.offTarget).toBe(1);
+  });
+
+  it('scores it when named', async () => {
+    const h = await cachedThenListed('junior');
+    const named = await h.app.rankPostings({ postingIds: ['acme-2'] });
+    expect(named.scored).toEqual(['acme-2']);
+    expect(named.offTarget).toBe(0);
+  });
+
+  it('says the list is why nothing is left to score', async () => {
+    // Every fixture title ends in "Engineer".
+    const h = await cachedThenListed('engineer');
+    await expect(h.app.rankPostings()).rejects.toMatchObject({
+      code: 'NOTHING_TO_SCORE',
+      message: expect.stringContaining('or has a title on skip-titles.txt (4)'),
+    });
   });
 });
 

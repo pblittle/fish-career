@@ -14,6 +14,7 @@ import {
   memoryPreferencesStore,
   memoryProfileStore,
   memorySeenStore,
+  memorySkipTitlesStore,
   memoryTraceReader,
   memoryTraceSink,
   memoryVerdictStore,
@@ -56,8 +57,12 @@ const board = (): Record<string, Posting[]> => ({
   ],
 });
 
+// The operator's skip list, empty until a test adds a phrase.
+let skip: ReturnType<typeof memorySkipTitlesStore>;
+
 const app = (): CareerApplication => {
   const traces = memoryTraceSink();
+  skip = memorySkipTitlesStore();
   const deps: CareerDependencies = {
     providers: {
       fixture: memoryProvider('fixture', board()),
@@ -80,6 +85,7 @@ const app = (): CareerApplication => {
     calibrations: memoryCalibrationStore(),
     clock: fixedClock('2026-09-25T12:00:00.000Z'),
     random: { int: () => 0, shuffle: (xs) => [...xs] },
+    skipTitles: skip,
   };
   return createApplication(deps);
 };
@@ -231,7 +237,18 @@ describe('the MCP contract', () => {
     const rows = structured(result).rows as { postingId: string; dims: unknown }[];
     expect(rows.map((r) => r.postingId).sort()).toEqual(['acme-1', 'acme-2']);
     expect(rows[0]?.dims).toBeDefined();
+    expect(structured(result).offTarget).toBe(0);
     expect((result.content as { text: string }[])[0]?.text).toContain('rank  posting');
+  });
+
+  it('triage_postings counts the cached postings the skip list set aside', async () => {
+    await client.callTool({ name: 'fetch_postings', arguments: {} });
+    skip.phrases.push('junior');
+    const result = await client.callTool({ name: 'triage_postings', arguments: {} });
+    expect(structured(result)).toMatchObject({ scored: ['acme-1'], offTarget: 1 });
+    expect((result.content as { text: string }[])[0]?.text).toContain(
+      'Set aside 1 cached posting with a title on skip-titles.txt.',
+    );
   });
 
   it('watchlist_probe returns counts and samples', async () => {
