@@ -110,7 +110,9 @@ a miss and cannot name a file outside the postings directory.
 - Judge responses: a runtime schema requires the hard blocker and every
   dimension with a finite score and a confidence in 0..1. A malformed answer
   fails that posting loudly rather than being clamped.
-- Watchlist entries and preferences: invalid entries are dropped, not trusted.
+- Watchlist entries and preferences: invalid entries are dropped on read, not
+  trusted. The watchlist store never writes over a file that holds entries it
+  dropped or could not parse; an add or remove refuses until the file is fixed.
 - The ledger: corruption is reported, never silently reset.
 
 ### Determinism
