@@ -1,4 +1,4 @@
-import { mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -63,6 +63,13 @@ describe('fileLedger.read', () => {
 });
 
 describe('fileLedger.mark', () => {
+  it('refuses to overwrite a ledger it cannot read', async () => {
+    const p = join(home(), 'scored.json');
+    writeFileSync(p, '{truncated');
+    await expect(fileLedger(p).mark({ a: 0.5 }, CURRENT)).rejects.toThrow(/refusing to overwrite/);
+    expect(readFileSync(p, 'utf8')).toBe('{truncated');
+  });
+
   it('merges new scores over prior ones', async () => {
     const p = join(home(), 'scored.json');
     const ledger = fileLedger(p);
