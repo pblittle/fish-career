@@ -18,6 +18,10 @@ export type ErrorCode =
   | 'VERDICTS_UNREADABLE'
   | 'UNKNOWN';
 
+// Two use cases refuse without a judge; they must say the same thing.
+export const NO_JUDGE_MESSAGE =
+  'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge.';
+
 export class ApplicationError extends Error {
   readonly code: ErrorCode;
 
