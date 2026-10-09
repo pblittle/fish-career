@@ -6,6 +6,7 @@ import type { McpServer } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import type { CareerApplication } from '../../application/career-application.js';
 import { renderCalibration } from '../../domain/calibration.js';
+import { ApplicationError } from '../../domain/errors.js';
 import { postingIdFromFile } from '../../domain/posting.js';
 import { renderEval } from '../../domain/preferences.js';
 import { collapseVariants, renderTable } from '../../domain/ranking.js';
@@ -71,11 +72,15 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
     {
       title: 'Add a company to the watchlist',
       description:
-        'Writes a verified company to the watchlist. Probe first with watchlist_probe and confirm the board identity from its titles; this tool writes what you give it. Adding a name already on the watchlist is a no-op.',
+        "Writes a company's board to the watchlist. Pass either url, a posting or board URL on Ashby, Greenhouse, Lever, or SmartRecruiters (the provider and slug are read from it, offline), or provider and slug from watchlist_probe; a slug from a guess needs the probe's titles to confirm the board is the company you mean. name defaults to the slug. Adding a name or a board already on the watchlist is a no-op that returns the existing entry. A URL on another system or a job search site fails with INVALID_COMPANY and says why.",
       inputSchema: z.object({
-        name: z.string().describe('Company display name'),
-        provider: providerEnum.describe('ATS provider, from the probe result'),
-        slug: z.string().describe('The board token on that provider'),
+        url: z
+          .string()
+          .optional()
+          .describe('A posting or board URL; use instead of provider and slug'),
+        name: z.string().optional().describe('Company display name; defaults to the slug'),
+        provider: providerEnum.optional().describe('ATS provider, from the probe result'),
+        slug: z.string().optional().describe('The board token on that provider'),
       }),
       outputSchema: watchlistAddOutput,
       annotations: {
@@ -85,13 +90,27 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
         openWorldHint: false,
       },
     },
-    async ({ name, provider, slug }) => {
+    async ({ url, name, provider, slug }) => {
       try {
-        const { added } = await app.addCompany({ name, provider, slug });
-        return ok(
-          added ? `Added ${name} (${provider}/${slug}).` : `${name} is already on the watchlist.`,
-          { name, provider, slug, added },
-        );
+        const byBoard = provider !== undefined || slug !== undefined;
+        if (url !== undefined && byBoard) {
+          throw new ApplicationError(
+            'INVALID_COMPANY',
+            'Pass a url, or a provider and slug, not both.',
+          );
+        }
+        if (url === undefined && (provider === undefined || slug === undefined)) {
+          throw new ApplicationError('INVALID_COMPANY', 'Pass a url, or a provider and slug.');
+        }
+        const { added, entry } =
+          url !== undefined
+            ? await app.addCompanyFromUrl({ url, name })
+            : await app.addCompany({ name, provider: provider ?? '', slug: slug ?? '' });
+        const board = `${entry.name} (${entry.provider}/${entry.slug})`;
+        return ok(added ? `Added ${board}.` : `${board} is already on the watchlist.`, {
+          ...entry,
+          added,
+        });
       } catch (err) {
         return failure(err);
       }

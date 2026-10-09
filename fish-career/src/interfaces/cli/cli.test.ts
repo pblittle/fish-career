@@ -56,6 +56,10 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       added: true,
       entry: { name: 'A', provider: 'ashby', slug: 'a' },
     })),
+    addCompanyFromUrl: vi.fn(async () => ({
+      added: true,
+      entry: { name: 'A', provider: 'ashby', slug: 'a' },
+    })),
     removeCompany: vi.fn(async () => ({ removed: true, name: 'A' })),
     listWatchlist: vi.fn(async () => []),
     getProfile: vi.fn(async () => ''),
@@ -276,10 +280,47 @@ describe('runCli', () => {
     expect(await runCli(['triage'], { app, io: sink.io })).toBe(0);
   });
 
-  it('watchlist add requires all three arguments', async () => {
+  it('watchlist add takes a name, provider, and slug, or a URL and an optional name', async () => {
+    const app = stubApp({
+      addCompanyFromUrl: vi.fn(async () => ({
+        added: true,
+        entry: { name: 'Vida Health', provider: 'lever', slug: 'vida' },
+      })),
+    });
     const sink = io();
-    expect(await runCli(['watchlist', 'add', 'Acme'], { app: stubApp(), io: sink.io })).toBe(1);
-    expect(sink.err.join('\n')).toContain('Usage: fish watchlist add');
+    const url = 'https://jobs.lever.co/vida/8fd2c844-ad71-4732-8574-2c3a3cc98bdc';
+    expect(await runCli(['watchlist', 'add', url, 'Vida Health'], { app, io: sink.io })).toBe(0);
+    expect(app.addCompanyFromUrl).toHaveBeenCalledWith({ url, name: 'Vida Health' });
+    expect(sink.out).toEqual(['Added Vida Health (lever/vida).']);
+
+    expect(await runCli(['watchlist', 'add', 'A', 'ashby', 'a'], { app, io: sink.io })).toBe(0);
+    expect(app.addCompany).toHaveBeenCalledWith({ name: 'A', provider: 'ashby', slug: 'a' });
+  });
+
+  it('watchlist add names the entry already watched when nothing is added', async () => {
+    const app = stubApp({
+      addCompanyFromUrl: vi.fn(async () => ({
+        added: false,
+        entry: { name: 'Vida', provider: 'lever', slug: 'vida' },
+      })),
+    });
+    const sink = io();
+    await runCli(['watchlist', 'add', 'jobs.lever.co/vida'], { app, io: sink.io });
+    expect(sink.out).toEqual(['Vida (lever/vida) is already on the watchlist.']);
+  });
+
+  it('watchlist add without a URL or all three of name, provider, and slug prints usage', async () => {
+    for (const args of [[], ['Acme'], ['Acme', 'ashby']]) {
+      const sink = io();
+      const app = stubApp();
+      expect(
+        await runCli(['watchlist', 'add', ...args], { app, io: sink.io }),
+        args.join(' '),
+      ).toBe(1);
+      expect(sink.err.join('\n')).toContain('Usage: fish watchlist add <url> [name]');
+      expect(app.addCompany).not.toHaveBeenCalled();
+      expect(app.addCompanyFromUrl).not.toHaveBeenCalled();
+    }
   });
 
   it('postings explain --dry-run prints the request without calling the judge', async () => {

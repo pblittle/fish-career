@@ -1,0 +1,32 @@
+{
+  "source": {
+    "url": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings?limit=100&offset=0",
+    "fetchedAt": "2026-10-03",
+    "note": "Two real ServiceNow postings, one remote and one not, trimmed to the fields the SmartRecruiters adapter reads. totalFound is cut from 706 to the two kept, so the adapter reads one page."
+  },
+  "body": {
+    "totalFound": 2,
+    "content": [
+      {
+        "id": "744000153266480",
+        "name": "Sr Mobile Software Engineer (Native Android and Backend)",
+        "releasedDate": "2026-10-02T20:33:26.076Z",
+        "location": {
+          "fullLocation": "San Diego, CALIFORNIA, United States",
+          "remote": true
+        },
+        "ref": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480"
+      },
+      {
+        "id": "744000153333219",
+        "name": "Sr Software Engineer",
+        "releasedDate": "2026-10-03T16:02:30.623Z",
+        "location": {
+          "fullLocation": "Santa Clara, CALIFORNIA, United States",
+          "remote": false
+        },
+        "ref": "https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153333219"
+      }
+    ]
+  }
+}
