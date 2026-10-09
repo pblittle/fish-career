@@ -255,7 +255,6 @@ describe('runCli', () => {
         skipped: 0,
         offTarget: 3,
         stale: [],
-        ledgerOk: true,
         runId: 'run-1',
       })),
     });
@@ -285,6 +284,7 @@ describe('runCli', () => {
         errors: ['acme-1: judge API responded 401: unauthorized'],
         scored: [],
         skipped: 0,
+        offTarget: 0,
         stale: [],
         runId: 'run-1',
       })),
