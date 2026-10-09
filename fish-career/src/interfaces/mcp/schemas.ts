@@ -104,7 +104,6 @@ export const triagePostingsOutput = z.union([
     errors: z.array(z.string()),
     scored: z.array(z.string()),
     skipped: z.number(),
-    ledgerOk: z.boolean(),
   }),
   errorEnvelope,
 ]);
@@ -181,7 +180,8 @@ const HINTS: Partial<Record<ErrorCode, string>> = {
   NO_CALIBRATION_HISTORY: 'Run calibration_start and calibration_submit first.',
   INVALID_COMPANY: 'Probe the company first to see which boards carry it.',
   INVALID_GRADE: 'Use 3 act, 2 look, 1 miss, or 0 should not surface.',
-  LEDGER_UNREADABLE: 'Check FISH_HOME/state/scored.json; the next triage run will rewrite it.',
+  LEDGER_UNREADABLE:
+    'Fix or remove FISH_HOME/state/scored.json; nothing is scored over it. Triage by posting ID still works and leaves the ledger alone.',
   VERDICTS_UNREADABLE:
     'Check FISH_HOME/state/verdicts.json; nothing is recorded or measured until it parses.',
 };

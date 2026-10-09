@@ -29,6 +29,9 @@ runtime boundary below are the answer.
 
 - Four public ATS APIs, one flat posting shape: `TITLE`, `COMPANY`,
   `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body.
+  `COMPENSATION` is the provider's structured field; when that is empty, the
+  adapter lifts the first salary range the body states, verbatim, and
+  otherwise writes `not stated`. A lone figure is never lifted.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not; later polls deliver arrivals only. A recency window applies on the
   first poll (or an explicit `--days`).
@@ -45,8 +48,10 @@ runtime boundary below are the answer.
 - Judge calls retry with backoff on 429, 5xx, and dropped connections; a 4xx
   throws at once. Every call writes a trace: latency, token usage, raw
   answers, profile hash, rubric version.
-- Every scored row checkpoints to the ledger immediately; a crash loses at
-  most the row in flight.
+- Every row a whole-cache run scores checkpoints to the ledger immediately; a
+  crash loses at most the row in flight. A run over named postings is a spot
+  check: it scores and traces but leaves the ledger alone, so it neither
+  settles nor refreshes those entries.
 - Ranking: a blocker at 0.5 or above demotes a row below every clean row,
   regardless of composite. Region-labelled variants of one vacancy collapse
   to one row that names the other offices; a bare base title stays its own
@@ -54,6 +59,9 @@ runtime boundary below are the answer.
 - The ledger records score plus provenance (profile hash, rubric version). A
   profile or rubric change re-scores stale entries on the next run; the
   operator never babysits invalidation.
+- A run with nothing to score throws `NOTHING_TO_SCORE`. Its message says
+  whether the cache is empty or every posting is already scored under the
+  current profile and rubric, because the two call for different next steps.
 
 ### evaluate and calibrate: the measurements
 
@@ -69,13 +77,15 @@ runtime boundary below are the answer.
 ```text
 src/domain        pure policy: posting, rubric, answers, ranking,
                   preferences, calibration, ledger, admission, verdicts,
-                  random, errors
+                  metrics, quality, random, errors
 src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
-                  trace-sink, stores, clock
+                  trace-sink, trace-reader, stores, clock
 src/application   use cases over a dependencies object
-src/adapters      ats (four boards), judge (jev, fake), filesystem, fake
-                  (in-memory), trace (JSONL, LangSmith)
-src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
+src/adapters      ats (four boards), judge (jev, fake), filesystem (stores,
+                  ledger, JSONL traces), fake (in-memory), trace (LangSmith,
+                  multi-sink fan-out)
+src/interfaces    mcp (server, tools, resources, prompts, schemas),
+                  cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
@@ -108,12 +118,15 @@ a miss and cannot name a file outside the postings directory.
 ### Boundaries validated at runtime
 
 - Judge responses: a runtime schema requires the hard blocker and every
-  dimension with a finite score and a confidence in 0..1. A malformed answer
-  fails that posting loudly rather than being clamped.
+  dimension with a score on that dimension's criteria ladder (0 to the last
+  rung) and a confidence in 0..1. A malformed answer fails that posting loudly
+  rather than being clamped.
 - Watchlist entries and preferences: invalid entries are dropped on read, not
   trusted. The watchlist store never writes over a file that holds entries it
   dropped or could not parse; an add or remove refuses until the file is fixed.
-- The ledger: corruption is reported, never silently reset.
+- The ledger: a corrupt ledger refuses the whole-cache run with
+  `LEDGER_UNREADABLE` before any judge call and is never overwritten. Triage
+  by explicit posting ID neither reads nor marks the ledger, so it still works.
 
 ### Determinism
 
