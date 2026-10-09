@@ -258,7 +258,6 @@ describe('runCli', () => {
         scored: [],
         skipped: 0,
         stale: [],
-        ledgerOk: true,
         runId: 'run-1',
       })),
     });
