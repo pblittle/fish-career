@@ -63,5 +63,9 @@
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vitest": "^5.0.1"
+  },
+  "overrides": {
+    "katex": "0.18.4",
+    "smol-toml": "^1.9.0"
   }
 }
