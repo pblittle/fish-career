@@ -1,6 +1,6 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import type { WatchlistEntry, WatchlistStore } from '../../ports/stores.js';
-import type { HomePaths } from './home.js';
+import { type HomePaths, writeFileAtomic } from './home.js';
 
 const isEntry = (v: unknown): v is WatchlistEntry => {
   if (typeof v !== 'object' || v === null) return false;
@@ -68,6 +68,6 @@ export const fileWatchlistStore = (paths: HomePaths): WatchlistStore => ({
         `The watchlist at ${paths.watchlist} has ${prior.dropped} malformed ${noun}; refusing to write over the file. Fix it first.`,
       );
     }
-    writeFileSync(paths.watchlist, JSON.stringify({ companies: entries }, null, 2));
+    writeFileAtomic(paths.watchlist, JSON.stringify({ companies: entries }, null, 2));
   },
 });

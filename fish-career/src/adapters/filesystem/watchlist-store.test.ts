@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -37,6 +37,14 @@ describe('fileWatchlistStore.write', () => {
     await s.write([acme]);
     await s.write([acme, beta]);
     expect(await s.read()).toEqual([acme, beta]);
+  });
+
+  it('writes atomically: no temp file is left beside the watchlist', async () => {
+    const { paths, store: s } = store();
+    await s.write([acme]);
+    expect(readdirSync(paths.home).filter((f) => f.includes('watchlist'))).toEqual([
+      'watchlist.json',
+    ]);
   });
 
   it('refuses to write over a file holding a malformed entry, and leaves it untouched', async () => {
