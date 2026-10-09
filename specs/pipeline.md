@@ -29,6 +29,9 @@ runtime boundary below are the answer.
 
 - Four public ATS APIs, one flat posting shape: `TITLE`, `COMPANY`,
   `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body.
+  `COMPENSATION` is the provider's structured field; when that is empty, the
+  adapter lifts the first salary range the body states, verbatim, and
+  otherwise writes `not stated`. A lone figure is never lifted.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not; later polls deliver arrivals only. A recency window applies on the
   first poll (or an explicit `--days`).
