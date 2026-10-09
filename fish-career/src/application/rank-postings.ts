@@ -74,7 +74,9 @@ export const rankPostings =
     if (candidates.length === 0) {
       throw new ApplicationError(
         'NOTHING_TO_SCORE',
-        'Every posting in the cache has already been scored under the current profile and rubric. Rescore to redo them.',
+        records.length === 0
+          ? 'The posting cache is empty. Fetch first.'
+          : 'Every posting in the cache has already been scored under the current profile and rubric. Rescore to redo them.',
       );
     }
 
