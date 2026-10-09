@@ -36,9 +36,11 @@ runtime boundary below are the answer.
   or not; later polls deliver arrivals only. A recency window applies on the
   first poll (or an explicit `--days`).
 - Remote is the provider's stated workplace type where it has one (Ashby and
-  Lever `workplaceType`, SmartRecruiters `location.remote`). Without one, a
-  Greenhouse or Lever posting falls back to its location text and an Ashby
-  posting to its `isRemote` flag. `PUBLISHED` is first publication
+  Lever `workplaceType`, SmartRecruiters `location.remote` and
+  `location.hybrid`). Without one, a Greenhouse or Lever posting falls back to
+  its location text and an Ashby posting to its `isRemote` flag. Every adapter
+  returns every posting with its workplace; fetch keeps the remote ones, so a
+  hybrid or on-site posting is counted as a not-remote drop on every board. `PUBLISHED` is first publication
   (Greenhouse `first_published`), not the last edit, so the recency window
   measures when a posting went up.
 - A body too thin to score is resolved through the provider's detail
@@ -102,7 +104,8 @@ src/bootstrap     createApplicationFromHome, createServerFromHome
 - `evaluateRanking()`
 - `startCalibration({ count?, seed? })`, `submitCalibration({ ranking })`,
   `rescoreCalibration()`
-- `listArrivals()`, `recordVerdict({ postingId, label })`, `verdictSummary()`
+- `listArrivals()`, `recordVerdict({ postingId, label })`, `verdictSummary()`,
+  `recallPostings({ urls })`
 - `explainPosting({ postingId })`, `previewPosting({ postingId })`
 - `probeCompany`, `addCompany`, `addCompanyFromUrl`, `removeCompany`,
   `listWatchlist`
@@ -180,7 +183,8 @@ MCP contract maps the codes to protocol errors
 - The `fish` CLI is the blessed interface: `fetch`, `triage`, `evaluate`,
   `calibrate start|submit|reuse|rescore`, `watchlist list|probe|add|remove`,
   `profile get|set`, `postings list|read|explain`, plus `arrivals` for
-  grading ([`specs/quality.md`](./quality.md)).
+  grading and `recall` for postings found elsewhere
+  ([`specs/quality.md`](./quality.md)).
 - `triage` exits non-zero when no posting could be scored; a partial run
   prints its failures and exits zero, because its rows are already persisted.
 - `postings explain` returns the raw typed answers and cost for one posting;

@@ -238,16 +238,22 @@ describe('Greenhouse list()', () => {
 });
 
 describe('SmartRecruiters list()', () => {
-  it('keeps the postings the board marks remote, keyed by posting id', async () => {
+  it('returns every posting with the workplace its location flags state', async () => {
+    // Like the other three adapters, it leaves the remote filter to fetch, so
+    // a hybrid or on-site posting counts as a not-remote drop and recall can
+    // say why it was never fetched.
     const fixture = recorded('smartrecruiters-servicenow');
     const fetchStub = serve(fixture.body);
     const postings = await PROVIDERS.smartrecruiters.list('ServiceNow');
     expect(fetchStub).toHaveBeenCalledWith(fixture.source.url, expect.anything());
-    expect(postings).toHaveLength(1);
+    expect(postings.map((p) => [p.title, p.workplace, p.remote])).toEqual([
+      ['Sr Mobile Software Engineer (Native Android and Backend)', 'Remote', true],
+      ['Director, CRM Sales Manufacturing', 'Hybrid', false],
+      ['Sr Software Engineer', 'On-site', false],
+    ]);
     expect(postings[0]).toMatchObject({
       key: 'sr:ServiceNow:744000153266480',
-      title: 'Sr Mobile Software Engineer (Native Android and Backend)',
-      remote: true,
+      location: 'San Diego, CALIFORNIA, United States',
       url: 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480',
       detailUrl: 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings/744000153266480',
     });

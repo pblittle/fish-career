@@ -24,8 +24,8 @@ src/domain        pure policy: posting, posting URLs, rubric, answers,
                   verdicts, random, errors
 src/ports         the interfaces the application may use
 src/application   use cases: fetchPostings, rankPostings, evaluateRanking,
-                  calibrateRanking, verdicts and arrivals, watchlist,
-                  postings, rubric summary
+                  calibrateRanking, verdicts and arrivals, recall,
+                  watchlist, postings, rubric summary
 src/adapters      ats (four boards), judge (Jev, fake), filesystem, fake (in-memory), trace (JSONL, LangSmith)
 src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
@@ -144,6 +144,10 @@ flight, because every row checkpoints the moment it is scored.
   the pipeline against that judgment, with a Wilson interval and a floor
   below which the report says no read. Latest-wins, provenance recorded and
   never invalidating, and never fed into the golden metrics.
+- **`recall`**: what arrivals cannot see. The operator brings URLs of postings
+  found elsewhere, and each is reported at the furthest stage it reached in
+  fish, from written and scored down to a board fish cannot read, so a miss
+  says where it was lost. A case log, not a rate: the URLs are not a sample.
 
 **Why:** "the model scored some jobs" is not a claim about anything. The
 measurements are what turn the rubric into something with an acceptance

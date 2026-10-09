@@ -33,6 +33,7 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       coverage: null,
       precision: { n: 0, relevant: 0, value: null, wilson: null, floor: 45, belowFloor: true },
     })),
+    recallPostings: vi.fn(async () => []),
     rankPostings: vi.fn(async () => ({
       rows: [],
       errors: [],
@@ -307,6 +308,32 @@ describe('runCli', () => {
     const sink = io();
     await runCli(['watchlist', 'add', 'jobs.lever.co/vida'], { app, io: sink.io });
     expect(sink.out).toEqual(['Vida (lever/vida) is already on the watchlist.']);
+  });
+
+  it('recall passes every URL to the use case and prints its case log', async () => {
+    const urls = [
+      'https://jobs.lever.co/vida/00000000-0000-4000-8000-000000000001',
+      'https://teladoc.wd503.myworkdayjobs.com/en-US/teladochealth_is_hiring',
+    ];
+    const app = stubApp({
+      recallPostings: vi.fn(async () => [
+        { url: urls[0] ?? '', stage: 'not-fetched' as const, company: 'Vida', title: 'Engineer' },
+        { url: urls[1] ?? '', stage: 'other-system' as const, names: 'Workday' },
+      ]),
+    });
+    const sink = io();
+    expect(await runCli(['recall', ...urls], { app, io: sink.io })).toBe(0);
+    expect(app.recallPostings).toHaveBeenCalledWith({ urls });
+    expect(sink.out[0]).toBe('not fetched   Vida: Engineer is listed and remote; run fish fetch');
+    expect(sink.out.at(-1)).toBe('2 URLs: 1 not fetched, 1 other system.');
+  });
+
+  it('recall without a URL prints usage', async () => {
+    const sink = io();
+    const app = stubApp();
+    expect(await runCli(['recall'], { app, io: sink.io })).toBe(1);
+    expect(sink.err.join('\n')).toContain('Usage: fish recall <url...>');
+    expect(app.recallPostings).not.toHaveBeenCalled();
   });
 
   it('watchlist add without a URL or all three of name, provider, and slug prints usage', async () => {

@@ -217,6 +217,16 @@ export const sameBoard = (a: Board, b: Board): boolean =>
 export const postingKey = (p: { provider: BoardProvider; slug: string; jobId: string }): string =>
   `${KEY_PREFIX[p.provider]}:${p.slug}:${p.jobId}`;
 
+// The board an adapter key was written for: the inverse of postingKey's
+// prefix and slug. Null for a key no adapter writes.
+export const boardOfKey = (key: string): Board | null => {
+  const [prefix, slug, ...rest] = key.split(':');
+  const provider = (Object.keys(KEY_PREFIX) as BoardProvider[]).find(
+    (p) => KEY_PREFIX[p] === prefix,
+  );
+  return provider && slug && rest.length > 0 ? { provider, slug } : null;
+};
+
 // Whether a posting key, as an adapter wrote it from the watched slug, is the
 // posting this URL names. A Greenhouse job on an employer's own site matches
 // that job on any watched Greenhouse board.

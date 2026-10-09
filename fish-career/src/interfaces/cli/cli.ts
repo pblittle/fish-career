@@ -11,6 +11,7 @@ import { postingIdFromFile } from '../../domain/posting.js';
 import { renderEval } from '../../domain/preferences.js';
 import { collapseVariants, renderTable } from '../../domain/ranking.js';
 import { runQuality } from './quality.js';
+import { renderRecall } from './recall.js';
 
 export interface CliIo {
   out(line: string): void;
@@ -34,6 +35,7 @@ Usage:
   fish                        start the MCP server over stdio (what hosts run)
   fish fetch [--company X] [--days N] [--all]
   fish arrivals [grade <postingId> <0|1|2|3> | summary]
+  fish recall <url...>              how far postings found elsewhere got in fish
   fish triage [--rescore] [postingId...]
   fish evaluate
   fish quality [--k N] [--json]     ranking quality against the labeled dataset
@@ -113,6 +115,13 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           io.out(`Boards that failed: ${outcome.failures.join(', ')}`);
         }
         if (outcome.arrivals.length > 0) io.out('Rank them with: fish triage');
+        return 0;
+      }
+
+      case 'recall': {
+        const urls = positional(rest);
+        if (urls.length === 0) return fail(io, 'Usage: fish recall <url...>');
+        for (const line of renderRecall(await app.recallPostings({ urls }))) io.out(line);
         return 0;
       }
 
