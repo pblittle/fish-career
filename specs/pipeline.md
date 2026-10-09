@@ -121,7 +121,9 @@ a miss and cannot name a file outside the postings directory.
   dimension with a score on that dimension's criteria ladder (0 to the last
   rung) and a confidence in 0..1. A malformed answer fails that posting loudly
   rather than being clamped.
-- Watchlist entries and preferences: invalid entries are dropped, not trusted.
+- Watchlist entries and preferences: invalid entries are dropped on read, not
+  trusted. The watchlist store never writes over a file that holds entries it
+  dropped or could not parse; an add or remove refuses until the file is fixed.
 - The ledger: a corrupt ledger refuses the whole-cache run with
   `LEDGER_UNREADABLE` before any judge call and is never overwritten. Triage
   by explicit posting ID neither reads nor marks the ledger, so it still works.

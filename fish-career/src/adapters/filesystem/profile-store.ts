@@ -1,6 +1,6 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import type { ProfileStore } from '../../ports/stores.js';
-import type { HomePaths } from './home.js';
+import { type HomePaths, writeFileAtomic } from './home.js';
 
 export const fileProfileStore = (paths: HomePaths): ProfileStore => ({
   async read(): Promise<string> {
@@ -11,6 +11,6 @@ export const fileProfileStore = (paths: HomePaths): ProfileStore => ({
     }
   },
   async write(content: string): Promise<void> {
-    writeFileSync(paths.profile, content);
+    writeFileAtomic(paths.profile, content);
   },
 });
