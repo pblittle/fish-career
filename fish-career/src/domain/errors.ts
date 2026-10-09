@@ -20,7 +20,7 @@ export type ErrorCode =
 
 // Two use cases refuse without a judge; they must say the same thing.
 export const NO_JUDGE_MESSAGE =
-  'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge.';
+  'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge. A secret reference such as op://... counts as no key until the tool that resolves it runs fish.';
 
 export class ApplicationError extends Error {
   readonly code: ErrorCode;

@@ -54,7 +54,11 @@ Scoring needs a TypeSafe API key in `$FISH_HOME/.env`:
 TYPESAFE_API_KEY=...
 ```
 
-Keys come from <https://console.typesafe.ai/keys>. No key yet? Put
+Keys come from <https://console.typesafe.ai/keys>. The value can be a secret
+reference instead of the key itself: with 1Password, write
+`TYPESAFE_API_KEY=op://<vault>/<item>/credential` and run fish under
+`op run --env-file="$FISH_HOME/.env" -- fish ...`. An unresolved reference
+counts as no key; fish never sends it to the judge. No key yet? Put
 `FISH_JUDGE=fake` in the same file and the deterministic stand-in
 ([`src/adapters/judge/fake.ts`](./fish-career/src/adapters/judge/fake.ts))
 answers the same typed questions, so the whole loop runs before you spend

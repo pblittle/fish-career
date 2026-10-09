@@ -80,5 +80,15 @@ export const writeJson = (path: string, value: unknown): void => {
   writeFileAtomic(path, JSON.stringify(value, null, 2));
 };
 
-export const hasApiKey = (): boolean =>
-  Boolean(process.env.TYPESAFE_API_KEY && !process.env.TYPESAFE_API_KEY.includes('your-key'));
+// A key is usable when it is present, is not the .env.example placeholder,
+// and is not an unresolved secret reference such as `op://vault/item/field`.
+// A reference reaches the process when the tool that resolves it (for
+// 1Password, `op run`) was skipped; sent as a bearer token it would fail
+// every posting with a 401, so it counts as no key instead.
+export const isUsableApiKey = (value: string | undefined): boolean => {
+  const key = value?.trim() ?? '';
+  if (key === '' || key.includes('your-key')) return false;
+  return !/^[a-z][a-z0-9+.-]*:\/\//i.test(key);
+};
+
+export const hasApiKey = (): boolean => isUsableApiKey(process.env.TYPESAFE_API_KEY);

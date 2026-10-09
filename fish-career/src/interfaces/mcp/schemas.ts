@@ -170,7 +170,8 @@ export const ok = (text: string, structured: Record<string, unknown>): ToolResul
 });
 
 const HINTS: Partial<Record<ErrorCode, string>> = {
-  NO_JUDGE: 'Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake.',
+  NO_JUDGE:
+    'Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake. A secret reference (op://...) counts as no key until it is resolved.',
   NO_PROFILE: 'Write one with profile_update first.',
   EMPTY_WATCHLIST: 'Probe and add a company with watchlist_probe and watchlist_add.',
   NOTHING_TO_SCORE: 'Fetch new postings, or rescore to redo the cache.',
