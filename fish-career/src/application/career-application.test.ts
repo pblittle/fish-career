@@ -131,6 +131,13 @@ describe('the complete workflow over in-memory ports', () => {
     expect(rescored.rows).toHaveLength(4);
   });
 
+  it('reports an empty cache as empty, not as already scored', async () => {
+    const h = harness();
+    const run = h.app.rankPostings();
+    await expect(run).rejects.toMatchObject({ code: 'NOTHING_TO_SCORE' });
+    await expect(run).rejects.toThrow('The posting cache is empty');
+  });
+
   it('delivers arrivals only: a second poll returns nothing new', async () => {
     const h = harness();
     await h.app.fetchPostings();

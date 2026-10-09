@@ -54,6 +54,9 @@ runtime boundary below are the answer.
 - The ledger records score plus provenance (profile hash, rubric version). A
   profile or rubric change re-scores stale entries on the next run; the
   operator never babysits invalidation.
+- A run with nothing to score throws `NOTHING_TO_SCORE`. Its message says
+  whether the cache is empty or every posting is already scored under the
+  current profile and rubric, because the two call for different next steps.
 
 ### evaluate and calibrate: the measurements
 
