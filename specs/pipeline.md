@@ -108,8 +108,9 @@ a miss and cannot name a file outside the postings directory.
 ### Boundaries validated at runtime
 
 - Judge responses: a runtime schema requires the hard blocker and every
-  dimension with a finite score and a confidence in 0..1. A malformed answer
-  fails that posting loudly rather than being clamped.
+  dimension with a score on that dimension's criteria ladder (0 to the last
+  rung) and a confidence in 0..1. A malformed answer fails that posting loudly
+  rather than being clamped.
 - Watchlist entries and preferences: invalid entries are dropped, not trusted.
 - The ledger: corruption is reported, never silently reset.
 
