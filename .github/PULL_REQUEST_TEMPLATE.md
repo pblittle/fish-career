@@ -6,6 +6,5 @@
 
 ## Checks
 
-- [ ] `npm --prefix fish-career test`
-- [ ] `npm --prefix fish-career run typecheck`
-- [ ] `npm --prefix fish-career run lint`
+- [ ] `npm --prefix fish-career run health` is green: lint, typecheck, test,
+  lint:md, build, verify:pack, and check:boundaries.

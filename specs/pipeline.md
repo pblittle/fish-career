@@ -48,8 +48,10 @@ runtime boundary below are the answer.
 - Judge calls retry with backoff on 429, 5xx, and dropped connections; a 4xx
   throws at once. Every call writes a trace: latency, token usage, raw
   answers, profile hash, rubric version.
-- Every scored row checkpoints to the ledger immediately; a crash loses at
-  most the row in flight.
+- Every row a whole-cache run scores checkpoints to the ledger immediately; a
+  crash loses at most the row in flight. A run over named postings is a spot
+  check: it scores and traces but leaves the ledger alone, so it neither
+  settles nor refreshes those entries.
 - Ranking: a blocker at 0.5 or above demotes a row below every clean row,
   regardless of composite. Region-labelled variants of one vacancy collapse
   to one row that names the other offices; a bare base title stays its own
@@ -72,13 +74,15 @@ runtime boundary below are the answer.
 ```text
 src/domain        pure policy: posting, rubric, answers, ranking,
                   preferences, calibration, ledger, admission, verdicts,
-                  random, errors
+                  metrics, quality, random, errors
 src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
-                  trace-sink, stores, clock
+                  trace-sink, trace-reader, stores, clock
 src/application   use cases over a dependencies object
-src/adapters      ats (four boards), judge (jev, fake), filesystem, fake
-                  (in-memory), trace (JSONL, LangSmith)
-src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
+src/adapters      ats (four boards), judge (jev, fake), filesystem (stores,
+                  ledger, JSONL traces), fake (in-memory), trace (LangSmith,
+                  multi-sink fan-out)
+src/interfaces    mcp (server, tools, resources, prompts, schemas),
+                  cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
