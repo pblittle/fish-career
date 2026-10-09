@@ -177,9 +177,6 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
         if (outcome.skipped > 0) {
           io.out(`\nSkipped ${outcome.skipped} already-scored postings from earlier runs.`);
         }
-        if (!outcome.ledgerOk) {
-          io.out('\nWARNING: the scored ledger could not be read; it was treated as empty.');
-        }
         if (outcome.errors.length > 0) io.out(`Failed: ${outcome.errors.join('; ')}`);
         return 0;
       }

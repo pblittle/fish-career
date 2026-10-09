@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  corruptLedger,
   fixedClock,
   memoryCalibrationStore,
   memoryLedger,
@@ -145,6 +146,23 @@ describe('the complete workflow over in-memory ports', () => {
     const ranked = await h.app.rankPostings({ postingIds: ['acme-1', 'acme-2'] });
     expect(ranked.rows).toHaveLength(2);
     expect((await h.ledger.read()).entries).toEqual({});
+  });
+
+  it('refuses a whole-cache run over a corrupt ledger before any judge call', async () => {
+    const judge = vi.fn(async () => {
+      throw new Error('the judge must not be called');
+    });
+    const h = harness({ ledger: corruptLedger(), judge: { ask: judge } });
+    await h.app.fetchPostings();
+    await expect(h.app.rankPostings()).rejects.toMatchObject({ code: 'LEDGER_UNREADABLE' });
+    expect(judge).not.toHaveBeenCalled();
+  });
+
+  it('still scores an explicit slice over a corrupt ledger, since that never reads or marks it', async () => {
+    const h = harness({ ledger: corruptLedger() });
+    await h.app.fetchPostings();
+    const ranked = await h.app.rankPostings({ postingIds: ['acme-1'] });
+    expect(ranked.rows).toHaveLength(1);
   });
 
   it('holds the ranking to the stated preferences', async () => {

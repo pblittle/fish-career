@@ -39,7 +39,6 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       scored: [],
       skipped: 0,
       stale: [],
-      ledgerOk: true,
       runId: 'run-1',
     })),
     evaluateRanking: vi.fn(async () => ({
@@ -227,7 +226,6 @@ describe('runCli', () => {
         scored: [],
         skipped: 2,
         stale: [],
-        ledgerOk: true,
         runId: 'run-1',
       })),
     });
