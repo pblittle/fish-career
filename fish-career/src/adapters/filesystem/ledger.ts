@@ -11,7 +11,9 @@ import type { Ledger } from '../../ports/ledger.js';
 import { writeFileAtomic } from './home.js';
 
 // A corrupt ledger is REPORTED, not silently treated as empty: an unnoticed
-// reset means paying for a full rescore the operator did not ask for.
+// reset means paying for a full rescore the operator did not ask for. The
+// application refuses to rank while read() is not ok, and mark() refuses too,
+// so a bypassing caller cannot overwrite an unreadable ledger either.
 const read = (path: string): LedgerRead => {
   let raw: string;
   try {
@@ -43,6 +45,11 @@ export const fileLedger = (path: string): Ledger => ({
   },
   async mark(scores: Record<PostingId, number>, provenance: LedgerProvenance): Promise<void> {
     const prior = read(path);
+    if (!prior.ok) {
+      throw new Error(
+        `The scored ledger at ${path} could not be read; refusing to overwrite it. Fix or remove it first.`,
+      );
+    }
     const at = new Date().toISOString();
     const incoming: Record<PostingId, LedgerEntry> = Object.fromEntries(
       Object.entries(scores).map(([id, score]) => [

@@ -423,9 +423,11 @@ the whole `FISH_HOME` to reset.
 ## Known limits
 
 - The package is not on npm yet. Until it is, install from source.
-- Greenhouse boards carry no compensation data, so the comp dimension reads
-  neutral there; sub-floor Greenhouse postings can slip past the comp gate and
-  should be eyeballed at the top of the table.
+- Greenhouse and SmartRecruiters boards carry no structured compensation.
+  When a posting states a salary range in its body, the header carries that
+  range verbatim; otherwise the comp dimension reads neutral, and a sub-floor
+  posting can slip past the comp gate and should be eyeballed at the top of
+  the table.
 - US eligibility is not filtered at fetch; it lives in posting text and is
   judged by the location dimension and the blocker check.
 - Ashby compensation ranges arrive as written by the employer, unverified.
