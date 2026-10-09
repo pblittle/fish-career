@@ -38,6 +38,32 @@ export const formatComp = (v: unknown): string => {
   return currency ? `${span} ${currency}` : span;
 };
 
+// Pay-transparency text often states a range the structured field omits:
+// 14 cached Ashby postings had an empty compensation object and a band in
+// the body. When a provider sends nothing structured, lift the first stated
+// range from the body, verbatim, so the header shows the posting's own words.
+// A lone figure is never lifted ("$400M in ARR" is not a salary), and a range
+// below the annual floor is skipped ("$10,000 to $20,000 stipend" is not
+// either). This is adapter-side translation of the wire text, not scoring:
+// the judge reads the body regardless.
+const AMOUNT = String.raw`\d{2,3}(?:,\d{3})+|\d{2,3}(?:\.\d+)?[Kk]`;
+const CURRENCY = String.raw`US\$|\$|USD|CAD|EUR|GBP|€|£`;
+const RANGE = new RegExp(
+  String.raw`(?:${CURRENCY})\s?(${AMOUNT})(?:\s?(?:${CURRENCY}))?\s?(?:-|–|—|to|and)\s?(?:${CURRENCY})?\s?(${AMOUNT})(?:\s?(?:${CURRENCY}))?`,
+  'g',
+);
+const ANNUAL_FLOOR = 20_000;
+
+const amount = (s: string): number =>
+  /[Kk]$/.test(s) ? Number(s.slice(0, -1)) * 1000 : Number(s.replace(/,/g, ''));
+
+export const compFromText = (text: string): string => {
+  for (const m of text.matchAll(RANGE)) {
+    if (amount(m[1] ?? '') >= ANNUAL_FLOOR) return m[0].trim();
+  }
+  return '';
+};
+
 // Greenhouse ships content entity-escaped TWICE, so entities decode in a
 // loop until stable before tags are stripped; one pass leaves "&amp;".
 const decodeEntities = (s: string): string => {
@@ -79,16 +105,20 @@ const ashby: AtsProvider = {
       // postings too (all 518 of OpenAI's on 2026-10-03), so it decides only
       // when the policy is absent.
       const workplace = str(j.workplaceType);
+      const text = str(j.descriptionPlain) || htmlToText(str(j.descriptionHtml));
       return {
         key: `ashby:${slug}:${jobUrl.split('/').pop() || title}`,
         title,
         location: str(j.location),
         workplace,
         remote: workplace ? workplace === 'Remote' : j.isRemote === true,
-        comp: str(rec(j.compensation).compensationTierSummary) || str(j.compensationTierSummary),
+        comp:
+          str(rec(j.compensation).compensationTierSummary) ||
+          str(j.compensationTierSummary) ||
+          compFromText(text),
         url: jobUrl,
         date: str(j.publishedAt),
-        text: str(j.descriptionPlain) || htmlToText(str(j.descriptionHtml)),
+        text,
       };
     });
   },
@@ -103,18 +133,19 @@ const greenhouse: AtsProvider = {
     return arr(b.jobs).map((j) => {
       const location = str(rec(j.location).name);
       const remote = /remote/i.test(location);
+      const text = htmlToText(str(j.content));
       return {
         key: `gh:${slug}:${String(j.id)}`,
         title: str(j.title),
         location,
         workplace: remote ? 'Remote' : '',
         remote,
-        comp: '',
+        comp: compFromText(text),
         url: str(j.absolute_url),
         // first_published is when the posting went up; updated_at moves on
         // every edit, so it would pass month-old postings off as new.
         date: str(j.first_published) || str(j.updated_at),
-        text: htmlToText(str(j.content)),
+        text,
       };
     });
   },
@@ -151,6 +182,9 @@ const smartrecruiters: AtsProvider = {
         location: str(location.fullLocation),
         workplace: remote ? 'Remote' : location.hybrid === true ? 'Hybrid' : 'On-site',
         remote,
+        // The body arrives from detail() after admission, so no text
+        // fallback here; SmartRecruiters stays "not stated" unless the
+        // list payload ever carries compensation.
         comp: '',
         url: str(i.ref),
         date: str(i.releasedDate),
@@ -190,16 +224,17 @@ const lever: AtsProvider = {
       const stated = LEVER_WORKPLACE.get(str(j.workplaceType).toLowerCase()) ?? '';
       const remote = stated ? stated === 'Remote' : /remote/i.test(location);
       const createdAt = typeof j.createdAt === 'number' ? j.createdAt : 0;
+      const text = htmlToText(str(j.description));
       return {
         key: `lever:${slug}:${String(j.id)}`,
         title: str(j.text),
         location,
         workplace: stated || (remote ? 'Remote' : ''),
         remote,
-        comp: formatComp(j.salaryRange),
+        comp: formatComp(j.salaryRange) || compFromText(text),
         url: str(j.hostedUrl),
         date: createdAt ? new Date(createdAt).toISOString() : '',
-        text: htmlToText(str(j.description)),
+        text,
       };
     });
   },

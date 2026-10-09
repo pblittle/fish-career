@@ -8,7 +8,7 @@
 
 import { randomUUID } from 'node:crypto';
 import { rowFromAnswers, type TriageRow } from '../domain/answers.js';
-import { ApplicationError } from '../domain/errors.js';
+import { ApplicationError, NO_JUDGE_MESSAGE } from '../domain/errors.js';
 import { type PostingRecord, postingHash } from '../domain/posting.js';
 import { rankRows } from '../domain/ranking.js';
 import { profileHash, RUBRIC_VERSION, stateFor } from '../domain/rubric.js';
@@ -31,10 +31,7 @@ export const scorePostings =
   async (records: PostingRecord[], opts: ScoreOptions): Promise<ScoreResult> => {
     const judge = deps.judge;
     if (!judge) {
-      throw new ApplicationError(
-        'NO_JUDGE',
-        'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge.',
-      );
+      throw new ApplicationError('NO_JUDGE', NO_JUDGE_MESSAGE);
     }
     const hash = profileHash(opts.profile);
     const provenance = { profileHash: hash, rubric: RUBRIC_VERSION };
