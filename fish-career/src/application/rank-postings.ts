@@ -54,6 +54,16 @@ export const rankPostings =
         .filter((r): r is NonNullable<typeof r> => r !== undefined);
     } else {
       const ledger = await deps.ledger.read();
+      if (!ledger.ok) {
+        // A corrupt ledger must not become an empty one: treating it as empty
+        // would rescore the whole cache at the operator's expense and then
+        // overwrite the file. Refuse before any judge call; an explicit slice
+        // still works because it never reads or marks the ledger.
+        throw new ApplicationError(
+          'LEDGER_UNREADABLE',
+          'The scored ledger could not be read; fix or remove state/scored.json. Nothing was scored.',
+        );
+      }
       ledgerOk = ledger.ok;
       const ids = records.map((r) => r.id);
       staleIds = stale(ids, ledger.entries, provenance);
