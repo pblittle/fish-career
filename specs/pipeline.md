@@ -69,13 +69,15 @@ runtime boundary below are the answer.
 ```text
 src/domain        pure policy: posting, rubric, answers, ranking,
                   preferences, calibration, ledger, admission, verdicts,
-                  random, errors
+                  metrics, quality, random, errors
 src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
-                  trace-sink, stores, clock
+                  trace-sink, trace-reader, stores, clock
 src/application   use cases over a dependencies object
-src/adapters      ats (four boards), judge (jev, fake), filesystem, fake
-                  (in-memory), trace (JSONL, LangSmith)
-src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
+src/adapters      ats (four boards), judge (jev, fake), filesystem (stores,
+                  ledger, JSONL traces), fake (in-memory), trace (LangSmith,
+                  multi-sink fan-out)
+src/interfaces    mcp (server, tools, resources, prompts, schemas),
+                  cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
