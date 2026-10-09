@@ -5,6 +5,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import type { CareerApplication } from '../../application/career-application.js';
+import { totalDrops } from '../../application/fetch-postings.js';
 import { renderCalibration } from '../../domain/calibration.js';
 import { ApplicationError } from '../../domain/errors.js';
 import { postingIdFromFile } from '../../domain/posting.js';
@@ -150,7 +151,7 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
     {
       title: 'Poll watchlist boards for new remote postings',
       description:
-        "Polls every watchlist company's public ATS board, keeps remote postings only, writes the ones never seen before into the postings cache, and returns the diff. Every remote posting a poll observes is marked seen, written or not, so later polls deliver arrivals only. First-ever poll writes only postings newer than 14 days. Compensation is included when the board provides it (Ashby usually, Greenhouse never).",
+        "Polls every watchlist company's public ATS board, keeps remote postings only, skips any whose title matches a phrase in the operator's skip-titles.txt, writes the ones never seen before into the postings cache, and returns the diff. Every remote posting it does not skip is marked seen, written or not, so later polls deliver arrivals only. First-ever poll writes only postings newer than 14 days. Compensation is included when the board provides it (Ashby usually, Greenhouse never).",
       inputSchema: z.object({}),
       outputSchema: fetchPostingsOutput,
       annotations: {
@@ -166,19 +167,12 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
         const lines = outcome.arrivals.map(
           (a) => `${a.company}: ${a.title} (${a.comp}) -> ${a.postingId}`,
         );
-        const drops = outcome.perCompany.reduce(
-          (sum, c) => ({
-            notRemote: sum.notRemote + c.drops.notRemote,
-            thinText: sum.thinText + c.drops.thinText,
-            outOfWindow: sum.outOfWindow + c.drops.outOfWindow,
-          }),
-          { notRemote: 0, thinText: 0, outOfWindow: 0 },
-        );
+        const drops = totalDrops(outcome.perCompany);
         return ok(
           [
             `${outcome.arrivals.length} new posting${outcome.arrivals.length === 1 ? '' : 's'}.`,
             ...lines,
-            `Dropped before writing: ${drops.notRemote} not remote, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
+            `Dropped before writing: ${drops.notRemote} not remote, ${drops.offTarget} off target, ${drops.thinText} too thin to score, ${drops.outOfWindow} out of window.`,
             ...(outcome.failures.length > 0
               ? ['', `Boards that failed: ${outcome.failures.join('; ')}`]
               : []),

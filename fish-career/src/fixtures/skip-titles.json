@@ -1,0 +1,166 @@
+{
+  "source": {
+    "recordedAt": "2026-10-03",
+    "note": "Real posting titles from public Ashby, Greenhouse, Lever, and SmartRecruiters boards polled on 2026-10-03. The phrases are a test list for the matcher, not anyone's skip list."
+  },
+  "phrases": [
+    "designer",
+    "account executive",
+    "sales",
+    "recruiter",
+    "marketing",
+    "customer success"
+  ],
+  "cases": [
+    {
+      "title": "Principal Product Designer, Provider Platform",
+      "skip": "designer",
+      "why": "a whole word, any case"
+    },
+    {
+      "title": "Sr. Staff Product & Visual Designer, Technology Workflows",
+      "skip": "designer",
+      "why": "a design role at an engineering level"
+    },
+    {
+      "title": "Account Executive, Commercial (EMEA)",
+      "skip": "account executive",
+      "why": "a two-word phrase"
+    },
+    {
+      "title": "Sr. Services Account Executive- Health Care Life Sciences",
+      "skip": "account executive",
+      "why": "punctuation touching a word"
+    },
+    {
+      "title": "Account Executive - Gaming/AdTech Sales",
+      "skip": "account executive",
+      "why": "the first phrase in file order"
+    },
+    {
+      "title": "AWS Sales Executive - Banking, Insurance, Wealth Management, Americas",
+      "skip": "sales",
+      "why": "a one-word phrase"
+    },
+    {
+      "title": "Governance, Risk, and Compliance Expert, GTM, Pre-Sales",
+      "skip": "sales",
+      "why": "a hyphen separates words"
+    },
+    {
+      "title": "Senior Sales Engineer - Remote",
+      "skip": "sales",
+      "why": "a one-word phrase reaches an engineer title"
+    },
+    {
+      "title": "Senior Technical Recruiter — Contract with Option to Hire",
+      "skip": "recruiter",
+      "why": "a whole word, any case"
+    },
+    {
+      "title": "Director of Marketing – Xsolla Advertising & Rewards",
+      "skip": "marketing",
+      "why": "a leadership title in another function"
+    },
+    {
+      "title": "Senior Staff Product Marketing Engineer, Core and SDKs",
+      "skip": "marketing",
+      "why": "a one-word phrase reaches an engineer title"
+    },
+    {
+      "title": "Staff Web Engineer, Marketing",
+      "skip": "marketing",
+      "why": "a one-word phrase reaches a software engineering role"
+    },
+    {
+      "title": "Customer Success Engineer (Americas)",
+      "skip": "customer success",
+      "why": "a two-word phrase reaches an engineer title"
+    },
+    {
+      "title": "Vice President, Customer Success (Remote)",
+      "skip": "customer success",
+      "why": "a leadership title in another function"
+    },
+    {
+      "title": "Director, Product Design",
+      "skip": null,
+      "why": "design is not designer"
+    },
+    {
+      "title": "Sr. Staff Design Program Manager, Core Business Workflows",
+      "skip": null,
+      "why": "design is not designer"
+    },
+    {
+      "title": "Enterprise Account Exec",
+      "skip": null,
+      "why": "an abbreviation is another word"
+    },
+    {
+      "title": "Strategic Account Execustive (New York City)",
+      "skip": null,
+      "why": "a misspelling in the posting is another word"
+    },
+    {
+      "title": "Account Director, Mid-Market",
+      "skip": null,
+      "why": "a phrase needs all its words"
+    },
+    {
+      "title": "Recruiting Coordinator",
+      "skip": null,
+      "why": "recruiting is not recruiter"
+    },
+    {
+      "title": "Client Executive, Community Lending Markets (Northwest Region)",
+      "skip": null,
+      "why": "markets is not marketing"
+    },
+    {
+      "title": "Client Success Manager (Health Plans/PBM)",
+      "skip": null,
+      "why": "a phrase needs all its words"
+    },
+    {
+      "title": "Director of Platform Engineering",
+      "skip": null,
+      "why": "engineering leadership"
+    },
+    {
+      "title": "Director of Engineering",
+      "skip": null,
+      "why": "engineering leadership"
+    },
+    {
+      "title": "Head of AI Enablement Engineering",
+      "skip": null,
+      "why": "engineering leadership"
+    },
+    {
+      "title": "Senior Director, AI Platform Engineering (Remote)",
+      "skip": null,
+      "why": "engineering leadership"
+    },
+    {
+      "title": "Engineering Manager, FDE Infrastructure (NORAM)",
+      "skip": null,
+      "why": "engineering leadership"
+    },
+    {
+      "title": "Head of Engineering, Compute",
+      "skip": null,
+      "why": "engineering leadership"
+    },
+    {
+      "title": "Staff Platform Engineer",
+      "skip": null,
+      "why": "a senior engineering title"
+    },
+    {
+      "title": "Forward Deployed Engineer (Mid/Senior) - Remote w/Travel",
+      "skip": null,
+      "why": "a senior engineering title"
+    }
+  ]
+}

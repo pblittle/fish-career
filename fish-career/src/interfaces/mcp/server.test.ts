@@ -182,10 +182,13 @@ describe('the MCP contract', () => {
     const result = await client.callTool({ name: 'fetch_postings', arguments: {} });
     expect(result.isError).toBeFalsy();
     expect(structured(result).arrivals).toHaveLength(2);
+    expect(structured(result).perCompany).toMatchObject([
+      { drops: { notRemote: 0, offTarget: 0, thinText: 0, outOfWindow: 0 } },
+    ]);
     const text = (result.content as { text: string }[])[0]?.text ?? '';
     expect(text).toContain('2 new postings');
     expect(text).toContain(
-      'Dropped before writing: 0 not remote, 0 too thin to score, 0 out of window.',
+      'Dropped before writing: 0 not remote, 0 off target, 0 too thin to score, 0 out of window.',
     );
   });
 

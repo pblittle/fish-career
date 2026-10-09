@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   memoryCalibrationStore,
   memoryLedger,
@@ -6,6 +6,7 @@ import {
   memoryPreferencesStore,
   memoryProfileStore,
   memorySeenStore,
+  memorySkipTitlesStore,
   memoryTraceReader,
   memoryTraceSink,
   memoryVerdictStore,
@@ -15,7 +16,7 @@ import { memoryProvider } from '../adapters/fake/providers.js';
 import { fakeJudge } from '../adapters/judge/fake.js';
 import type { Posting } from '../domain/posting.js';
 import type { CareerDependencies } from './dependencies.js';
-import { fetchPostings } from './fetch-postings.js';
+import { fetchPostings, totalDrops } from './fetch-postings.js';
 
 const DAY = 86_400_000;
 const NOW = Date.parse('2026-09-27T12:00:00.000Z');
@@ -38,6 +39,7 @@ interface Harness {
   acme: Posting[];
   beta: Posting[];
   seen: ReturnType<typeof memorySeenStore>;
+  provider: ReturnType<typeof memoryProvider>;
   clock: { now: () => Date; set: (iso: string) => void };
 }
 
@@ -81,7 +83,7 @@ const harness = (): Harness => {
     clock,
     random: { int: () => 0, shuffle: (xs) => [...xs] },
   };
-  return { deps, acme, beta, seen, clock };
+  return { deps, acme, beta, seen, provider, clock };
 };
 
 describe('fetchPostings drop accounting', () => {
@@ -94,7 +96,7 @@ describe('fetchPostings drop accounting', () => {
         total: 5,
         remote: 4,
         written: 2,
-        drops: { notRemote: 1, thinText: 1, outOfWindow: 1 },
+        drops: { notRemote: 1, offTarget: 0, thinText: 1, outOfWindow: 1 },
       },
     ]);
     expect(outcome.arrivals.map((a) => a.postingId).sort()).toEqual(['acme-1', 'acme-5']);
@@ -137,9 +139,22 @@ describe('fetchPostings drop accounting', () => {
       total: 1,
       remote: 1,
       written: 0,
-      drops: { notRemote: 0, thinText: 0, outOfWindow: 1 },
+      drops: { notRemote: 0, offTarget: 0, thinText: 0, outOfWindow: 1 },
     });
     expect((await h.seen.read())['fixture:beta:1']?.observedAt).toBe('2026-09-27T12:00:00.000Z');
+  });
+
+  it('sums the drops over every board a poll read', async () => {
+    const h = harness();
+    // Only Beta's one title reads "Role fixture:beta:1".
+    h.deps.skipTitles = memorySkipTitlesStore(['beta']);
+    const outcome = await fetchPostings(h.deps)({});
+    expect(totalDrops(outcome.perCompany)).toEqual({
+      notRemote: 1,
+      offTarget: 1,
+      thinText: 1,
+      outOfWindow: 1,
+    });
   });
 
   it('records in the seen index why a posting it observed was not written', async () => {
@@ -150,5 +165,59 @@ describe('fetchPostings drop accounting', () => {
     expect(seen['fixture:acme:3']).toMatchObject({ observed: true, dropped: 'out-of-window' });
     expect(seen['fixture:acme:1']).toMatchObject({ file: 'acme-1.txt' });
     expect(seen['fixture:acme:1']?.dropped).toBeUndefined();
+  });
+});
+
+describe('fetchPostings skip titles', () => {
+  const designer = (n: number, over: Partial<Posting> = {}): Posting =>
+    posting(`fixture:acme:${n}`, { title: 'Product Designer II', ...over });
+
+  it('sets aside a remote title on the skip list and never marks it seen', async () => {
+    const h = harness();
+    h.acme.push(designer(6), designer(7, { remote: false }));
+    h.deps.skipTitles = memorySkipTitlesStore(['designer']);
+    const outcome = await fetchPostings(h.deps)({ companies: ['Acme'] });
+    // The remote check runs first: posting 7 is not remote, whatever its title.
+    expect(outcome.perCompany[0]?.drops).toEqual({
+      notRemote: 2,
+      offTarget: 1,
+      thinText: 1,
+      outOfWindow: 1,
+    });
+    expect(outcome.arrivals.map((a) => a.postingId).sort()).toEqual(['acme-1', 'acme-5']);
+    expect((await h.seen.read())['fixture:acme:6']).toBeUndefined();
+  });
+
+  it('writes the posting on the next poll once the phrase is deleted', async () => {
+    const h = harness();
+    h.acme.push(designer(6));
+    const skip = memorySkipTitlesStore(['designer']);
+    h.deps.skipTitles = skip;
+    await fetchPostings(h.deps)({ companies: ['Acme'] });
+    skip.phrases = [];
+    const second = await fetchPostings(h.deps)({ companies: ['Acme'] });
+    expect(second.arrivals.map((a) => a.postingId)).toEqual(['acme-6']);
+  });
+
+  it('spends no detail fetch on a skipped title', async () => {
+    const h = harness();
+    h.acme.push(designer(6, { text: 'short' }));
+    h.deps.skipTitles = memorySkipTitlesStore(['designer']);
+    const detail = vi.spyOn(h.provider, 'detail');
+    await fetchPostings(h.deps)({ companies: ['Acme'] });
+    expect(detail.mock.calls.map(([p]) => p.key).sort()).toEqual([
+      'fixture:acme:2',
+      'fixture:acme:5',
+    ]);
+  });
+
+  it('leaves a posting already seen to admission, uncounted', async () => {
+    const h = harness();
+    await fetchPostings(h.deps)({ companies: ['Acme'] });
+    // Every acme title reads "Role fixture:acme:N".
+    h.deps.skipTitles = memorySkipTitlesStore(['role']);
+    const second = await fetchPostings(h.deps)({ companies: ['Acme'] });
+    expect(second.perCompany[0]?.drops.offTarget).toBe(0);
+    expect(second.arrivals).toEqual([]);
   });
 });

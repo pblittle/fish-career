@@ -13,6 +13,7 @@ import {
   parsePostingUrl,
   sameBoard,
 } from '../domain/posting-url.js';
+import { offTargetPhrase } from '../domain/skip-titles.js';
 import type { DropReason, WatchlistEntry } from '../ports/stores.js';
 import type { CareerDependencies } from './dependencies.js';
 
@@ -26,6 +27,7 @@ export const RECALL_STAGES = [
   'unreadable', // the watched board could not be read just now
   'not-listed', // the watched board does not list it now
   'not-remote', // listed, but not remote by the provider's own fields
+  'off-target', // listed and remote, but its title is on the skip list
   'not-fetched', // listed and remote, but no poll has seen it yet
   'dropped', // seen by a poll, not written
   'written', // written to the cache
@@ -44,6 +46,8 @@ export interface RecallCase {
   title?: string;
   workplace?: string;
   location?: string;
+  // The skip-titles phrase the title matches.
+  phrase?: string;
   // Why a seen posting was not written, when the seen index recorded it.
   reason?: DropReason;
   observedAt?: string;
@@ -60,10 +64,11 @@ type Listing = { postings: Posting[] } | { error: string };
 export const recallPostings =
   (deps: CareerDependencies) =>
   async (input: { urls: string[] }): Promise<RecallCase[]> => {
-    const [watchlist, seen, ledger] = await Promise.all([
+    const [watchlist, seen, ledger, phrases] = await Promise.all([
       deps.watchlist.read(),
       deps.seen.read(),
       deps.ledger.read(),
+      deps.skipTitles?.read() ?? [],
     ]);
     const companyOf = (board: Board): string =>
       watchlist.find((e) => sameBoard(e, board))?.name ?? `${board.provider}/${board.slug}`;
@@ -142,9 +147,9 @@ export const recallPostings =
           names: target.kind === 'posting' ? `${target.provider}/${target.slug}` : target.provider,
         };
       }
-      // A live read separates a posting that is not remote, one no poll has
-      // reached yet, and one the board no longer lists. A board that cannot
-      // be read rules nothing out.
+      // A live read separates a posting that is not remote, one the skip list
+      // keeps out, one no poll has reached yet, and one the board no longer
+      // lists, in fetch's order. A board that cannot be read rules nothing out.
       let unreadable: RecallCase | null = null;
       for (const board of boards) {
         const read = await listing(board);
@@ -154,7 +159,10 @@ export const recallPostings =
         }
         const posting = read.postings.find((p) => matchesKey(target, p.key));
         if (posting?.remote) {
-          return { url, stage: 'not-fetched', company: board.name, title: posting.title };
+          const phrase = offTargetPhrase(posting.title, phrases);
+          return phrase
+            ? { url, stage: 'off-target', company: board.name, title: posting.title, phrase }
+            : { url, stage: 'not-fetched', company: board.name, title: posting.title };
         }
         if (posting) {
           // Where a board states no workplace, its location text decided, so
