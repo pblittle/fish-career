@@ -92,6 +92,11 @@ export const htmlToText = (s: string | null | undefined): string =>
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
+// Without a stated workplace type, the location text decides: "Remote" on
+// most boards, "Distributed" on Cloudflare's, which defines it as anywhere
+// in the country of employment.
+const REMOTE_LOCATION = /remote|distributed/i;
+
 const ashby: AtsProvider = {
   id: 'ashby',
   async list(slug: string): Promise<Posting[]> {
@@ -132,7 +137,7 @@ const greenhouse: AtsProvider = {
     );
     return arr(b.jobs).map((j) => {
       const location = str(rec(j.location).name);
-      const remote = /remote/i.test(location);
+      const remote = REMOTE_LOCATION.test(location);
       const text = htmlToText(str(j.content));
       return {
         key: `gh:${slug}:${String(j.id)}`,
@@ -171,7 +176,9 @@ const smartrecruiters: AtsProvider = {
     }
     // The location's remote and hybrid flags state the policy; neither set
     // is on-site. Every posting comes back, and fetch keeps the remote ones,
-    // the same as the other three boards.
+    // the same as the other three boards. The list's ref is the API's JSON
+    // for the posting, so it serves as the detail URL, and the link a person
+    // opens is built from the company and the posting id.
     return items.map((i) => {
       const id = String(i.id);
       const location = rec(i.location);
@@ -186,7 +193,7 @@ const smartrecruiters: AtsProvider = {
         // fallback here; SmartRecruiters stays "not stated" unless the
         // list payload ever carries compensation.
         comp: '',
-        url: str(i.ref),
+        url: `https://jobs.smartrecruiters.com/${slug}/${id}`,
         date: str(i.releasedDate),
         text: '',
         detailUrl: `https://api.smartrecruiters.com/v1/companies/${slug}/postings/${id}`,
@@ -222,7 +229,7 @@ const lever: AtsProvider = {
     return arr(b).map((j) => {
       const location = str(rec(j.categories).location);
       const stated = LEVER_WORKPLACE.get(str(j.workplaceType).toLowerCase()) ?? '';
-      const remote = stated ? stated === 'Remote' : /remote/i.test(location);
+      const remote = stated ? stated === 'Remote' : REMOTE_LOCATION.test(location);
       const createdAt = typeof j.createdAt === 'number' ? j.createdAt : 0;
       const text = htmlToText(str(j.description));
       return {
