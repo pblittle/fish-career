@@ -5,7 +5,7 @@
 // network or real sleeps.
 //
 // The response is validated at this boundary: the API returns whatever the
-// model emitted, and a missing or non-finite probability must fail that
+// model emitted, and a missing or out-of-range answer must fail that
 // posting loudly rather than be clamped into a score nobody can explain.
 
 import { z } from 'zod';
@@ -18,17 +18,20 @@ const JEV_TIMEOUT_MS = 30_000;
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_MS = 500;
 
-const dimensionSchema = z
-  .object({
-    score: z.number().finite(),
-    confidence: z.number().min(0).max(1),
-  })
-  .catchall(z.unknown());
+// A score is a position on the dimension's criteria ladder, 0 to the last
+// rung, so each dimension validates against its own last rung.
+const dimensionSchema = (lastRung: number) =>
+  z
+    .object({
+      score: z.number().min(0).max(lastRung),
+      confidence: z.number().min(0).max(1),
+    })
+    .catchall(z.unknown());
 
 const answersSchema = z
   .object({
     hard_blocker: z.object({ noul: z.number().min(0).max(1) }).catchall(z.unknown()),
-    ...Object.fromEntries(DIMENSIONS.map((d) => [d.id, dimensionSchema])),
+    ...Object.fromEntries(DIMENSIONS.map((d) => [d.id, dimensionSchema(d.criteria.length - 1)])),
   })
   .catchall(z.unknown());
 

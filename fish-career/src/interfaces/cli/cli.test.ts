@@ -40,7 +40,6 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       scored: [],
       skipped: 0,
       stale: [],
-      ledgerOk: true,
       runId: 'run-1',
     })),
     evaluateRanking: vi.fn(async () => ({
@@ -232,7 +231,6 @@ describe('runCli', () => {
         scored: [],
         skipped: 2,
         stale: [],
-        ledgerOk: true,
         runId: 'run-1',
       })),
     });
@@ -255,6 +253,22 @@ describe('runCli', () => {
     const code = await runCli(['triage'], { app, io: sink.io });
     expect(code).toBe(1);
     expect(sink.err.join('\n')).toContain('No profile yet.');
+  });
+
+  it('exits non-zero when every posting failed to score', async () => {
+    const app = stubApp({
+      rankPostings: vi.fn(async () => ({
+        rows: [],
+        errors: ['acme-1: judge API responded 401: unauthorized'],
+        scored: [],
+        skipped: 0,
+        stale: [],
+        runId: 'run-1',
+      })),
+    });
+    const sink = io();
+    expect(await runCli(['triage'], { app, io: sink.io })).toBe(1);
+    expect(sink.out.join('\n')).toContain('Failed: acme-1');
   });
 
   it('treats nothing-to-score as a clean exit', async () => {

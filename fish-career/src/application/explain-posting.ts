@@ -4,7 +4,7 @@
 
 import { randomUUID } from 'node:crypto';
 import { type JevAnswers, rowFromAnswers, type TriageRow } from '../domain/answers.js';
-import { ApplicationError } from '../domain/errors.js';
+import { ApplicationError, NO_JUDGE_MESSAGE } from '../domain/errors.js';
 import type { PostingId } from '../domain/posting.js';
 import { postingHash, postingIdFromFile } from '../domain/posting.js';
 import { profileHash, questions, RUBRIC_VERSION, stateFor } from '../domain/rubric.js';
@@ -47,10 +47,7 @@ export const explainPosting =
     const { profile, record } = await requireProfileAndRecord(deps, input.postingId);
     const judge = deps.judge;
     if (!judge) {
-      throw new ApplicationError(
-        'NO_JUDGE',
-        'No judge is configured. Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake for the stand-in judge.',
-      );
+      throw new ApplicationError('NO_JUDGE', NO_JUDGE_MESSAGE);
     }
     const runId = randomUUID();
     const textHash = postingHash(record.text);

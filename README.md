@@ -56,7 +56,11 @@ Scoring needs a TypeSafe API key in `$FISH_HOME/.env`:
 TYPESAFE_API_KEY=...
 ```
 
-Keys come from <https://console.typesafe.ai/keys>. No key yet? Put
+Keys come from <https://console.typesafe.ai/keys>. The value can be a secret
+reference instead of the key itself: with 1Password, write
+`TYPESAFE_API_KEY=op://<vault>/<item>/credential` and run fish under
+`op run --env-file="$FISH_HOME/.env" -- fish ...`. An unresolved reference
+counts as no key; fish never sends it to the judge. No key yet? Put
 `FISH_JUDGE=fake` in the same file and the deterministic stand-in
 ([`src/adapters/judge/fake.ts`](./fish-career/src/adapters/judge/fake.ts))
 answers the same typed questions, so the whole loop runs before you spend
@@ -487,9 +491,11 @@ the whole `FISH_HOME` to reset.
 ## Known limits
 
 - The package is not on npm yet. Until it is, install from source.
-- Greenhouse boards carry no compensation data, so the comp dimension reads
-  neutral there; sub-floor Greenhouse postings can slip past the comp gate and
-  should be eyeballed at the top of the table.
+- Greenhouse and SmartRecruiters boards carry no structured compensation.
+  When a posting states a salary range in its body, the header carries that
+  range verbatim; otherwise the comp dimension reads neutral, and a sub-floor
+  posting can slip past the comp gate and should be eyeballed at the top of
+  the table.
 - US eligibility is not filtered at fetch; it lives in posting text and is
   judged by the location dimension and the blocker check.
 - Ashby compensation ranges arrive as written by the employer, unverified.
