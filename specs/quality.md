@@ -133,14 +133,18 @@ posting reached:
   `fish arrivals grade <postingId> <0|1|2|3>` records a verdict;
   `fish arrivals summary` prints coverage and precision@arrival.
 - CLI: `fish recall <url...>` prints one line per URL, labeled by its
-  furthest stage, then the stages counted. Recall is not an MCP tool yet.
+  furthest stage, then the stages counted. A posting dropped for its date, or
+  before fish recorded why, names the `fish fetch --company X --days N` that
+  reconsiders it, while its board is watched. Recall is not an MCP tool yet.
 - `fish fetch` reports drops by reason: not remote and off target (both
   counted before admission, and neither marked seen, so both recur on every
   poll that lists them), too thin to score, out of window. Off target counts
   unseen remote postings whose title matches a phrase in `skip-titles.txt`
   ([`specs/pipeline.md`](./pipeline.md), fetch). The out-of-window bucket is
   degenerate after the first poll: the default window is first-run only, so
-  it fires on the first run or when `--days` is passed explicitly.
+  it fires on the first run or when `--days` is passed explicitly. An explicit
+  window also reconsiders the postings earlier polls dropped for their date,
+  so one the window still falls short of is counted again.
 - The seen index records `observedAt`, the first-observation time, set when a
   posting is first marked seen and preserved thereafter. Freshness-lag
   reporting is not in this slice; the field is the prerequisite.

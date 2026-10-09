@@ -100,4 +100,30 @@ describe('renderRecall', () => {
     ]);
     expect(line).toBe('dropped       Vida: Writer, too thin to score');
   });
+
+  it('prints the fetch that reconsiders a dropped posting, quoted for the shell', () => {
+    const lines = renderRecall([
+      {
+        url,
+        stage: 'dropped',
+        company: 'Vida',
+        title: 'Writer',
+        reason: 'out-of-window',
+        observedAt: '2026-10-03T12:00:00.000Z',
+        days: 31,
+      },
+      { url, stage: 'dropped', company: 'hippocratic ai', title: 'Editor', days: 9 },
+    ]);
+    expect(lines.slice(0, 2)).toEqual([
+      'dropped       Vida: Writer, outside the recency window when first seen on 2026-10-03; fish fetch --company Vida --days 31 reconsiders it',
+      "dropped       hippocratic ai: Editor, before fish recorded why; fish fetch --company 'hippocratic ai' --days 9 reconsiders it",
+    ]);
+  });
+
+  it('quotes a URL with a query, which zsh would read as a glob', () => {
+    const pasted =
+      'https://jobs.lever.co/xsolla/4eb71eae-b475-45e2-899d-b6de4980721d?lever-source=Indeed';
+    const [line] = renderRecall([{ url: pasted, stage: 'not-watched', names: 'lever/xsolla' }]);
+    expect(line).toBe(`not watched   lever/xsolla; add it with fish watchlist add '${pasted}'`);
+  });
 });

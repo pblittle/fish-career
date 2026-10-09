@@ -195,8 +195,10 @@ fish triage    # score the arrivals, print the ranked table
 you have never seen, and returns the diff. It also reports why postings were
 dropped: not remote, off target, too thin to score, out of window. The
 out-of-window bucket only fires on the first poll, which defaults to the last
-14 days, or when you pass `--days`; after that a remote posting is dropped on
-first contact or never. `triage` scores the arrivals against the profile with
+14 days, or when you pass `--days`. A posting dropped for its date stays
+dropped until you ask for a window that reaches it: `fetch --days N` (or
+`--all`) reconsiders it, and `fish recall` prints that command for a posting
+you found elsewhere. `triage` scores the arrivals against the profile with
 the judge and prints per-dimension scores, confidences, and blocker flags.
 Over MCP, the tools are `fetch_postings` and `triage_postings`.
 
@@ -411,7 +413,7 @@ it the URLs of postings you found elsewhere, and it reports how far each got
 in fish:
 
 - written and scored;
-- dropped as too thin or too old;
+- dropped as too thin, or as too old, with the `fish fetch` that reconsiders it;
 - listed but not remote, kept out by your skip list, or not fetched yet;
 - no longer listed;
 - on a board you don't watch;

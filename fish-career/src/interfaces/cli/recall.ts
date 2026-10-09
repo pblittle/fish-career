@@ -21,6 +21,12 @@ const LABEL: Readonly<Record<RecallStage, string>> = {
 
 const WIDTH = Math.max(...Object.values(LABEL).map((l) => l.length)) + 2;
 
+// A value in a printed command, quoted when the shell would otherwise split
+// or expand it: zsh reads the ? in a URL's query as a glob and stops with
+// "no matches found".
+const word = (s: string): string =>
+  /^[\w./:@%+,=-]+$/.test(s) ? s : `'${s.replace(/'/g, `'\\''`)}'`;
+
 const why = (c: RecallCase): string => {
   if (c.reason === 'thin-text') return 'too thin to score';
   if (c.reason === 'out-of-window') {
@@ -37,8 +43,12 @@ const detail = (c: RecallCase): string => {
       const score = typeof c.score === 'number' ? `score ${c.score.toFixed(2)}` : 'not scored yet';
       return `${posting}, ${score} [${c.postingId}]`;
     }
-    case 'dropped':
-      return `${posting}, ${why(c)}`;
+    case 'dropped': {
+      const again = c.days
+        ? `; fish fetch --company ${word(c.company ?? '')} --days ${c.days} reconsiders it`
+        : '';
+      return `${posting}, ${why(c)}${again}`;
+    }
     case 'not-fetched':
       return `${posting} is listed and remote; run fish fetch`;
     case 'off-target':
@@ -55,7 +65,7 @@ const detail = (c: RecallCase): string => {
       return `${c.company}'s board could not be read (${c.error}): ${c.url}`;
     case 'not-watched':
       return c.names?.includes('/')
-        ? `${c.names}; add it with fish watchlist add ${c.url}`
+        ? `${c.names}; add it with fish watchlist add ${word(c.url)}`
         : `no ${c.names} board is on the watchlist: ${c.url}`;
     case 'board-url':
       return `names ${c.names}, ${c.company ? `watched as ${c.company}` : 'not watched'}, not a posting: ${c.url}`;
