@@ -83,11 +83,11 @@ runtime schema at the adapter boundary, not prose to be parsed for sentiment.
 **Why:** prose scoring forces you to extract a number from a paragraph the
 model wrote, and that extraction is where the dishonesty lives. A typed answer
 per dimension is checkable, weightable, and disagreeable. A response missing a
-dimension or carrying a non-finite score fails that posting loudly instead of
-being clamped into a score nobody can explain. A `?` in the table means the
-model was not confident; that is surfaced, not smoothed over. A blocker at
-0.5+ demotes a row below every clean row whatever the composite says, because
-an unmet hard requirement is not a matter of taste.
+dimension or carrying a score off its criteria ladder fails that posting
+loudly instead of being clamped into a score nobody can explain. A `?` in the
+table means the model was not confident; that is surfaced, not smoothed over.
+A blocker at 0.5+ demotes a row below every clean row whatever the composite
+says, because an unmet hard requirement is not a matter of taste.
 
 ## The protocol surface is typed
 

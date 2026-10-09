@@ -13,8 +13,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
       - run: npm ci --prefix fish-career
@@ -34,9 +34,9 @@ jobs:
       - run: npm run smoke --prefix fish-career
       - name: Inspector discovery and invocation
         run: |
-          FISH_HOME=$(mktemp -d) npx -y @modelcontextprotocol/inspector --cli node fish-career/dist/index.js --method tools/list | tee /tmp/tools.json
+          FISH_HOME=$(mktemp -d) npx -y @modelcontextprotocol/inspector@2.10.1 --cli node fish-career/dist/index.js --method tools/list | tee /tmp/tools.json
           grep -q triage_postings /tmp/tools.json
-          FISH_HOME=$(mktemp -d) npx -y @modelcontextprotocol/inspector --cli node fish-career/dist/index.js --method tools/call --tool-name profile_update --tool-arg "content=# CI smoke" | tee /tmp/call.json
+          FISH_HOME=$(mktemp -d) npx -y @modelcontextprotocol/inspector@2.10.1 --cli node fish-career/dist/index.js --method tools/call --tool-name profile_update --tool-arg "content=# CI smoke" | tee /tmp/call.json
           grep -q '"written": true' /tmp/call.json
 
   compat:
@@ -46,8 +46,8 @@ jobs:
       matrix:
         node-version: [22, 24]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci --prefix fish-career
@@ -59,10 +59,10 @@ jobs:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
       - run: npm ci --prefix fish-career

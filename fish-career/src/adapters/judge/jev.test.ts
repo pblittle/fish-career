@@ -29,6 +29,19 @@ describe('validateAnswers', () => {
     expect(() => validateAnswers(answers)).toThrow(/skills/);
   });
 
+  it('rejects a score past the last rung of its ladder', () => {
+    // Every dimension has four criteria, so 3 is the last rung.
+    const answers = fullAnswers();
+    answers.skills = { score: 4, confidence: 0.8 };
+    expect(() => validateAnswers(answers)).toThrow(/skills/);
+  });
+
+  it('rejects a negative score', () => {
+    const answers = fullAnswers();
+    answers.comp = { score: -1, confidence: 0.8 };
+    expect(() => validateAnswers(answers)).toThrow(/comp/);
+  });
+
   it('rejects a confidence outside 0..1', () => {
     const answers = fullAnswers();
     answers.skills = { score: 2, confidence: 3 };
