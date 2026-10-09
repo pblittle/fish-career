@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { relative, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { homePaths } from './home.js';
+import { homePaths, isUsableApiKey } from './home.js';
 
 // A home can be a checkout of this repository. A file git tracks there is
 // deleted from the home by any later commit that removes it from the repo:
@@ -23,5 +23,26 @@ describe('the fish home and git', () => {
     );
     expect(top.size).toBeGreaterThan(5);
     expect([...top].filter((name) => !ignored.has(`/${name}`) && !ignored.has(name))).toEqual([]);
+  });
+});
+
+describe('isUsableApiKey', () => {
+  it('accepts a real key', () => {
+    expect(isUsableApiKey('ts_live_0123456789abcdef')).toBe(true);
+  });
+
+  it('rejects a missing or blank value', () => {
+    expect(isUsableApiKey(undefined)).toBe(false);
+    expect(isUsableApiKey('')).toBe(false);
+    expect(isUsableApiKey('   ')).toBe(false);
+  });
+
+  it('rejects the .env.example placeholder', () => {
+    expect(isUsableApiKey('your-key-from-https://console.typesafe.ai/keys')).toBe(false);
+  });
+
+  it('rejects an unresolved secret reference instead of sending it as a bearer token', () => {
+    expect(isUsableApiKey('op://Vault/TypeSafe/credential')).toBe(false);
+    expect(isUsableApiKey('vault://secret/typesafe')).toBe(false);
   });
 });

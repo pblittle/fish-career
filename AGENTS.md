@@ -30,7 +30,8 @@ that is correct today over the general thing that might be needed later.
    metrics updates it deliberately with the recorded run; a change without a
    test isn't done.
 5. **Commits and releases.** Conventional commits, enforced by commitlint
-   (the eleven types in `commitlint.config.js`); every commit is SSH-signed,
+   (the eleven types in `commitlint.config.js`); every branch commit is
+   SSH-signed (a squash merge onto `main` carries GitHub's signature instead),
    explicit paths only (`git add <path>`), no AI attribution. Version bumps
    and changelog notes are manual; a surface rename gets one changelog line,
    never a migration doc. `main` takes no direct pushes: branch, PR, green CI.

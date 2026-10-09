@@ -28,8 +28,11 @@ runtime boundary below are the answer.
 ### fetch: watchlist to postings cache
 
 - Four public ATS APIs, one flat posting shape: `TITLE`, `COMPANY`,
-  `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body. `URL` is
-  the page a person opens, never the API's JSON: a SmartRecruiters list entry
+  `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body.
+  `COMPENSATION` is the provider's structured field; when that is empty, the
+  adapter lifts the first salary range the body states, verbatim, and
+  otherwise writes `not stated`. A lone figure is never lifted. `URL` is the
+  page a person opens, never the API's JSON: a SmartRecruiters list entry
   carries only its API link, so its `URL` is built from the company and the
   posting id.
 - Remote postings only. Every observed remote posting is marked seen, written
@@ -76,8 +79,10 @@ runtime boundary below are the answer.
 - Judge calls retry with backoff on 429, 5xx, and dropped connections; a 4xx
   throws at once. Every call writes a trace: latency, token usage, raw
   answers, profile hash, rubric version.
-- Every scored row checkpoints to the ledger immediately; a crash loses at
-  most the row in flight.
+- Every row a whole-cache run scores checkpoints to the ledger immediately; a
+  crash loses at most the row in flight. A run over named postings is a spot
+  check: it scores and traces but leaves the ledger alone, so it neither
+  settles nor refreshes those entries.
 - Ranking: a blocker at 0.5 or above demotes a row below every clean row,
   regardless of composite. Region-labelled variants of one vacancy collapse
   to one row that names the other offices; a bare base title stays its own
@@ -85,6 +90,9 @@ runtime boundary below are the answer.
 - The ledger records score plus provenance (profile hash, rubric version). A
   profile or rubric change re-scores stale entries on the next run; the
   operator never babysits invalidation.
+- A run with nothing to score throws `NOTHING_TO_SCORE`. Its message says
+  whether the cache is empty or every posting is already scored under the
+  current profile and rubric, because the two call for different next steps.
 
 ### evaluate and calibrate: the measurements
 
@@ -100,13 +108,15 @@ runtime boundary below are the answer.
 ```text
 src/domain        pure policy: posting, posting URLs, rubric, answers,
                   ranking, preferences, calibration, ledger, admission,
-                  skip titles, verdicts, random, errors
+                  skip titles, verdicts, metrics, quality, random, errors
 src/ports         interfaces: ats-provider, judge, posting-repository, ledger,
-                  trace-sink, stores, clock
+                  trace-sink, trace-reader, stores, clock
 src/application   use cases over a dependencies object
-src/adapters      ats (four boards), judge (jev, fake), filesystem, fake
-                  (in-memory), trace (JSONL, LangSmith)
-src/interfaces    mcp (server, tools, resources, prompts), cli (commands)
+src/adapters      ats (four boards), judge (jev, fake), filesystem (stores,
+                  ledger, JSONL traces), fake (in-memory), trace (LangSmith,
+                  multi-sink fan-out)
+src/interfaces    mcp (server, tools, resources, prompts, schemas),
+                  cli (commands)
 src/bootstrap     createApplicationFromHome, createServerFromHome
 ```
 
@@ -167,10 +177,15 @@ watched.
 ### Boundaries validated at runtime
 
 - Judge responses: a runtime schema requires the hard blocker and every
-  dimension with a finite score and a confidence in 0..1. A malformed answer
-  fails that posting loudly rather than being clamped.
-- Watchlist entries and preferences: invalid entries are dropped, not trusted.
-- The ledger: corruption is reported, never silently reset.
+  dimension with a score on that dimension's criteria ladder (0 to the last
+  rung) and a confidence in 0..1. A malformed answer fails that posting loudly
+  rather than being clamped.
+- Watchlist entries and preferences: invalid entries are dropped on read, not
+  trusted. The watchlist store never writes over a file that holds entries it
+  dropped or could not parse; an add or remove refuses until the file is fixed.
+- The ledger: a corrupt ledger refuses the whole-cache run with
+  `LEDGER_UNREADABLE` before any judge call and is never overwritten. Triage
+  by explicit posting ID neither reads nor marks the ledger, so it still works.
 
 ### Determinism
 
@@ -193,6 +208,8 @@ MCP contract maps the codes to protocol errors
   `profile get|set`, `postings list|read|explain`, plus `arrivals` for
   grading and `recall` for postings found elsewhere
   ([`specs/quality.md`](./quality.md)).
+- `triage` exits non-zero when no posting could be scored; a partial run
+  prints its failures and exits zero, because its rows are already persisted.
 - `postings explain` returns the raw typed answers and cost for one posting;
   `--dry-run` prints the request without sending it. `calibrate reuse` redraws
   the pending slice from its recorded seed.
