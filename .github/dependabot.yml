@@ -1,0 +1,12 @@
+# The workflow pins actions to commit SHAs so CI runs code that was reviewed,
+# not whatever a moving tag points at today. Dependabot refreshes those pins
+# and the version comment beside each one. The npm packages are deliberately
+# not here: fish-career's lockfile is updated by hand with the health gate.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
