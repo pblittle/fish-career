@@ -88,7 +88,7 @@ export const checkBoundaries = ({ packageRoot = PACKAGE_ROOT, sourceDir } = {}) 
   const declared = [
     ...Object.keys(pkg.dependencies ?? {}),
     ...Object.keys(pkg.devDependencies ?? {}),
-  ].map((name) => ({ name, prefix: name + '/' }));
+  ].map((name) => ({ name, prefix: `${name}/` }));
 
   const files = walk(source);
   const specifiers = new Set();
@@ -98,7 +98,7 @@ export const checkBoundaries = ({ packageRoot = PACKAGE_ROOT, sourceDir } = {}) 
     const text = readFileSync(file, 'utf8');
     const where = relative(packageRoot, file);
     const zone = relative(source, file).split(sep).join('/');
-    const inZone = (prefix) => zone === prefix || zone.startsWith(prefix + '/');
+    const inZone = (prefix) => zone === prefix || zone.startsWith(`${prefix}/`);
     const core = inZone('domain') || inZone('application');
     const surfaces = inZone('interfaces');
     const mcp = inZone('interfaces/mcp');

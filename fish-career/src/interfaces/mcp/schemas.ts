@@ -105,7 +105,6 @@ export const triagePostingsOutput = z.union([
     errors: z.array(z.string()),
     scored: z.array(z.string()),
     skipped: z.number(),
-    ledgerOk: z.boolean(),
   }),
   errorEnvelope,
 ]);
@@ -171,7 +170,8 @@ export const ok = (text: string, structured: Record<string, unknown>): ToolResul
 });
 
 const HINTS: Partial<Record<ErrorCode, string>> = {
-  NO_JUDGE: 'Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake.',
+  NO_JUDGE:
+    'Put a TypeSafe API key in FISH_HOME/.env, or set FISH_JUDGE=fake. A secret reference (op://...) counts as no key until it is resolved.',
   NO_PROFILE: 'Write one with profile_update first.',
   EMPTY_WATCHLIST: 'Probe and add a company with watchlist_probe and watchlist_add.',
   NOTHING_TO_SCORE: 'Fetch new postings, or rescore to redo the cache.',
@@ -182,7 +182,8 @@ const HINTS: Partial<Record<ErrorCode, string>> = {
   NO_CALIBRATION_HISTORY: 'Run calibration_start and calibration_submit first.',
   INVALID_COMPANY: 'Probe the company first to see which boards carry it.',
   INVALID_GRADE: 'Use 3 act, 2 look, 1 miss, or 0 should not surface.',
-  LEDGER_UNREADABLE: 'Check FISH_HOME/state/scored.json; the next triage run will rewrite it.',
+  LEDGER_UNREADABLE:
+    'Fix or remove FISH_HOME/state/scored.json; nothing is scored over it. Triage by posting ID still works and leaves the ledger alone.',
   VERDICTS_UNREADABLE:
     'Check FISH_HOME/state/verdicts.json; nothing is recorded or measured until it parses.',
 };
