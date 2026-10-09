@@ -181,7 +181,9 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
           io.out('\nWARNING: the scored ledger could not be read; it was treated as empty.');
         }
         if (outcome.errors.length > 0) io.out(`Failed: ${outcome.errors.join('; ')}`);
-        return 0;
+        // A run that scored nothing is a failure, whatever it printed: a
+        // scheduled triage must not report success with an empty table.
+        return outcome.rows.length === 0 && outcome.errors.length > 0 ? 1 : 0;
       }
 
       case 'evaluate': {

@@ -133,6 +133,8 @@ MCP contract maps the codes to protocol errors
   `calibrate start|submit|reuse|rescore`, `watchlist list|probe|add|remove`,
   `profile get|set`, `postings list|read|explain`, plus `arrivals` for
   grading ([`specs/quality.md`](./quality.md)).
+- `triage` exits non-zero when no posting could be scored; a partial run
+  prints its failures and exits zero, because its rows are already persisted.
 - `postings explain` returns the raw typed answers and cost for one posting;
   `--dry-run` prints the request without sending it. `calibrate reuse` redraws
   the pending slice from its recorded seed.
