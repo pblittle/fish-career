@@ -35,6 +35,12 @@ runtime boundary below are the answer.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not; later polls deliver arrivals only. A recency window applies on the
   first poll (or an explicit `--days`).
+- Remote is the provider's stated workplace type where it has one (Ashby and
+  Lever `workplaceType`, SmartRecruiters `location.remote`). Without one, a
+  Greenhouse or Lever posting falls back to its location text and an Ashby
+  posting to its `isRemote` flag. `PUBLISHED` is first publication
+  (Greenhouse `first_published`), not the last edit, so the recency window
+  measures when a posting went up.
 - A body too thin to score is resolved through the provider's detail
   endpoint, or dropped as thin text if it stays thin; the split drop reasons
   are in [`specs/quality.md`](./quality.md).

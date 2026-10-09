@@ -101,6 +101,9 @@ const ashby: AtsProvider = {
     return arr(b.jobs).map((j) => {
       const jobUrl = str(j.jobUrl);
       const title = str(j.title);
+      // workplaceType is the stated policy. isRemote is set on hybrid
+      // postings too (all 518 of OpenAI's on 2026-10-03), so it decides only
+      // when the policy is absent.
       const workplace = str(j.workplaceType);
       const text = str(j.descriptionPlain) || htmlToText(str(j.descriptionHtml));
       return {
@@ -108,7 +111,7 @@ const ashby: AtsProvider = {
         title,
         location: str(j.location),
         workplace,
-        remote: workplace === 'Remote' || j.isRemote === true,
+        remote: workplace ? workplace === 'Remote' : j.isRemote === true,
         comp:
           str(rec(j.compensation).compensationTierSummary) ||
           str(j.compensationTierSummary) ||
@@ -139,7 +142,9 @@ const greenhouse: AtsProvider = {
         remote,
         comp: compFromText(text),
         url: str(j.absolute_url),
-        date: str(j.updated_at),
+        // first_published is when the posting went up; updated_at moves on
+        // every edit, so it would pass month-old postings off as new.
+        date: str(j.first_published) || str(j.updated_at),
         text,
       };
     });
@@ -196,20 +201,32 @@ const smartrecruiters: AtsProvider = {
   },
 };
 
+// Lever states the policy in workplaceType. The location is free text that
+// often omits it ("United States" on a remote posting) or contradicts it
+// ("Canada - Remote" on a hybrid one), so it decides only when the policy is
+// absent or unspecified.
+const LEVER_WORKPLACE: ReadonlyMap<string, string> = new Map([
+  ['remote', 'Remote'],
+  ['hybrid', 'Hybrid'],
+  ['onsite', 'On-site'],
+  ['on-site', 'On-site'],
+]);
+
 const lever: AtsProvider = {
   id: 'lever',
   async list(slug: string): Promise<Posting[]> {
     const b = await get(`https://api.lever.co/v0/postings/${slug}?mode=json`);
     return arr(b).map((j) => {
       const location = str(rec(j.categories).location);
-      const remote = /remote/i.test(location);
+      const stated = LEVER_WORKPLACE.get(str(j.workplaceType).toLowerCase()) ?? '';
+      const remote = stated ? stated === 'Remote' : /remote/i.test(location);
       const createdAt = typeof j.createdAt === 'number' ? j.createdAt : 0;
       const text = htmlToText(str(j.description));
       return {
         key: `lever:${slug}:${String(j.id)}`,
         title: str(j.text),
         location,
-        workplace: remote ? 'Remote' : '',
+        workplace: stated || (remote ? 'Remote' : ''),
         remote,
         comp: formatComp(j.salaryRange) || compFromText(text),
         url: str(j.hostedUrl),
