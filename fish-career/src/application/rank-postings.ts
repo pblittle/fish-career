@@ -17,7 +17,6 @@ export interface RankOutcome {
   scored: PostingId[];
   skipped: number;
   stale: PostingId[];
-  ledgerOk: boolean;
   runId: string;
 }
 
@@ -38,7 +37,6 @@ export const rankPostings =
     let candidates = records;
     let skipped = 0;
     let staleIds: PostingId[] = [];
-    let ledgerOk = true;
 
     if (input.postingIds !== undefined) {
       const wanted = input.postingIds.map(postingIdFromFile);
@@ -64,7 +62,6 @@ export const rankPostings =
           'The scored ledger could not be read; fix or remove state/scored.json. Nothing was scored.',
         );
       }
-      ledgerOk = ledger.ok;
       const ids = records.map((r) => r.id);
       staleIds = stale(ids, ledger.entries, provenance);
       if (!input.rescore) {
@@ -89,7 +86,6 @@ export const rankPostings =
       scored: rows.map((r) => r.postingId),
       skipped,
       stale: staleIds,
-      ledgerOk,
       runId,
     };
   };

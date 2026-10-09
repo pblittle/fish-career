@@ -104,7 +104,6 @@ export const triagePostingsOutput = z.union([
     errors: z.array(z.string()),
     scored: z.array(z.string()),
     skipped: z.number(),
-    ledgerOk: z.boolean(),
   }),
   errorEnvelope,
 ]);
