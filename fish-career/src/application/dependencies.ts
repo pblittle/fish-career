@@ -34,7 +34,8 @@ export interface CareerDependencies {
   profile: ProfileStore;
   watchlist: WatchlistStore;
   preferences: PreferencesStore;
-  // Titles fetch never writes. Without a store, no title is skipped.
+  // Titles fetch never writes and triage sets aside. Without a store, no
+  // title is skipped.
   skipTitles?: SkipTitlesStore;
   calibrations: CalibrationStore;
   clock: Clock;

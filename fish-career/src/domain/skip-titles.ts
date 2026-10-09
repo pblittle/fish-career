@@ -1,4 +1,4 @@
-// Titles the operator never wants fetched. The phrases live in
+// Titles the operator never wants fetched or scored. The phrases live in
 // skip-titles.txt, one per line. A phrase matches a title when its words
 // appear in the title side by side and in order, compared as whole words in
 // any case; punctuation only separates words. So "designer" skips "Product

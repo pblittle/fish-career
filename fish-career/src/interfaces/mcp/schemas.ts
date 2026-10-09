@@ -105,6 +105,9 @@ export const triagePostingsOutput = z.union([
     errors: z.array(z.string()),
     scored: z.array(z.string()),
     skipped: z.number(),
+    offTarget: z
+      .number()
+      .describe('Cached postings not scored: their titles match a phrase in skip-titles.txt'),
   }),
   errorEnvelope,
 ]);

@@ -180,6 +180,12 @@ export const runCli = async (argv: string[], deps: CliDeps): Promise<number> => 
         if (outcome.skipped > 0) {
           io.out(`\nSkipped ${outcome.skipped} already-scored postings from earlier runs.`);
         }
+        if (outcome.offTarget > 0) {
+          const n = outcome.offTarget;
+          io.out(
+            `\nSet aside ${n} cached posting${n === 1 ? '' : 's'} with a title on skip-titles.txt.`,
+          );
+        }
         if (outcome.errors.length > 0) io.out(`Failed: ${outcome.errors.join('; ')}`);
         // A run that scored nothing is a failure, whatever it printed: a
         // scheduled triage must not report success with an empty table.

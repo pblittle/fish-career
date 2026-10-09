@@ -39,6 +39,7 @@ const stubApp = (over: Partial<CareerApplication> = {}): CareerApplication =>
       errors: [],
       scored: [],
       skipped: 0,
+      offTarget: 0,
       stale: [],
       runId: 'run-1',
     })),
@@ -230,6 +231,7 @@ describe('runCli', () => {
         errors: [],
         scored: [],
         skipped: 2,
+        offTarget: 0,
         stale: [],
         runId: 'run-1',
       })),
@@ -241,6 +243,26 @@ describe('runCli', () => {
       rescore: false,
     });
     expect(sink.out.join('\n')).toContain('Skipped 2 already-scored postings');
+    expect(sink.out.join('\n')).not.toContain('skip-titles.txt');
+  });
+
+  it('triage says how many cached postings the skip list set aside', async () => {
+    const app = stubApp({
+      rankPostings: vi.fn(async () => ({
+        rows: [],
+        errors: [],
+        scored: [],
+        skipped: 0,
+        offTarget: 3,
+        stale: [],
+        runId: 'run-1',
+      })),
+    });
+    const sink = io();
+    await runCli(['triage'], { app, io: sink.io });
+    expect(sink.out.join('\n')).toContain(
+      'Set aside 3 cached postings with a title on skip-titles.txt.',
+    );
   });
 
   it('reports an application failure with its message and a non-zero exit', async () => {
@@ -262,6 +284,7 @@ describe('runCli', () => {
         errors: ['acme-1: judge API responded 401: unauthorized'],
         scored: [],
         skipped: 0,
+        offTarget: 0,
         stale: [],
         runId: 'run-1',
       })),
