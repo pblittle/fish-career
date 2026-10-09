@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   isPostingId,
@@ -8,6 +8,7 @@ import {
   postingIdFromFile,
 } from '../../domain/posting.js';
 import type { PostingRepository } from '../../ports/posting-repository.js';
+import { writeFileAtomic } from './home.js';
 
 const safe = (s: string): string =>
   s
@@ -67,7 +68,7 @@ export const filePostingRepository = (dir: string): PostingRepository => ({
       `PUBLISHED: ${posting.date}`,
     ].join('\n');
     const file = postingFile(company, posting.key);
-    writeFileSync(join(dir, file), `${header}\n\n${posting.text}\n`);
+    writeFileAtomic(join(dir, file), `${header}\n\n${posting.text}\n`);
     return postingIdFromFile(file);
   },
 });

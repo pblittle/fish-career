@@ -102,6 +102,18 @@ export const memoryVerdictStore = (initial: Record<PostingId, Verdict> = {}): Ve
   };
 };
 
+// A ledger whose file cannot be read: read() reports it and mark() refuses,
+// exactly as the filesystem adapter does, so use cases can be tested against
+// the refusal without a real corrupt file.
+export const corruptLedger = (): Ledger => ({
+  async read(): Promise<LedgerRead> {
+    return { ok: false, entries: {} };
+  },
+  async mark(): Promise<void> {
+    throw new Error('The scored ledger could not be read; refusing to overwrite it.');
+  },
+});
+
 export const memoryLedger = (initial: Record<PostingId, LedgerEntry> = {}): Ledger => {
   const entries = { ...initial };
   return {
