@@ -40,4 +40,18 @@ describe('optional LangGraph orchestration over the application API', () => {
     expect(interrupts).toHaveLength(1);
     vi.unstubAllGlobals();
   });
+
+  it('runs the same on any wall-clock day: the fake application keeps its own clock', async () => {
+    // The fake board is dated 2026-09-20 and a first poll keeps only the
+    // last 14 days, so on the system clock this example went dark on
+    // 2026-10-04. The application reads time through its clock port, so
+    // moving Date years ahead must change nothing.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2031-01-01T00:00:00Z') });
+    try {
+      const { interrupts } = await pause('far-future');
+      expect(interrupts).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

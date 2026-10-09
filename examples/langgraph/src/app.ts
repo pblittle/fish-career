@@ -4,6 +4,7 @@
 // the same application API.
 
 import {
+  fixedClock,
   memoryCalibrationStore,
   memoryLedger,
   memoryPostingRepository,
@@ -25,7 +26,6 @@ import type { CareerDependencies } from 'fish-career/dist/application/dependenci
 import { createApplicationFromHome } from 'fish-career/dist/bootstrap/create-application.js';
 import type { Posting } from 'fish-career/dist/domain/posting.js';
 import { createSeededRandom } from 'fish-career/dist/domain/random.js';
-import { systemClock } from 'fish-career/dist/ports/clock.js';
 
 const FIXTURE_PROFILE = [
   'Senior platform / forward-deployed engineer, individual contributor.',
@@ -84,7 +84,10 @@ export const fakeApplication = (): CareerApplication => {
     ]),
     preferences: memoryPreferencesStore([]),
     calibrations: memoryCalibrationStore(),
-    clock: systemClock,
+    // Fixed like the seed below. On the system clock the board's postings,
+    // dated 2026-09-20, fell outside the first poll's 14-day window on
+    // 2026-10-04, and the example had nothing left to triage.
+    clock: fixedClock('2026-09-25T12:00:00.000Z'),
     random: createSeededRandom(20260925),
     version: 'langgraph-example',
   };
