@@ -43,11 +43,17 @@ const forbidden = [
 
 const missing = requiredExact.filter((f) => !files.includes(f));
 const leaked = files.filter((f) => forbidden.some((re) => re.test(f)));
+// npm install -g ./fish-career links the clone, so the `fish` command runs
+// dist/index.js in place: a build that leaves it without the exec bit breaks
+// the command with "permission denied" until it is linked again.
+const bin = pack.files.find((f) => f.path === 'dist/index.js');
+const binNotExecutable = bin !== undefined && (bin.mode & 0o111) === 0;
 
-if (missing.length > 0 || leaked.length > 0) {
+if (missing.length > 0 || leaked.length > 0 || binNotExecutable) {
   console.error('pack verification failed');
   for (const f of missing) console.error(`  missing: ${f}`);
   for (const f of leaked) console.error(`  leaked: ${f}`);
+  if (binNotExecutable) console.error('  not executable: dist/index.js');
   process.exit(1);
 }
 

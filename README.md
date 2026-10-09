@@ -37,8 +37,9 @@ npm ci --prefix fish-career
 npm run build --prefix fish-career
 ```
 
-Link the CLI once so the bare `fish` name exists
-(`npm --prefix fish-career link`), then drive the loop:
+Install the CLI once so the bare `fish` name exists
+(`npm install -g ./fish-career`; it links the clone, so a rebuild updates
+it), then drive the loop:
 
 ```bash
 fish profile set <path>                      # the judgment target; see the walkthrough
@@ -378,7 +379,7 @@ fish postings list | read <postingId> | explain <postingId> [--dry-run]
 ```
 
 From a source checkout, run it as `node fish-career/dist/index.js <command>`
-or link it (`npm --prefix fish-career link`).
+or install it once (`npm install -g ./fish-career`).
 
 ## Ranking quality
 
