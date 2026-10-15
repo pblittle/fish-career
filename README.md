@@ -495,10 +495,13 @@ the whole `FISH_HOME` to reset.
 
 - The package is not on npm yet. Until it is, install from source.
 - Greenhouse and SmartRecruiters boards carry no structured compensation.
-  When a posting states a salary range in its body, the header carries that
-  range verbatim; otherwise the comp dimension reads neutral, and a sub-floor
-  posting can slip past the comp gate and should be eyeballed at the top of
-  the table.
+  When a Greenhouse posting states a salary range in its body, the header
+  carries that range verbatim. A SmartRecruiters posting's body arrives
+  later, from its detail endpoint, so its header reads `not stated` even
+  when the body states a range; the judge reads the body either way. When
+  the body states no range, the comp dimension reads neutral, and a
+  sub-floor posting can slip past the comp gate and should be eyeballed at
+  the top of the table.
 - US eligibility is not filtered at fetch; it lives in posting text and is
   judged by the location dimension and the blocker check.
 - Ashby compensation ranges arrive as written by the employer, unverified.

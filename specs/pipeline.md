@@ -31,10 +31,13 @@ runtime boundary below are the answer.
   `LOCATION`, `COMPENSATION`, `URL`, `PUBLISHED`, plus the full body.
   `COMPENSATION` is the provider's structured field; when that is empty, the
   adapter lifts the first salary range the body states, verbatim, and
-  otherwise writes `not stated`. A lone figure is never lifted. `URL` is the
-  page a person opens, never the API's JSON: a SmartRecruiters list entry
-  carries only its API link, so its `URL` is built from the company and the
-  posting id.
+  otherwise writes `not stated`. A lone figure is never lifted. The
+  SmartRecruiters adapter reads no body from the list (the body arrives from
+  the detail endpoint after admission), so a SmartRecruiters posting's
+  `COMPENSATION` reads `not stated` even when its body states a range. `URL`
+  is the page a person opens, never the API's JSON: a SmartRecruiters list
+  entry carries only its API link, so its `URL` is built from the company and
+  the posting id.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not, unless its title is on the skip list; later polls deliver arrivals
   only. A recency window applies on the first poll (or an explicit `--days`).

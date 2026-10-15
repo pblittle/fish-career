@@ -151,7 +151,7 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
     {
       title: 'Poll watchlist boards for new remote postings',
       description:
-        "Polls every watchlist company's public ATS board, keeps remote postings only, skips any whose title matches a phrase in the operator's skip-titles.txt, writes the ones never seen before into the postings cache, and returns the diff. Every remote posting it does not skip is marked seen, written or not, so later polls deliver arrivals only. First-ever poll writes only postings newer than 14 days. Compensation is included when the board provides it (Ashby usually, Greenhouse never).",
+        "Polls every watchlist company's public ATS board, keeps remote postings only, skips any whose title matches a phrase in the operator's skip-titles.txt, writes the ones never seen before into the postings cache, and returns the diff. Every remote posting it does not skip is marked seen, written or not, so later polls deliver arrivals only. First-ever poll writes only postings newer than 14 days. Compensation is included when the board provides it or the posting body states a salary range, lifted verbatim; a SmartRecruiters arrival's compensation reads \"not stated\" even when its body states one.",
       inputSchema: z.object({}),
       outputSchema: fetchPostingsOutput,
       annotations: {
@@ -180,7 +180,7 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
               ? ['', 'First poll: only postings newer than 14 days were written.']
               : []),
             outcome.arrivals.length > 0
-              ? '\nTriage them with triage_postings, then grade the ones you would act on with verdict_record.'
+              ? '\nTriage them with triage_postings, then grade each one with verdict_record.'
               : '',
           ]
             .filter(Boolean)

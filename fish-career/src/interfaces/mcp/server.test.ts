@@ -196,6 +196,10 @@ describe('the MCP contract', () => {
     expect(text).toContain(
       'Dropped before writing: 0 not remote, 0 off target, 0 too thin to score, 0 out of window.',
     );
+    // Every arrival, misses included: precision@arrival needs the 0s and 1s.
+    expect(text).toContain(
+      'Triage them with triage_postings, then grade each one with verdict_record.',
+    );
   });
 
   it('verdict_record records a grade, replaces it latest-wins, and rejects an unknown posting', async () => {

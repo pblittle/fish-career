@@ -40,7 +40,7 @@ Once the first npm release lands, `npx -y fish-career` starts the stdio
 server.
 
 Then, from the host: write a profile, probe a company, add it to the
-watchlist, fetch arrivals, triage them, grade what you would act on, and
+watchlist, fetch arrivals, triage them, grade each one, and
 calibrate the rubric against your own blind ranking. The repository README
 walks the whole setup and lists the CLI.
 
