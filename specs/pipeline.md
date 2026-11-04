@@ -1,6 +1,6 @@
 # The posting pipeline: fetch, triage, and the application core
 
-Status: accepted · 2026-09-22 · boundary rule amended 2026-09-27, 2026-09-28
+Status: accepted
 
 ## Problem
 
@@ -15,13 +15,13 @@ convert an unbounded stream of postings into a small ranked table with the
 reasons attached, and to prove measurably that the ranking tracks the
 operator's own judgment rather than a model's taste.
 
-The MCP server had grown into the application: its handlers read directories,
-orchestrated fetch and scoring, and rendered results, while the CLI
-reimplemented slices of the same decisions, so a change could drift. Posting
-filenames leaked into the contract, so storage layout was load-bearing, and
-nothing could run the complete workflow without a filesystem, a clock, or the
-network, so tests could only cover pieces. The core, the ports, and the
-runtime boundary below are the answer.
+Two surfaces over one workflow drift apart unless they share the decisions:
+a server whose handlers read directories and orchestrate scoring, beside a
+CLI that reimplements slices of the same logic, scores differently depending
+on how it was asked. A storage filename in the contract makes the layout
+impossible to change, and a workflow that needs a filesystem, a clock, or the
+network can only be tested in pieces. The core, the ports, and the runtime
+boundary below are the answer.
 
 ## Contract
 
@@ -40,7 +40,7 @@ runtime boundary below are the answer.
   only. A recency window applies on the first poll (or an explicit `--days`).
   An explicit window (`--days N`, or `--all` for none) also reconsiders every
   posting a poll observed and never wrote, except one too thin to score: those
-  dropped out of window, and those from before fish recorded why. Each keeps
+  dropped out of window, and those with no recorded reason. Each keeps
   its first-observation time.
 - Remote is the provider's stated workplace type where it has one (Ashby and
   Lever `workplaceType`, SmartRecruiters `location.remote` and
@@ -141,9 +141,8 @@ directory, builds a judge prompt, or decides an order.
 
 A posting's ID is its cache filename stem (`langchain-0a5dd30c-...`), not the
 filename. Ledger entries, traces, calibrations, preferences, the MCP tools,
-and the CLI all speak IDs. The filesystem adapter maps ID to file. Ledgers and
-preferences written before this change keyed on filenames and are normalized
-on read, so existing state survives. On input, a `.txt` suffix is accepted and
+and the CLI all speak IDs. The filesystem adapter maps ID to file. A filename in a
+ledger or preferences entry is normalized to its ID on read. On input, a `.txt` suffix is accepted and
 stripped. On read, an ID is checked against the cache-ID alphabet
 (`^[a-z0-9]+(?:-[a-z0-9]+)*$`) before any filesystem access; anything else is
 a miss and cannot name a file outside the postings directory.
@@ -194,20 +193,16 @@ watched.
 
 ### Errors
 
-Use cases throw `ApplicationError` with a stable code (`NO_JUDGE`,
-`NO_PROFILE`, `EMPTY_WATCHLIST`, `NOTHING_TO_SCORE`, `NO_PREFERENCES`,
-`POSTING_NOT_FOUND`, `INVALID_RANKING`, `NO_PENDING_CALIBRATION`,
-`NO_CALIBRATION_HISTORY`, `INVALID_COMPANY`). Surfaces render the message; the
-MCP contract maps the codes to protocol errors
-([`specs/mcp-contract.md`](./mcp-contract.md)).
+Use cases throw `ApplicationError` with a stable code from `ErrorCode` in
+`src/domain/errors.ts`. Surfaces render the message; the MCP server returns
+the code in its error envelope ([`specs/mcp-contract.md`](./mcp-contract.md)).
+The codes, and which tool raises each:
+[`docs/reference/mcp.md`](../docs/reference/mcp.md#error-codes).
 
 ### Surfaces
 
-- The `fish` CLI is the blessed interface: `fetch`, `triage`, `evaluate`,
-  `calibrate start|submit|reuse|rescore`, `watchlist list|probe|add|remove`,
-  `profile get|set`, `postings list|read|explain`, plus `arrivals` for
-  grading and `recall` for postings found elsewhere
-  ([`specs/quality.md`](./quality.md)).
+- The `fish` CLI is the blessed interface; every command is in
+  [`docs/reference/cli.md`](../docs/reference/cli.md).
 - `triage` exits non-zero when no posting could be scored; a partial run
   prints its failures and exits zero, because its rows are already persisted.
 - `postings explain` returns the raw typed answers and cost for one posting;
@@ -256,13 +251,12 @@ protocol-level not-found.
 ## Non-goals
 
 - No scraping LinkedIn, no auto-applying, no multi-candidate profiles.
-- No MCP App UI yet; the ranked table is text until the App plane exists.
+- No MCP App UI; the ranked table is text.
 - No LLM-authored prose in the ranking path. Typed answers only.
-- No OpenTelemetry adapter yet; the port is the seam for it.
+- No OpenTelemetry adapter; the trace port is where one would attach.
 - No sampling or redaction of trace answers; a deployment that needs either
   should wrap the sink.
 - No remote trace storage as the source of truth.
-- No change to scoring math, rubric data, ranking rules, or fetch semantics.
 - No hosted or multi-user concerns.
 
 ## Acceptance

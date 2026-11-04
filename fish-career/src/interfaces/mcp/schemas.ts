@@ -138,9 +138,11 @@ export const calibrationStartOutput = z.union([
   errorEnvelope,
 ]);
 
-// `z.nullable()` emits `type: ["number","null"]`, which single-type dialects
-// (Gemini function declarations, OpenAPI 3.0) reject or drop. A union emits
-// anyOf branches instead, which Inspector's portability check accepts.
+// The rho fields are null below two scored postings. Even written as a union,
+// the field reaches tools/list as `type: ["number","null"]`, which
+// single-type dialects (Gemini function declarations, OpenAPI 3.0) reject or
+// drop, and Inspector's portability check warns about it;
+// specs/mcp-contract.md records why the warning is accepted.
 const nullableNumber = z.union([z.number(), z.null()]);
 
 export const calibrationResultOutput = z.union([

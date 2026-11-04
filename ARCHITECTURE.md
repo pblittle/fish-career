@@ -3,13 +3,12 @@
 The decisions worth defending, and why they were made. Short on purpose: if a
 decision isn't here, it wasn't one.
 
-## One application core, many surfaces
+## One application core, two surfaces
 
 ```text
 MCP over stdio ──┐
-CLI ─────────────┼── CareerApplication (src/application)
-Future hosted ───┤         │
-Future API ──────┘         │
+CLI ─────────────┴── CareerApplication (src/application)
+                           │
             ┌──────────────┼──────────────┐
             │              │              │
        ATS providers     Judge      Repositories,
@@ -126,7 +125,7 @@ are no longer asking and nothing tells you which half. Invalidation is
 automatic so the operator never babysits it. A crash costs at most the row in
 flight, because every row checkpoints the moment it is scored.
 
-## There are four measurements, and the golden metrics are the acceptance test
+## There are five measurements, and the golden metrics are the acceptance test
 
 - **`evaluate`**: holds the ranking to pairwise preferences that quote their
   own source line in the profile. No human step. Runs in CI against a golden
@@ -159,13 +158,13 @@ the model's mood.
 
 - **Stable posting IDs.** A posting's ID is its cache filename stem, and every
   ledger entry, trace, calibration, and protocol surface speaks IDs. Storage
-  layout (`.txt` headers today, a database tomorrow) is an adapter detail;
-  older ledgers and preferences that keyed on filenames are normalized on read.
+  layout (`.txt` files with a header) is an adapter detail; a filename in a
+  ledger or preferences entry is normalized to its ID on read.
 - **One judge call per posting.** A run is long and a call is idempotent, so
   a 429, a 5xx, or a dropped connection costs a backoff and a retry; any other
   4xx is the request's own fault and throws at once. `fetchImpl` and
   `retryBaseMs` are injectable so the policy is tested without a network or
-     real sleeps.
+  real sleeps.
 - **Traces are a port with two sinks.** Every judge call is written to
   `state/traces.jsonl`, and `FISH_TRACE=langsmith` mirrors it to LangSmith.
   The local trace stays the source of truth and a failing mirror never fails
@@ -196,7 +195,3 @@ the model's mood.
 `fish-career`, so the npm surface and the filesystem agree; the preferred CLI
 command is `fish`. The domain is deliberately unregistered while the product is
 hypothetical.
-
-`fish.agency` is not part of this architecture. It was a placeholder for a
-hypothetical parent platform and is retired by
-`docs/adr/0001-product-boundary.md`.

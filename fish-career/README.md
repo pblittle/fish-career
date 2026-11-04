@@ -4,68 +4,34 @@ Local-first job search: an MCP server and CLI that rank postings against your
 profile, explain every score, and measure the ranking against your own
 judgment.
 
-This is the package README. The repository has the architecture, the specs,
-and the full walkthrough: **<https://github.com/pblittle/fish-career>**
+This is the package README. The documentation lives in the repository:
+**<https://github.com/pblittle/fish-career#documentation>**
 
 ## Quick start
 
-Requires Node 20.12+. State lives in `FISH_HOME` (default `~/.config/fish`),
-never in the package.
-
-The package is not published to npm yet. From a source checkout, build once:
-
-```sh
-npm ci --prefix fish-career
-npm run build --prefix fish-career
-```
-
-With `FISH_JUDGE=fake` in `$FISH_HOME/.env` the deterministic stand-in judge
-answers the same typed questions, so scoring runs with no key; the fetches
-still go to the public ATS boards. A TypeSafe key turns on the real judge.
-
-Connect an MCP host (Claude Desktop, opencode, Cursor) to the stdio server:
-
-```json
-{
-  "mcpServers": {
-    "fish-career": {
-      "command": "node",
-      "args": ["/absolute/path/to/repo/fish-career/dist/index.js"]
-    }
-  }
-}
-```
-
-Once the first npm release lands, `npx -y fish-career` starts the stdio
-server.
-
-Then, from the host: write a profile, probe a company, add it to the
-watchlist, fetch arrivals, triage them, grade what you would act on, and
-calibrate the rubric against your own blind ranking. The repository README
-walks the whole setup and lists the CLI.
+Requires Node 20.12+. The package is not published to npm yet; build it from
+a source checkout and follow
+[Your first ranked table](https://github.com/pblittle/fish-career/blob/main/docs/tutorials/first-ranked-table.md),
+which needs no API key. To run it under Claude Desktop, Cursor, or opencode:
+[How to connect an MCP host](https://github.com/pblittle/fish-career/blob/main/docs/how-to/connect-an-mcp-host.md).
 
 ## What's in the package
 
-Eleven MCP tools: `watchlist_probe`, `watchlist_add`, `watchlist_remove`,
-`fetch_postings`, `verdict_record`, `triage_postings`, `evaluate_ranking`,
-`calibration_start`, `calibration_submit`, `calibration_rescore`, and
-`profile_update`. Passive state is exposed as resources, and the repeatable
-workflows ship as prompts; the repository README lists them with the CLI.
-
-Every tool returns structured content validated against a declared output
-schema, plus text for chat hosts; expected failures carry a stable code.
-
-Scoring requires a TypeSafe API key in `FISH_HOME/.env`, or `FISH_JUDGE=fake`
-for the deterministic stand-in; the tests use the fakes.
+`dist/` holds the stdio MCP server and the `fish` CLI, two surfaces over one
+application core; `eval/` holds the labeled dataset, the recorded judge run,
+and the golden metrics that `fish quality` reads. Every tool, resource,
+prompt, and error code:
+[the MCP surface](https://github.com/pblittle/fish-career/blob/main/docs/reference/mcp.md).
+Every command:
+[the command line](https://github.com/pblittle/fish-career/blob/main/docs/reference/cli.md).
 
 ## State and privacy
 
-Everything read and written hangs off `FISH_HOME`: profile, watchlist,
-postings cache, `.env`, and run state. The package holds none of it. Postings
-come from public, no-auth ATS APIs; the profile is sent to the judge on
-scoring calls and nowhere else. An optional LangSmith trace mirror carries
-hashes, the model, token counts, and typed answers, never the profile or
-posting text. The repository README carries the details.
+Everything fish reads and writes lives under `FISH_HOME` (default
+`~/.config/fish`); the package holds none of it. Postings come from public,
+no-auth ATS APIs, and the profile is sent to the judge on scoring calls and
+nowhere else:
+[Privacy and data flow](https://github.com/pblittle/fish-career/blob/main/docs/explanation/privacy-and-data-flow.md).
 
 ## License
 

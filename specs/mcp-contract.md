@@ -1,37 +1,23 @@
 # The typed MCP contract
 
-Status: accepted · 2026-09-25
+Status: accepted
 
 ## Problem
 
-The 0.4 MCP surface was a collection of text-returning functions. Safety was
-argument-dependent (`watchlist_add` probed or wrote depending on `confirm`),
-posting filenames were the public identifier, passive state (`profile`,
-`watchlist`, a posting) was exposed as action-shaped tools, there were no
-reusable prompts, and clients could not branch on failure: every expected
-error arrived as prose. A client had to parse text to know what happened and
-whether the call was safe to repeat.
+A model is the client. To compose calls it needs to know what a call will do
+before it runs it, and to branch on how a call failed without parsing prose.
+A tool whose safety depends on an argument, a storage filename used as an
+identifier, passive state behind an action-shaped tool, or an error that
+arrives only as text each leave the client guessing.
 
 ## Contract
 
 ### Tools
 
-Eleven action tools, each with an input schema, an output schema, safety
-annotations, and one success/error path:
-
-| Tool | Purpose | readOnly | destructive | idempotent | openWorld |
-|---|---|---|---|---|---|
-| `watchlist_probe` | Probe the four ATS boards for a slug | yes | no | yes | yes |
-| `watchlist_add` | Write a company's board, from a URL or a provider and slug | no | no | yes | no |
-| `watchlist_remove` | Remove a company | no | yes | yes | no |
-| `fetch_postings` | Poll boards, write arrivals | no | no | yes | yes |
-| `verdict_record` | Record the operator's grade for an arrival | no | yes | yes | no |
-| `triage_postings` | Score and rank postings | no | no | no | yes |
-| `evaluate_ranking` | Hold the ranking to stated preferences | no | no | no | yes |
-| `calibration_start` | Draw a seeded blind slice | no | no | no | no |
-| `calibration_submit` | Record the human order, measure | no | no | no | yes |
-| `calibration_rescore` | Re-measure under the current rubric | no | no | no | yes |
-| `profile_update` | Replace the profile | no | yes | yes | no |
+Every tool has an input schema, an output schema, safety annotations, and one
+success path and one error path. A tool that both probes and writes is two
+tools. The tools, their annotations, inputs, outputs, and errors are listed
+in [`docs/reference/mcp.md`](../docs/reference/mcp.md).
 
 `watchlist_add` takes exactly one of two forms: a posting or board `url`,
 read offline ([`specs/pipeline.md`](./pipeline.md), Posting URLs), or a
@@ -52,32 +38,25 @@ converges on one record per posting. The verdict's scale and store are in
   tests rather than by the protocol layer.
 - A concise text rendering alongside it for conversational hosts.
 - Expected failures: `isError: true`, with
-  `structuredContent.error = { code, message, hint? }` and the stable codes
-  `NO_JUDGE`, `NO_PROFILE`, `EMPTY_WATCHLIST`, `NOTHING_TO_SCORE`,
-  `NO_PREFERENCES`, `POSTING_NOT_FOUND`, `INVALID_RANKING`,
-  `NO_PENDING_CALIBRATION`, `NO_CALIBRATION_HISTORY`, `INVALID_COMPANY`,
-  `LEDGER_UNREADABLE`, `INVALID_GRADE`, `VERDICTS_UNREADABLE`.
+  `structuredContent.error = { code, message, hint? }`, the code from
+  `ErrorCode` in `src/domain/errors.ts` and the hint from `HINTS` in
+  `src/interfaces/mcp/schemas.ts`.
 
 ### Stable identifiers and error codes
 
-The codes above are a contract: clients branch on them, a code is never
+The codes are a contract: clients branch on them, a code is never
 reused for a different failure, and the surface may add codes but not change
-the meaning of the ones listed. The message and hint are for humans and may
+the meaning of existing ones. The message and hint are for humans and may
 change. Posting IDs are stable cache filename stems; a `.txt` suffix on input
 is accepted and stripped.
 
-### Resources
+### Resources and prompts
 
-`fish://profile/current`, `fish://watchlist`, `fish://postings`,
-`fish://postings/{postingId}` (template), `fish://rubric/current`,
-`fish://calibrations/latest`, `fish://runs/latest`, and `fish://runs/{runId}`
-(template).
-
-### Prompts
-
-`career-search-onboarding`, `review-new-arrivals`, `explain-ranking`,
-`calibrate-rubric`, `audit-profile`. Arguments carry mutable intent; the
-prompts prescribe no seniority, geography, or compensation floor.
+Passive state is a resource, never a tool, and a missing posting or run is a
+protocol-level not-found. Prompts carry the repeatable workflows; their
+arguments carry mutable intent, and they prescribe no seniority, geography,
+or compensation floor. Both are listed in
+[`docs/reference/mcp.md`](../docs/reference/mcp.md).
 
 ### Composition
 

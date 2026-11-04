@@ -24,16 +24,9 @@ re-record anything.
 - `postings/`: the posting fixtures, in the same header format the fetch
   engine writes.
 
-## Re-recording after a rubric or dataset change
+## Changing the baseline
 
-```bash
-export TYPESAFE_API_KEY=...            # from console.typesafe.ai
-npm --prefix fish-career run build
-npm --prefix fish-career run record:eval
-npm --prefix fish-career run quality   # read the result before committing
-```
-
-Review the `base-run.json` diff and update `expected-metrics.json` only when
-the metric change is the intended one. The regression test fails otherwise,
-which is the point: a rubric change is a claim about ranking quality, and the
-claim gets measured.
+A rubric or dataset change that moves the metrics is landed through
+[How to change the rubric](https://github.com/pblittle/fish-career/blob/main/docs/how-to/change-the-rubric.md):
+re-record, read the report, and update `expected-metrics.json` with the two
+published copies the tests hold it to.

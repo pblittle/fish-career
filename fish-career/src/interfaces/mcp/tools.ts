@@ -151,7 +151,7 @@ export const registerTools = (server: McpServer, app: CareerApplication): void =
     {
       title: 'Poll watchlist boards for new remote postings',
       description:
-        "Polls every watchlist company's public ATS board, keeps remote postings only, skips any whose title matches a phrase in the operator's skip-titles.txt, writes the ones never seen before into the postings cache, and returns the diff. Every remote posting it does not skip is marked seen, written or not, so later polls deliver arrivals only. First-ever poll writes only postings newer than 14 days. Compensation is included when the board provides it (Ashby usually, Greenhouse never).",
+        "Polls every watchlist company's public ATS board, keeps remote postings only, skips any whose title matches a phrase in the operator's skip-titles.txt, writes the ones never seen before into the postings cache, and returns the diff. Every remote posting it does not skip is marked seen, written or not, so later polls deliver arrivals only. First-ever poll writes only postings newer than 14 days; a company filter or a wider window, which also reconsiders postings dropped for their date, is the CLI's `fish fetch --company X --days N`. Compensation is the board's structured range where it has one, otherwise the first salary range the posting text states, otherwise \"not stated\".",
       inputSchema: z.object({}),
       outputSchema: fetchPostingsOutput,
       annotations: {
