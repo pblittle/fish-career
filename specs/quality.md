@@ -1,22 +1,18 @@
 # Ranking quality: metrics, grades, and findings
 
-Status: accepted · 2026-09-25 · verdicts and findings amended 2026-09-27,
-2026-09-28 · known-item recall added 2026-10-03 · off-target drops added
-2026-10-03
+Status: accepted
 
 ## Problem
 
 "The model scored some jobs" is not a claim about anything. The preference
 eval checks whether a ranking satisfies constraints the profile already
-states, but it is narrow: there was no labeled dataset, no top-of-list metric,
-no way to compare a rubric or model change against a stable baseline, and no
-sensitivity analysis to show whether a result depends on the exact weights.
-Nothing closed the loop on the real cache either: the arrivals fetch actually
-wrote, and whether the operator would act on them. `fish fetch` reported only
-what it wrote, not what it dropped, so "the pipeline is quiet" could not be
-told from "the boards are quiet" or "the admission rules ate everything", and
-there was no place to record the operator's own verdict on an arrival, which
-is the ground truth the whole loop exists to track.
+states, but it is narrow. A ranking change needs a labeled dataset, a
+top-of-list metric, a stable baseline to compare against, and a sensitivity
+pass that shows whether a result depends on the exact weights. The loop also
+needs closing on the real cache: whether the operator would act on what
+fetch wrote, which is the ground truth the whole loop exists to track, and
+what fetch dropped and why, so that "the pipeline is quiet" can be told from
+"the boards are quiet" or "the admission rules ate everything".
 
 ## Contract
 
@@ -81,7 +77,7 @@ Every metric returns null rather than a guess when its inputs are too thin.
   arrival is unknown, not a miss.
 - `coverage` = graded / cached. Null when the cache is empty.
 - Every number is null rather than a guess when its inputs are too thin. A
-  code constant, `PRECISION_FLOOR = 45` (an ESTIMATE from the advice run),
+  code constant, `PRECISION_FLOOR = 45` (an ESTIMATE, not a measurement),
   suppresses the precision line below it as "no read (n=... below the
   floor)". Above it, a Wilson 95% interval accompanies the rate.
 - Verdicts never feed `eval/expected-metrics.json` or `fish quality`; the
@@ -134,8 +130,8 @@ posting reached:
   `fish arrivals summary` prints coverage and precision@arrival.
 - CLI: `fish recall <url...>` prints one line per URL, labeled by its
   furthest stage, then the stages counted. A posting dropped for its date, or
-  before fish recorded why, names the `fish fetch --company X --days N` that
-  reconsiders it, while its board is watched. Recall is not an MCP tool yet.
+  with no recorded reason, names the `fish fetch --company X --days N` that
+  reconsiders it, while its board is watched. Recall has no MCP tool.
 - `fish fetch` reports drops by reason: not remote and off target (both
   counted before admission, and neither marked seen, so both recur on every
   poll that lists them), too thin to score, out of window. Off target counts
@@ -146,11 +142,10 @@ posting reached:
   window also reconsiders the postings earlier polls dropped for their date,
   so one the window still falls short of is counted again.
 - The seen index records `observedAt`, the first-observation time, set when a
-  posting is first marked seen and preserved thereafter. Freshness-lag
-  reporting is not in this slice; the field is the prerequisite.
+  posting is first marked seen and preserved thereafter. No report reads it.
 - A posting a poll observed but did not write carries why in the seen index:
-  `dropped` is `thin-text` or `out-of-window`. Entries written before the
-  field existed have no reason, and recall says so.
+  `dropped` is `thin-text` or `out-of-window`. An entry with no reason is
+  reported as such by recall.
 
 ### Recorded baseline
 
@@ -199,9 +194,7 @@ at any time.
 - No online experimentation or production telemetry.
 - No automatic rubric optimization; sensitivity points at fragile weights,
   and changing them remains a reviewed diff.
-- The A2UI card, LangGraph, the scheduler, the directory frame,
-  freshness-lag reporting, verdict history, and any automatic tuning are out
-  of scope; `observedAt` is the prerequisite field for freshness lag.
+- No verdict history and no freshness-lag report.
 - No recall rate and no recall MCP tool: the known-item log counts cases.
 
 ## Acceptance

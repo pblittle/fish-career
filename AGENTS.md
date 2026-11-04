@@ -87,11 +87,15 @@ work; do not loosen the gate.
   answer schema and the separate blocker check are the structural defense; do
   not replace them with prose parsing.
 
-## Specs and ADRs
+## Specs, ADRs, and docs
 
 - A behavior change lands in the subsystem spec under `specs/`; the PR
   template asks for the link.
 - An architectural decision lands as an ADR in `docs/adr/`.
+- User documentation lives in `docs/` by kind: `tutorials/`, `how-to/`,
+  `reference/`, `explanation/`. A change to a command, tool, resource, file,
+  or setting updates its reference page; each fact lives on one page, and
+  the others link to it.
 - Documentation changes land in the same commit as the code they describe,
   never ahead of it.
 
