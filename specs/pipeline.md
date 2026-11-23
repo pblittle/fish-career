@@ -101,7 +101,9 @@ boundary below are the answer.
 - A golden fixture of recorded judge answers runs the same eval in CI with no
   network and no key.
 - `calibrate`: optional and stronger. Spearman agreement against a hand-ranked
-  slice, for when an operator will rank one.
+  slice, for when an operator will rank one. The submitted ranking must be a
+  permutation of the slice — every posting exactly once, nothing from outside
+  it; anything else fails with `INVALID_RANKING`.
 
 ### Layout: the application core, ports, and adapters
 

@@ -209,6 +209,26 @@ describe('the complete workflow over in-memory ports', () => {
     ).rejects.toMatchObject({ code: 'INVALID_RANKING' });
   });
 
+  it('refuses a human ranking that repeats a posting', async () => {
+    const h = harness();
+    await fetchAndRank(h);
+    const { postingIds } = await h.app.startCalibration({ count: 3, seed: 9 });
+    // A duplicate passes the missing check but would corrupt the stored
+    // human ranking, which no rescore can repair.
+    await expect(
+      h.app.submitCalibration({ ranking: [...postingIds, ...postingIds.slice(0, 1)] }),
+    ).rejects.toMatchObject({ code: 'INVALID_RANKING' });
+  });
+
+  it('refuses a human ranking that names postings outside the slice', async () => {
+    const h = harness();
+    await fetchAndRank(h);
+    const { postingIds } = await h.app.startCalibration({ count: 3, seed: 9 });
+    await expect(
+      h.app.submitCalibration({ ranking: [...postingIds, 'not-in-the-slice'] }),
+    ).rejects.toMatchObject({ code: 'INVALID_RANKING' });
+  });
+
   it('a human order that disagrees with the judge produces a negative rho', async () => {
     const h = harness();
     await fetchAndRank(h);

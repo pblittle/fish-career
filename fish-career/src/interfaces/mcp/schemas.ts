@@ -182,7 +182,7 @@ const HINTS: Partial<Record<ErrorCode, string>> = {
   NOTHING_TO_SCORE: 'Fetch new postings, or rescore to redo the cache.',
   NO_PREFERENCES: 'Create FISH_HOME/preferences.json with the pairs the ranking must respect.',
   POSTING_NOT_FOUND: 'List the cache from the fish://postings resource.',
-  INVALID_RANKING: 'Rank every posting in the pending slice.',
+  INVALID_RANKING: 'Rank every posting in the pending slice, each exactly once, nothing else.',
   NO_PENDING_CALIBRATION: 'Start one with calibration_start.',
   NO_CALIBRATION_HISTORY: 'Run calibration_start and calibration_submit first.',
   INVALID_COMPANY: 'Probe the company first to see which boards carry it.',

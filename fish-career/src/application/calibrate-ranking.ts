@@ -118,6 +118,22 @@ export const submitCalibration =
         'No calibration is pending; start one first.',
       );
     }
+    // The ranking must be a permutation of the slice: a repeated posting or
+    // one from outside it passes the missing check but corrupts the stored
+    // human ranking, which no rescore can repair.
+    if (new Set(input.ranking).size !== input.ranking.length) {
+      throw new ApplicationError(
+        'INVALID_RANKING',
+        'The ranking repeats a posting; every posting in the slice appears exactly once.',
+      );
+    }
+    const slice = new Set(pending.postingIds);
+    if (input.ranking.some((id) => !slice.has(id))) {
+      throw new ApplicationError(
+        'INVALID_RANKING',
+        'The ranking names postings outside the pending slice; rank exactly the slice.',
+      );
+    }
     const missing = pending.postingIds.filter((id) => !input.ranking.includes(id));
     if (missing.length > 0) {
       throw new ApplicationError(
