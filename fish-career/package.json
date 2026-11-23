@@ -59,7 +59,7 @@
     "@commitlint/cli": "^21.2.3",
     "@modelcontextprotocol/client": "^2.2.0",
     "@types/node": "^26.6.2",
-    "markdownlint-cli2": "^0.23.3",
+    "markdownlint-cli2": "^0.24.2",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vitest": "^5.0.1"
