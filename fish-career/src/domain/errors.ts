@@ -16,6 +16,7 @@ export type ErrorCode =
   | 'INVALID_COMPANY'
   | 'INVALID_GRADE'
   | 'VERDICTS_UNREADABLE'
+  | 'SEEN_UNREADABLE'
   | 'UNKNOWN';
 
 // Two use cases refuse without a judge; they must say the same thing.

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  corruptSeenStore,
   fixedClock,
   memoryCalibrationStore,
   memoryLedger,
@@ -54,7 +55,7 @@ const honorPosting = (id: string): Posting => ({
   text: 'y'.repeat(200),
 });
 
-const harness = () => {
+const harness = (over: Partial<CareerDependencies> = {}) => {
   const vida = [
     vidaPosting(1),
     vidaPosting(2, { text: 'too short' }),
@@ -88,6 +89,7 @@ const harness = () => {
     calibrations: memoryCalibrationStore(),
     clock: fixedClock(NOW),
     random: { int: () => 0, shuffle: (xs) => [...xs] },
+    ...over,
   };
   return { deps, vida, lever };
 };
@@ -102,6 +104,13 @@ const afterFirstPoll = async () => {
 };
 
 describe('recallPostings, the known-item case log', () => {
+  it('refuses over a corrupt seen index instead of answering from silence', async () => {
+    const h = harness({ seen: corruptSeenStore() });
+    await expect(
+      recallPostings(h.deps)({ urls: [`https://jobs.lever.co/vida/${uuid(1)}`] }),
+    ).rejects.toMatchObject({ code: 'SEEN_UNREADABLE' });
+  });
+
   it('reports the furthest stage each posting reached', async () => {
     const h = await afterFirstPoll();
     const cases = await recallPostings(h.deps)({

@@ -82,7 +82,17 @@ export const fetchPostings =
       );
     }
 
-    const seen = await deps.seen.read();
+    const seenRead = await deps.seen.read();
+    if (!seenRead.ok) {
+      // A corrupt seen index must not become an empty one: treating it as
+      // empty would re-arrive every posting the operator already graded and
+      // lose the record of why anything was dropped. Refuse before any poll.
+      throw new ApplicationError(
+        'SEEN_UNREADABLE',
+        'The seen index could not be read; fix or remove state/seen.json. Nothing was fetched or marked seen.',
+      );
+    }
+    const seen = seenRead.seen;
     const phrases = (await deps.skipTitles?.read()) ?? [];
     const firstRun = Object.keys(seen).length === 0;
     const days = input.days !== undefined ? input.days : firstRun ? 14 : null;

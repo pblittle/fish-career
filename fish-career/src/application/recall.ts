@@ -4,6 +4,7 @@
 // not a rate: the URLs are whatever the operator happened to find, not a
 // sample of anything a rate could be read from.
 
+import { ApplicationError } from '../domain/errors.js';
 import type { Posting, PostingId } from '../domain/posting.js';
 import { postingIdFromFile } from '../domain/posting.js';
 import {
@@ -68,12 +69,21 @@ type Listing = { postings: Posting[] } | { error: string };
 export const recallPostings =
   (deps: CareerDependencies) =>
   async (input: { urls: string[] }): Promise<RecallCase[]> => {
-    const [watchlist, seen, ledger, phrases] = await Promise.all([
+    const [watchlist, seenRead, ledger, phrases] = await Promise.all([
       deps.watchlist.read(),
       deps.seen.read(),
       deps.ledger.read(),
       deps.skipTitles?.read() ?? [],
     ]);
+    if (!seenRead.ok) {
+      // The seen index is the primary stage source; over a corrupt one the
+      // case log would answer from silence, so it refuses.
+      throw new ApplicationError(
+        'SEEN_UNREADABLE',
+        'The seen index could not be read; fix or remove state/seen.json. Nothing was reported.',
+      );
+    }
+    const seen = seenRead.seen;
     const companyOf = (board: Board): string =>
       watchlist.find((e) => sameBoard(e, board))?.name ?? `${board.provider}/${board.slug}`;
 

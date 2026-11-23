@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   corruptLedger,
+  corruptSeenStore,
   fixedClock,
   memoryCalibrationStore,
   memoryLedger,
@@ -171,6 +172,14 @@ describe('the complete workflow over in-memory ports', () => {
     await h.app.fetchPostings();
     const ranked = await h.app.rankPostings({ postingIds: ['acme-1'] });
     expect(ranked.rows).toHaveLength(1);
+  });
+
+  it('refuses to fetch over a corrupt seen index, before any poll', async () => {
+    const h = harness({ seen: corruptSeenStore() });
+    // Treating it as empty would re-arrive every posting the operator
+    // already graded and lose the drop reasons.
+    await expect(h.app.fetchPostings()).rejects.toMatchObject({ code: 'SEEN_UNREADABLE' });
+    expect((await h.app.listPostings()).length).toBe(0);
   });
 
   it('holds the ranking to the stated preferences', async () => {
