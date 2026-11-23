@@ -35,8 +35,9 @@ that is correct today over the general thing that might be needed later.
    explicit paths only (`git add <path>`), no AI attribution. Version bumps,
    changelog notes, and tags are cut by release-please from conventional
    commits on `main`; never edit `CHANGELOG.md` or the version by hand. A
-   surface rename gets one changelog line, never a migration doc. `main` takes
-   no direct pushes: branch, PR, green CI.
+   surface rename lands as a `feat:` or `fix:` commit, so it gets its one
+   changelog line; never a migration doc. `main` takes no direct pushes:
+   branch, PR, green CI.
 
 ## The gate
 
