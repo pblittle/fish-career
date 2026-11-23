@@ -25,9 +25,10 @@ const averageRanks = (values: number[]): number[] => {
 };
 
 // Spearman is Pearson over the tie-averaged ranks. The 6Σd² shortcut is
-// exact only without ties, and the labeled eval and calibration slices
-// both carry ties; a constant side has no association to measure, so it
-// reads null like every other too-thin input.
+// exact only without ties, and the labeled eval's grades tie (calibration
+// slices pass distinct positions, so their rho is unchanged); a constant
+// side has no association to measure, so it reads null like every other
+// too-thin input.
 export const spearman = (a: number[], b: number[]): number | null => {
   if (a.length !== b.length || a.length < 2) return null;
   const ra = averageRanks(a);
