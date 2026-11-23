@@ -3,7 +3,7 @@
   "k": 5,
   "pairwiseAccuracy": 0.9230769230769231,
   "kendallTau": 0.736850539762792,
-  "spearman": 0.8632352941176471,
+  "spearman": 0.8578372368099236,
   "precisionAt5": 1,
   "ndcgAt5": 0.9840352219951628,
   "missing": ["contoso-thin"],
