@@ -1,0 +1,27 @@
+# Releases are cut by release-please, not by hand: conventional commits on
+# main become a release PR that bumps fish-career/package.json and
+# CHANGELOG.md, and merging that PR tags the version and publishes the
+# release notes. Nothing here runs on branches; it fires on pushes to main.
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # With the default GITHUB_TOKEN, events from the release PR do not
+          # trigger CI on it; a personal access token named
+          # RELEASE_PLEASE_TOKEN lets the test workflow run on the release PR
+          # too. The fallback keeps releases working before the secret exists.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
