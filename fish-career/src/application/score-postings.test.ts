@@ -28,7 +28,7 @@ const deps = (over: Partial<CareerDependencies> = {}): CareerDependencies => ({
   providers: {},
   judge: fakeJudge,
   postings: memoryPostingRepository(),
-  seen: { read: async () => ({}), write: async () => {} },
+  seen: { read: async () => ({ ok: true, seen: {} }), write: async () => {} },
   verdicts: memoryVerdictStore(),
   ledger: memoryLedger(),
   traces: memoryTraceSink(),

@@ -59,8 +59,16 @@ export interface SeenEntry {
   dropped?: DropReason;
 }
 
+// The seen index read like the verdict store's: a corrupt file is REPORTED,
+// not silently treated as empty. An unnoticed reset would re-arrive every
+// posting and lose the record of why they were dropped.
+export interface SeenRead {
+  ok: boolean;
+  seen: Record<string, SeenEntry>;
+}
+
 export interface SeenStore {
-  read(): Promise<Record<string, SeenEntry>>;
+  read(): Promise<SeenRead>;
   write(seen: Record<string, SeenEntry>): Promise<void>;
 }
 

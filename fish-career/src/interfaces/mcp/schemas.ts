@@ -191,6 +191,8 @@ const HINTS: Partial<Record<ErrorCode, string>> = {
     'Fix or remove FISH_HOME/state/scored.json; nothing is scored over it. Triage by posting ID still works and leaves the ledger alone.',
   VERDICTS_UNREADABLE:
     'Check FISH_HOME/state/verdicts.json; nothing is recorded or measured until it parses.',
+  SEEN_UNREADABLE:
+    'Fix or remove FISH_HOME/state/seen.json; nothing is fetched, marked seen, or recalled over it.',
 };
 
 // An expected failure is a result, not a thrown error: the client gets a

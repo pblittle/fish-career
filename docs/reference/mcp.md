@@ -195,6 +195,7 @@ people and may change.
 | `INVALID_GRADE` | `verdict_record` | Use 3, 2, 1, or 0 |
 | `LEDGER_UNREADABLE` | `triage_postings` | Fix or remove `state/scored.json`; triage by posting ID still works |
 | `VERDICTS_UNREADABLE` | `verdict_record` | Check `state/verdicts.json` |
+| `SEEN_UNREADABLE` | `fetch_postings`, `recall` | Fix or remove `state/seen.json` |
 
 Any other thrown error arrives with code `UNKNOWN`. An argument that fails
 its input schema (a `label` of 5, say) is rejected by the SDK before fish

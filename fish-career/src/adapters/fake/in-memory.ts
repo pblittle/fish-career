@@ -17,6 +17,7 @@ import type {
   PreferencesStore,
   ProfileStore,
   SeenEntry,
+  SeenRead,
   SeenStore,
   SkipTitlesStore,
   VerdictStore,
@@ -96,8 +97,8 @@ export const memoryCalibrationStore = (): CalibrationStore & {
 export const memorySeenStore = (initial: Record<string, SeenEntry> = {}): SeenStore => {
   let seen = { ...initial };
   return {
-    async read() {
-      return { ...seen };
+    async read(): Promise<SeenRead> {
+      return { ok: true, seen: { ...seen } };
     },
     async write(next) {
       seen = { ...next };
@@ -127,6 +128,17 @@ export const corruptLedger = (): Ledger => ({
   },
   async mark(): Promise<void> {
     throw new Error('The scored ledger could not be read; refusing to overwrite it.');
+  },
+});
+
+// The seen-index twin of corruptLedger: read() reports the file as unreadable
+// so fetch and recall can be tested against the refusal without a real file.
+export const corruptSeenStore = (): SeenStore => ({
+  async read(): Promise<SeenRead> {
+    return { ok: false, seen: {} };
+  },
+  async write(): Promise<void> {
+    throw new Error('The seen index could not be read; refusing to overwrite it.');
   },
 });
 

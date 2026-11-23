@@ -105,7 +105,7 @@ describe('fetchPostings drop accounting', () => {
   it('writes observedAt when a posting is first marked seen, and preserves it', async () => {
     const h = harness();
     await fetchPostings(h.deps)({ companies: ['Acme'] });
-    const first = await h.seen.read();
+    const first = (await h.seen.read()).seen;
     expect(first['fixture:acme:1']?.observedAt).toBe('2026-09-27T12:00:00.000Z');
     expect(first['fixture:acme:3']?.observedAt).toBe('2026-09-27T12:00:00.000Z');
     // A non-remote posting is never marked seen at all.
@@ -115,7 +115,7 @@ describe('fetchPostings drop accounting', () => {
     h.acme.push(posting('fixture:acme:6'));
     const second = await fetchPostings(h.deps)({ companies: ['Acme'] });
     expect(second.arrivals.map((a) => a.postingId)).toEqual(['acme-6']);
-    const after = await h.seen.read();
+    const after = (await h.seen.read()).seen;
     expect(after['fixture:acme:6']?.observedAt).toBe('2026-09-29T08:00:00.000Z');
     // The first observations are untouched by the later poll.
     expect(after['fixture:acme:1']?.observedAt).toBe('2026-09-27T12:00:00.000Z');
@@ -141,7 +141,9 @@ describe('fetchPostings drop accounting', () => {
       written: 0,
       drops: { notRemote: 0, offTarget: 0, thinText: 0, outOfWindow: 1 },
     });
-    expect((await h.seen.read())['fixture:beta:1']?.observedAt).toBe('2026-09-27T12:00:00.000Z');
+    expect((await h.seen.read()).seen['fixture:beta:1']?.observedAt).toBe(
+      '2026-09-27T12:00:00.000Z',
+    );
   });
 
   it('sums the drops over every board a poll read', async () => {
@@ -160,7 +162,7 @@ describe('fetchPostings drop accounting', () => {
   it('records in the seen index why a posting it observed was not written', async () => {
     const h = harness();
     await fetchPostings(h.deps)({ companies: ['Acme'] });
-    const seen = await h.seen.read();
+    const seen = (await h.seen.read()).seen;
     expect(seen['fixture:acme:2']).toMatchObject({ observed: true, dropped: 'thin-text' });
     expect(seen['fixture:acme:3']).toMatchObject({ observed: true, dropped: 'out-of-window' });
     expect(seen['fixture:acme:1']).toMatchObject({ file: 'acme-1.txt' });
@@ -189,7 +191,7 @@ describe('fetchPostings with an explicit window', () => {
       outOfWindow: 0,
     });
     // It keeps the time the first poll observed it.
-    expect((await h.seen.read())['fixture:acme:3']).toEqual({
+    expect((await h.seen.read()).seen['fixture:acme:3']).toEqual({
       title: 'Role fixture:acme:3',
       file: 'acme-3.txt',
       date: h.acme[2].date,
@@ -202,7 +204,7 @@ describe('fetchPostings with an explicit window', () => {
     const narrow = await fetchPostings(h.deps)({ companies: ['Acme'], days: 20 });
     expect(narrow.arrivals).toEqual([]);
     expect(narrow.perCompany[0]?.drops.outOfWindow).toBe(1);
-    expect((await h.seen.read())['fixture:acme:3']).toMatchObject({
+    expect((await h.seen.read()).seen['fixture:acme:3']).toMatchObject({
       dropped: 'out-of-window',
       observedAt: '2026-09-27T12:00:00.000Z',
     });
@@ -232,7 +234,7 @@ describe('fetchPostings with an explicit window', () => {
     });
     const all = await fetchPostings(h.deps)({ companies: ['Beta'], days: null });
     expect(all.arrivals.map((a) => a.postingId)).toEqual(['beta-1']);
-    expect((await h.seen.read())['fixture:beta:1']).toEqual({
+    expect((await h.seen.read()).seen['fixture:beta:1']).toEqual({
       title: 'Role fixture:beta:1',
       file: 'beta-1.txt',
       date: h.beta[0].date,
@@ -257,7 +259,7 @@ describe('fetchPostings skip titles', () => {
       outOfWindow: 1,
     });
     expect(outcome.arrivals.map((a) => a.postingId).sort()).toEqual(['acme-1', 'acme-5']);
-    expect((await h.seen.read())['fixture:acme:6']).toBeUndefined();
+    expect((await h.seen.read()).seen['fixture:acme:6']).toBeUndefined();
   });
 
   it('writes the posting on the next poll once the phrase is deleted', async () => {

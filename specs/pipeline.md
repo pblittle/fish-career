@@ -37,7 +37,11 @@ boundary below are the answer.
   posting id.
 - Remote postings only. Every observed remote posting is marked seen, written
   or not, unless its title is on the skip list; later polls deliver arrivals
-  only. A recency window applies on the first poll (or an explicit `--days`).
+  only. The seen index is guarded like the verdict store: a corrupt
+  `state/seen.json` refuses the poll and recall with `SEEN_UNREADABLE`
+  instead of silently resetting — an unnoticed reset would re-arrive every
+  posting and lose the record of why anything was dropped. A recency window
+  applies on the first poll (or an explicit `--days`).
   An explicit window (`--days N`, or `--all` for none) also reconsiders every
   posting a poll observed and never wrote, except one too thin to score: those
   dropped out of window, and those with no recorded reason. Each keeps
