@@ -188,7 +188,7 @@ people and may change.
 | `NOTHING_TO_SCORE` | `triage_postings`, `calibration_start` | Fetch new postings, or rescore |
 | `NO_PREFERENCES` | `evaluate_ranking` | Create `FISH_HOME/preferences.json` |
 | `POSTING_NOT_FOUND` | `triage_postings`, `verdict_record` | List the cache from `fish://postings` |
-| `INVALID_RANKING` | `calibration_submit` | Rank every posting in the pending slice |
+| `INVALID_RANKING` | `calibration_submit` | Rank every posting in the pending slice, each exactly once, nothing else |
 | `NO_PENDING_CALIBRATION` | `calibration_submit` | Start one with `calibration_start` |
 | `NO_CALIBRATION_HISTORY` | `calibration_rescore` | Run `calibration_start` and `calibration_submit` first |
 | `INVALID_COMPANY` | `watchlist_add`, `watchlist_probe` (empty slug) | Probe the company first |
