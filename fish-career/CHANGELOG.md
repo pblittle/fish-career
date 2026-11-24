@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.1](https://github.com/pblittle/fish-career/compare/v0.9.0...v0.9.1) (2026-11-24)
+
+
+### Bug Fixes
+
+* **calibration:** spearman is exact with ties ([#77](https://github.com/pblittle/fish-career/issues/77)) ([ef94879](https://github.com/pblittle/fish-career/commit/ef94879c89c05cac4d40d4d1a24dc111ad5be864))
+* **deps:** clear every open dependency alert ([#78](https://github.com/pblittle/fish-career/issues/78)) ([ae92e8f](https://github.com/pblittle/fish-career/commit/ae92e8f410b8023768a8672a6df0596d6c2ef3bc))
+
 ## [0.9.0](https://github.com/pblittle/fish-career/compare/v0.8.0...v0.9.0) (2026-10-09)
 
 
