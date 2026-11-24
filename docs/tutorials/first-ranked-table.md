@@ -42,7 +42,7 @@ ranking quality against 17 labeled postings (16 scored, k=5)
 
 pairwise accuracy  92.3%  ###############.
 kendall tau        73.7%  ##############..
-spearman rho       86.3%  ###############.
+spearman rho       85.8%  ###############.
 precision@5       100.0%  ################
 ndcg@5            98.4%  ################
 blockers below clean rows: yes

@@ -32,9 +32,22 @@ describe('spearman', () => {
   });
 
   it('averages tied ranks', () => {
-    // [1,1,2] vs [1,2,3]: ties in a become ranks 1.5,1.5,3 -> d^2 = 0.25+0.25+0 = 0.5
-    // rho = 1 - 3/(3*8) = 0.875
-    expect(spearman([1, 1, 2], [1, 2, 3])).toBeCloseTo(0.875);
+    // [1,1,2] vs [1,2,3]: ties in a become ranks 1.5,1.5,3, and Pearson
+    // over the averaged ranks is 1.5/sqrt(1.5*2) ≈ 0.866. The 6Σd²
+    // shortcut would answer 0.875; it is exact only without ties.
+    expect(spearman([1, 1, 2], [1, 2, 3])).toBeCloseTo(0.8660254037844386);
+  });
+
+  it('is exact with ties on both sides', () => {
+    // A perfect reversal of tied pairs is -1; the 6Σd² shortcut answers -0.6.
+    expect(spearman([1, 1, 2, 2], [2, 2, 1, 1])).toBeCloseTo(-1);
+    // Uneven ties: Pearson is 3.75/4.5 ≈ 0.833; the shortcut answers 0.85.
+    expect(spearman([1, 1, 2, 3], [1, 2, 2, 3])).toBeCloseTo(0.8333333333333334);
+  });
+
+  it('is null when one side is constant', () => {
+    // No variance on one side: there is no association to measure.
+    expect(spearman([1, 1, 1], [1, 2, 3])).toBeNull();
   });
 
   it('is null below two items or on length mismatch', () => {

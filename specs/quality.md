@@ -45,7 +45,7 @@ Over the predicted order and the labels:
 
 - pairwise accuracy (comparable pairs only; equal labels are skipped),
 - Kendall tau-b,
-- Spearman rho,
+- Spearman rho (Pearson over tie-averaged ranks),
 - precision@k (label >= 2 counts as relevant),
 - nDCG@k over graded relevance,
 - per-dimension weight sensitivity: bump one weight by delta, renormalize,
@@ -156,7 +156,7 @@ judged against `eval/profile.md` by `jev-latest` under rubric v1:
   five rows the operator would act on first are the five the ranking puts
   first (three graded 3, two graded 2).
 - **The order mostly agrees.** Pairwise accuracy 92.3%, Kendall tau 73.7%,
-  Spearman 86.3%.
+  Spearman 85.8%.
 - **Hard constraints hold.** Every posting whose blocker fires (Austin
   on-site, Seattle hybrid, Singapore remote, and the adversarial posting)
   ranks below every clean row.

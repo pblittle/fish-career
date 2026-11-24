@@ -16,7 +16,7 @@ than a model's taste.
 
 The ranking is measured, not asserted. [`fish-career/eval/`](./fish-career/eval)
 holds 17 labeled postings covering the hard cases, a recorded judge run, and
-golden metrics: pairwise accuracy 92.3%, Kendall tau 73.7%, Spearman 86.3%,
+golden metrics: pairwise accuracy 92.3%, Kendall tau 73.7%, Spearman 85.8%,
 precision@5 100%, nDCG@5 98.4%, with every blocked posting below every clean
 one. `fish quality` reproduces the report offline. The findings, including
 where the ranking still disagrees with the operator, are in
