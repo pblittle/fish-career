@@ -32,9 +32,12 @@ that is correct today over the general thing that might be needed later.
 5. **Commits and releases.** Conventional commits, enforced by commitlint
    (the eleven types in `commitlint.config.js`); every branch commit is
    SSH-signed (a squash merge onto `main` carries GitHub's signature instead),
-   explicit paths only (`git add <path>`), no AI attribution. Version bumps
-   and changelog notes are manual; a surface rename gets one changelog line,
-   never a migration doc. `main` takes no direct pushes: branch, PR, green CI.
+   explicit paths only (`git add <path>`), no AI attribution. Version bumps,
+   changelog notes, and tags are cut by release-please from conventional
+   commits on `main`; never edit `CHANGELOG.md` or the version by hand. A
+   surface rename lands as a `feat:` or `fix:` commit, so it gets its one
+   changelog line; never a migration doc. `main` takes no direct pushes:
+   branch, PR, green CI.
 
 ## The gate
 

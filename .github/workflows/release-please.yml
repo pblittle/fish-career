@@ -1,0 +1,58 @@
+# Releases are cut by release-please, not by hand: conventional commits on
+# main become a release PR that bumps fish-career/package.json and
+# CHANGELOG.md, and merging that PR tags the version and publishes the
+# release notes. Nothing here runs on branches; it fires on pushes to main.
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      # The ruleset requires test and commitlint with no bypass, and a release
+      # PR opened with the GITHUB_TOKEN gets neither: the pull_request event
+      # may not fire at all (the recursion guard), and when it does it lands
+      # in action_required, which leaves the head SHA pending. Dispatch the
+      # checks onto the release branch, then approve the gated run for that
+      # exact SHA, so the release PR can merge without a PAT or a human tap.
+      # The approval is scoped to the head SHA because the release branch is
+      # reused and a stale gated run on it must not be started (#36).
+      # releases_created, not release_created: the latter is only set for a
+      # package at the repo root, and fish-career lives in a subdirectory.
+      # Only a PR this repo's workflow opened (github-actions[bot]) qualifies:
+      # a fork PR can name its branch release-please-* too, and approving its
+      # gated run would wave untrusted code past the approval gate.
+      - name: Trigger checks on the release PR, and approve the gated run
+        if: steps.release.outputs.releases_created != 'true'
+        run: |
+          ref=$(gh api "repos/$GITHUB_REPOSITORY/pulls" --jq '[.[] | select(.user.login == "github-actions[bot]" and (.head.ref | startswith("release-please")))][0].head.ref // empty')
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/pulls" --jq '[.[] | select(.user.login == "github-actions[bot]" and (.head.ref | startswith("release-please")))][0].head.sha // empty')
+          [ -n "$ref" ] || exit 0
+          gh workflow run test.yml --ref "$ref"
+          for attempt in 1 2 3 4 5 6; do
+            ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$sha&status=action_required" --jq '.workflow_runs[].id')
+            if [ -n "$ids" ]; then
+              for id in $ids; do
+                gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/approve" >/dev/null
+              done
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "no gated run found to approve"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
